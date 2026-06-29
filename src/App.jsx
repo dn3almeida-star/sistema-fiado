@@ -9,6 +9,9 @@ import CobrancasHoje from './pages/CobrancasHoje.jsx'
 import Relatorio from './pages/Relatorio.jsx'
 import { useClientes } from './hooks/useClientes.js'
 import { useVendas } from './hooks/useVendas.js'
+import { useAuth } from './hooks/useAuth.jsx'
+import Login from './pages/Login.jsx'
+import Splash from './components/Splash.jsx'
 
 export default function App() {
   const [paginaAtiva, setPaginaAtiva] = useState('dashboard')
@@ -21,6 +24,7 @@ export default function App() {
 
   const clientesHook = useClientes()
   const vendasHook = useVendas()
+  const { session, carregando: carregandoAuth } = useAuth()
 
   function navegar(pagina, params = {}) {
     if (params.clienteId !== undefined) setClienteAtivoId(params.clienteId)
@@ -36,6 +40,9 @@ export default function App() {
   }
 
   const props = { navegar, mostrarToast, ...clientesHook, ...vendasHook }
+
+  if (carregandoAuth) return <Splash />
+  if (!session) return <Login />
 
   return (
     <div className="flex flex-col min-h-screen bg-ground">
