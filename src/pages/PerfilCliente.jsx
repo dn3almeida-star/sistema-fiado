@@ -1,17 +1,57 @@
 import { useState } from 'react'
-import { ArrowLeft, Phone, MapPin, Home, FileText, ChevronDown, ChevronUp, CheckCircle, Circle, FileDown, Trash2, Plus } from 'lucide-react'
+import { ArrowLeft, Phone, MapPin, Home, FileText, ChevronDown, ChevronUp, CheckCircle, Circle, FileDown, Trash2, Plus, Pencil, Check, X } from 'lucide-react'
 import ModalConfirmar from '../components/ModalConfirmar.jsx'
 import { formatarMoeda, formatarData, statusParcela, formatarTelefone } from '../utils/formatadores.js'
 import { gerarCarnetPDF } from '../utils/gerarPDF.js'
 
-export default function PerfilCliente({ clienteId, clientes, vendas, marcarParcelaPaga, desmarcarParcelaPaga, removerVenda, removerCliente, navegar, mostrarToast, profile }) {
+export default function PerfilCliente({ clienteId, clientes, vendas, marcarParcelaPaga, desmarcarParcelaPaga, removerVenda, removerCliente, atualizarCliente, navegar, mostrarToast, profile }) {
   const [vendasAbertas, setVendasAbertas] = useState({})
   const [modalPago, setModalPago] = useState(null)
   const [modalRemover, setModalRemover] = useState(null)
   const [modalExcluirCliente, setModalExcluirCliente] = useState(false)
+  const [editando, setEditando] = useState(false)
+  const [form, setForm] = useState(null)
+  const [salvando, setSalvando] = useState(false)
 
   const cliente = clientes.find(c => c.id === clienteId)
   if (!cliente) return null
+
+  function abrirEdicao() {
+    setForm({
+      nome: cliente.nome,
+      telefone: cliente.telefone ?? '',
+      endereco: cliente.endereco ?? '',
+      bairro: cliente.bairro ?? '',
+      observacoes: cliente.observacoes ?? '',
+    })
+    setEditando(true)
+  }
+
+  function cancelarEdicao() {
+    setEditando(false)
+    setForm(null)
+  }
+
+  async function salvarEdicao() {
+    if (!form.nome.trim()) return
+    setSalvando(true)
+    try {
+      await atualizarCliente(clienteId, {
+        nome: form.nome.trim(),
+        telefone: form.telefone.trim(),
+        endereco: form.endereco.trim(),
+        bairro: form.bairro.trim(),
+        observacoes: form.observacoes.trim(),
+      })
+      setEditando(false)
+      setForm(null)
+      mostrarToast('✓ Cliente atualizado')
+    } catch {
+      mostrarToast('Erro ao salvar alterações.', 'error')
+    } finally {
+      setSalvando(false)
+    }
+  }
 
   const vendasCliente = vendas
     .filter(v => v.clienteId === clienteId)
@@ -61,56 +101,119 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
       <div className="bg-primary text-white px-4 pt-4 pb-6">
         <div className="flex items-center justify-between mb-4">
           <button
-            onClick={() => navegar('clientes')}
+            onClick={() => editando ? cancelarEdicao() : navegar('clientes')}
             className="flex items-center gap-2 text-white/70 hover:text-white min-h-touch transition-colors"
           >
             <ArrowLeft size={20} />
-            <span className="text-sm font-medium">Clientes</span>
+            <span className="text-sm font-medium">{editando ? 'Cancelar' : 'Clientes'}</span>
           </button>
-          <button
-            onClick={() => setModalExcluirCliente(true)}
-            className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white/80 px-3 py-2 rounded-xl text-sm min-h-touch transition-colors"
-          >
-            <Trash2 size={15} />
-            Excluir
-          </button>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center flex-shrink-0">
-            <span className="text-white font-extrabold text-2xl">{cliente.nome[0]?.toUpperCase()}</span>
-          </div>
-          <div>
-            <h1 className="text-xl font-bold leading-tight">{cliente.nome}</h1>
-            {cliente.bairro && <p className="text-white/60 text-sm mt-0.5">{cliente.bairro}</p>}
-          </div>
-        </div>
-
-        {/* Contato */}
-        {(cliente.telefone || cliente.endereco) && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {cliente.telefone && (
-              <a
-                href={`tel:${cliente.telefone.replace(/\D/g, '')}`}
-                className="flex items-center gap-1.5 bg-white/10 text-white px-3 py-2 rounded-xl text-sm min-h-touch"
+          {editando ? (
+            <button
+              onClick={salvarEdicao}
+              disabled={salvando || !form?.nome?.trim()}
+              className="flex items-center gap-1.5 bg-white text-primary px-3 py-2 rounded-xl text-sm font-bold min-h-touch disabled:opacity-50 transition-colors"
+            >
+              <Check size={15} />
+              {salvando ? 'Salvando…' : 'Salvar'}
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={abrirEdicao}
+                className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white/80 px-3 py-2 rounded-xl text-sm min-h-touch transition-colors"
               >
-                <Phone size={14} />
-                {formatarTelefone(cliente.telefone)}
-              </a>
-            )}
-            {cliente.endereco && (
-              <span className="flex items-center gap-1.5 bg-white/10 text-white/80 px-3 py-2 rounded-xl text-sm">
-                <Home size={14} />
-                {cliente.endereco}
-              </span>
-            )}
-            {cliente.bairro && (
-              <span className="flex items-center gap-1.5 bg-white/10 text-white/80 px-3 py-2 rounded-xl text-sm">
-                <MapPin size={14} />
-                {cliente.bairro}
-              </span>
-            )}
+                <Pencil size={15} />
+                Editar
+              </button>
+              <button
+                onClick={() => setModalExcluirCliente(true)}
+                className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white/80 px-3 py-2 rounded-xl text-sm min-h-touch transition-colors"
+              >
+                <Trash2 size={15} />
+                Excluir
+              </button>
+            </div>
+          )}
+        </div>
+
+        {editando ? (
+          <div className="space-y-2.5">
+            <input
+              autoFocus
+              type="text"
+              value={form.nome}
+              onChange={e => setForm(f => ({ ...f, nome: e.target.value }))}
+              placeholder="Nome *"
+              className="w-full bg-white/15 text-white placeholder-white/50 px-4 py-3 rounded-xl text-base outline-none focus:bg-white/25 transition-colors"
+            />
+            <input
+              type="tel"
+              inputMode="numeric"
+              value={form.telefone}
+              onChange={e => setForm(f => ({ ...f, telefone: e.target.value }))}
+              placeholder="Telefone"
+              className="w-full bg-white/15 text-white placeholder-white/50 px-4 py-3 rounded-xl text-base outline-none focus:bg-white/25 transition-colors"
+            />
+            <input
+              type="text"
+              value={form.endereco}
+              onChange={e => setForm(f => ({ ...f, endereco: e.target.value }))}
+              placeholder="Endereço"
+              className="w-full bg-white/15 text-white placeholder-white/50 px-4 py-3 rounded-xl text-base outline-none focus:bg-white/25 transition-colors"
+            />
+            <input
+              type="text"
+              value={form.bairro}
+              onChange={e => setForm(f => ({ ...f, bairro: e.target.value }))}
+              placeholder="Bairro"
+              className="w-full bg-white/15 text-white placeholder-white/50 px-4 py-3 rounded-xl text-base outline-none focus:bg-white/25 transition-colors"
+            />
+            <textarea
+              value={form.observacoes}
+              onChange={e => setForm(f => ({ ...f, observacoes: e.target.value }))}
+              placeholder="Observações"
+              rows={2}
+              className="w-full bg-white/15 text-white placeholder-white/50 px-4 py-3 rounded-xl text-base outline-none focus:bg-white/25 transition-colors resize-none"
+            />
           </div>
+        ) : (
+          <>
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-extrabold text-2xl">{cliente.nome[0]?.toUpperCase()}</span>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold leading-tight">{cliente.nome}</h1>
+                {cliente.bairro && <p className="text-white/60 text-sm mt-0.5">{cliente.bairro}</p>}
+              </div>
+            </div>
+
+            {(cliente.telefone || cliente.endereco) && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {cliente.telefone && (
+                  <a
+                    href={`tel:${cliente.telefone.replace(/\D/g, '')}`}
+                    className="flex items-center gap-1.5 bg-white/10 text-white px-3 py-2 rounded-xl text-sm min-h-touch"
+                  >
+                    <Phone size={14} />
+                    {formatarTelefone(cliente.telefone)}
+                  </a>
+                )}
+                {cliente.endereco && (
+                  <span className="flex items-center gap-1.5 bg-white/10 text-white/80 px-3 py-2 rounded-xl text-sm">
+                    <Home size={14} />
+                    {cliente.endereco}
+                  </span>
+                )}
+                {cliente.bairro && (
+                  <span className="flex items-center gap-1.5 bg-white/10 text-white/80 px-3 py-2 rounded-xl text-sm">
+                    <MapPin size={14} />
+                    {cliente.bairro}
+                  </span>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
 
