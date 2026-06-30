@@ -1,28 +1,45 @@
 import jsPDF from 'jspdf'
 import { formatarData, formatarMoeda } from './formatadores.js'
 
-export function gerarCarnetPDF(cliente, venda, nomeVendedor = 'Vendedor') {
+export async function gerarCarnetPDF(cliente, venda, loja = {}) {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const largura = 190
   const margem = 10
 
-  // Cabeçalho
-  doc.setFillColor(30, 58, 95)
+  // Cabeçalho (forest green)
+  doc.setFillColor(21, 78, 48)
   doc.rect(0, 0, 210, 28, 'F')
+
+  // Logo da loja (se houver)
+  if (loja.logo_url) {
+    try {
+      const resp = await fetch(loja.logo_url)
+      const blob = await resp.blob()
+      const dataUrl = await new Promise(res => {
+        const fr = new FileReader()
+        fr.onload = () => res(fr.result)
+        fr.readAsDataURL(blob)
+      })
+      doc.addImage(dataUrl, 'PNG', margem, 4, 20, 20)
+    } catch {
+      // sem logo se falhar o carregamento
+    }
+  }
+
   doc.setTextColor(255, 255, 255)
-  doc.setFontSize(20)
+  doc.setFontSize(18)
   doc.setFont('helvetica', 'bold')
-  doc.text('CARNÊ DE PAGAMENTO', 105, 12, { align: 'center' })
+  doc.text(loja.nome_loja || 'Caderno Digital', 105, 13, { align: 'center' })
   doc.setFontSize(11)
   doc.setFont('helvetica', 'normal')
-  doc.text('Caderno Digital', 105, 21, { align: 'center' })
+  doc.text('Carnê de Pagamento', 105, 21, { align: 'center' })
 
   // Dados do cliente
   doc.setTextColor(0, 0, 0)
   doc.setFontSize(11)
   doc.setFont('helvetica', 'bold')
   doc.text('DADOS DO CLIENTE', margem, 36)
-  doc.setDrawColor(30, 58, 95)
+  doc.setDrawColor(21, 78, 48)
   doc.line(margem, 38, margem + largura, 38)
 
   doc.setFont('helvetica', 'normal')
@@ -57,7 +74,7 @@ export function gerarCarnetPDF(cliente, venda, nomeVendedor = 'Vendedor') {
   y += 8
 
   // Cabeçalho da tabela
-  doc.setFillColor(30, 58, 95)
+  doc.setFillColor(21, 78, 48)
   doc.rect(margem, y, largura, 8, 'F')
   doc.setTextColor(255, 255, 255)
   doc.setFontSize(9)
@@ -96,7 +113,8 @@ export function gerarCarnetPDF(cliente, venda, nomeVendedor = 'Vendedor') {
   // Rodapé
   doc.setFontSize(9)
   doc.setTextColor(100, 100, 100)
-  doc.text(`Vendedor: ${nomeVendedor}`, 105, 285, { align: 'center' })
+  const contato = loja.telefone ? `${loja.nome_loja || 'Vendedor'} — ${loja.telefone}` : (loja.nome_loja || 'Vendedor')
+  doc.text(contato, 105, 285, { align: 'center' })
   doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 105, 290, { align: 'center' })
 
   const nomeArquivo = `carne-${cliente.nome.replace(/\s+/g, '-').toLowerCase()}.pdf`

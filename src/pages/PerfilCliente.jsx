@@ -4,7 +4,7 @@ import ModalConfirmar from '../components/ModalConfirmar.jsx'
 import { formatarMoeda, formatarData, statusParcela, formatarTelefone } from '../utils/formatadores.js'
 import { gerarCarnetPDF } from '../utils/gerarPDF.js'
 
-export default function PerfilCliente({ clienteId, clientes, vendas, marcarParcelaPaga, desmarcarParcelaPaga, removerVenda, removerCliente, navegar, mostrarToast }) {
+export default function PerfilCliente({ clienteId, clientes, vendas, marcarParcelaPaga, desmarcarParcelaPaga, removerVenda, removerCliente, navegar, mostrarToast, profile }) {
   const [vendasAbertas, setVendasAbertas] = useState({})
   const [modalPago, setModalPago] = useState(null)
   const [modalRemover, setModalRemover] = useState(null)
@@ -240,7 +240,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
 
                       <div className="flex gap-2 px-3 pb-3">
                         <button
-                          onClick={() => gerarCarnetPDF(cliente, venda)}
+                          onClick={() => gerarCarnetPDF(cliente, venda, profile || {})}
                           className="flex-1 flex items-center justify-center gap-2 bg-primary-50 text-primary py-2.5 rounded-xl font-semibold text-sm active:bg-primary/10 transition-colors"
                         >
                           <FileDown size={16} />
