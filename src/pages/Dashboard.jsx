@@ -4,7 +4,7 @@ import CardResumo from '../components/CardResumo.jsx'
 import { formatarData, hoje, diasAteVencimento } from '../utils/formatadores.js'
 import { useAuth } from '../hooks/useAuth.jsx'
 
-export default function Dashboard({ clientes, vendas, navegar }) {
+export default function Dashboard({ clientes, vendas, navegar, profile }) {
   const { logout } = useAuth()
   const stats = useMemo(() => {
     const hj = hoje()
@@ -44,9 +44,15 @@ export default function Dashboard({ clientes, vendas, navegar }) {
           <h1 className="text-2xl font-extrabold text-gray-900 leading-tight">Caderno Digital</h1>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-sm">
-            <BookOpen size={20} className="text-white" strokeWidth={2} />
-          </div>
+          <button
+            onClick={() => navegar('perfil-loja')}
+            className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-sm overflow-hidden"
+            aria-label="Perfil da loja"
+          >
+            {profile?.logo_url
+              ? <img src={profile.logo_url} alt="Logo" className="w-full h-full object-cover" />
+              : <BookOpen size={20} className="text-white" strokeWidth={2} />}
+          </button>
           <button
             onClick={logout}
             className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-500 active:bg-gray-50"

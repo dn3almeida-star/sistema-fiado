@@ -12,6 +12,9 @@ import { useVendas } from './hooks/useVendas.js'
 import { useAuth } from './hooks/useAuth.jsx'
 import Login from './pages/Login.jsx'
 import Splash from './components/Splash.jsx'
+import PerfilLoja from './pages/PerfilLoja.jsx'
+import { useProfile } from './hooks/useProfile.js'
+import { perfilCompleto } from './utils/perfil.js'
 
 export default function App() {
   const [paginaAtiva, setPaginaAtiva] = useState('dashboard')
@@ -24,7 +27,8 @@ export default function App() {
 
   const clientesHook = useClientes()
   const vendasHook = useVendas()
-  const { session, carregando: carregandoAuth } = useAuth()
+  const { session, usuario, carregando: carregandoAuth } = useAuth()
+  const profileHook = useProfile(usuario)
 
   function navegar(pagina, params = {}) {
     if (params.clienteId !== undefined) setClienteAtivoId(params.clienteId)
@@ -39,10 +43,31 @@ export default function App() {
     toastTimer.current = setTimeout(() => setToast(null), 3000)
   }
 
-  const props = { navegar, mostrarToast, ...clientesHook, ...vendasHook }
+  const props = {
+    navegar,
+    mostrarToast,
+    profile: profileHook.profile,
+    salvarProfile: profileHook.salvarProfile,
+    enviarLogo: profileHook.enviarLogo,
+    ...clientesHook,
+    ...vendasHook,
+  }
 
   if (carregandoAuth) return <Splash />
   if (!session) return <Login />
+  if (profileHook.carregandoProfile) return <Splash />
+  if (!perfilCompleto(profileHook.profile)) {
+    return (
+      <PerfilLoja
+        profile={profileHook.profile}
+        salvarProfile={profileHook.salvarProfile}
+        enviarLogo={profileHook.enviarLogo}
+        mostrarToast={mostrarToast}
+        modoInicial
+        onConcluir={() => setPaginaAtiva('dashboard')}
+      />
+    )
+  }
   if (clientesHook.carregandoClientes || vendasHook.carregandoVendas) return <Splash />
 
   return (
@@ -60,6 +85,7 @@ export default function App() {
         )}
         {paginaAtiva === 'cobrancas' && <CobrancasHoje {...props} />}
         {paginaAtiva === 'relatorio' && <Relatorio {...props} />}
+        {paginaAtiva === 'perfil-loja' && <PerfilLoja {...props} />}
       </main>
 
       <BottomNav paginaAtiva={paginaAtiva} onNavegar={navegar} />
