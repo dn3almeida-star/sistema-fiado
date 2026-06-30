@@ -43,6 +43,7 @@ export default function App() {
 
   if (carregandoAuth) return <Splash />
   if (!session) return <Login />
+  if (clientesHook.carregandoClientes || vendasHook.carregandoVendas) return <Splash />
 
   return (
     <div className="flex flex-col min-h-screen bg-ground">
