@@ -26,18 +26,26 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
     setVendasAbertas(prev => ({ ...prev, [id]: !prev[id] }))
   }
 
-  function confirmarMarcarPago() {
+  async function confirmarMarcarPago() {
     if (!modalPago) return
-    marcarParcelaPaga(modalPago.vendaId, modalPago.numeroParcela)
-    setModalPago(null)
-    mostrarToast('✓ Parcela marcada como paga')
+    try {
+      await marcarParcelaPaga(modalPago.vendaId, modalPago.numeroParcela)
+      setModalPago(null)
+      mostrarToast('✓ Parcela marcada como paga')
+    } catch {
+      mostrarToast('Erro ao atualizar a parcela.', 'error')
+    }
   }
 
-  function confirmarRemoverVenda() {
+  async function confirmarRemoverVenda() {
     if (!modalRemover) return
-    removerVenda(modalRemover)
-    setModalRemover(null)
-    mostrarToast('Venda removida', 'info')
+    try {
+      await removerVenda(modalRemover)
+      setModalRemover(null)
+      mostrarToast('Venda removida', 'info')
+    } catch {
+      mostrarToast('Erro ao remover a venda.', 'error')
+    }
   }
 
   function confirmarExcluirCliente() {
@@ -201,7 +209,8 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                   if (!p.pago) setModalPago({ vendaId: venda.id, numeroParcela: p.numero, valor: p.valor })
                                   else {
                                     desmarcarParcelaPaga(venda.id, p.numero)
-                                    mostrarToast('Parcela desmarcada', 'info')
+                                      .then(() => mostrarToast('Parcela desmarcada', 'info'))
+                                      .catch(() => mostrarToast('Erro ao atualizar a parcela.', 'error'))
                                   }
                                 }}
                                 className="flex-shrink-0 min-h-touch min-w-touch flex items-center justify-center"

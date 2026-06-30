@@ -46,17 +46,21 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
     return true
   }
 
-  function salvar() {
+  async function salvar() {
     if (!validar()) return
-    adicionarVenda({
-      clienteId,
-      itens: form.itens.trim(),
-      valorTotal: parseFloat(form.valorTotal),
-      entrada: parseFloat(form.entrada) || 0,
-      parcelas: parcelasPreview,
-    })
-    setSucesso(true)
-    setTimeout(() => navegar('perfil', { clienteId }), 1200)
+    try {
+      await adicionarVenda({
+        clienteId,
+        itens: form.itens.trim(),
+        valorTotal: parseFloat(form.valorTotal),
+        entrada: parseFloat(form.entrada) || 0,
+        parcelas: parcelasPreview,
+      })
+      setSucesso(true)
+      setTimeout(() => navegar('perfil', { clienteId }), 1200)
+    } catch {
+      setErro('Erro ao salvar a venda. Verifique a conexão e tente de novo.')
+    }
   }
 
   if (sucesso) {

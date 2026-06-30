@@ -1,69 +1,85 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { supabase } from '../lib/supabase.js'
 
-const CHAVE = 'caderno_vendas'
+const SELECT = 'id, clienteId:cliente_id, itens, valorTotal:valor_total, entrada, parcelas, criadaEm:criada_em'
 
 export function useVendas() {
-  const [vendas, setVendas] = useState(() => {
-    try {
-      const raw = localStorage.getItem(CHAVE)
-      return raw ? JSON.parse(raw) : []
-    } catch {
-      return []
-    }
-  })
+  const [vendas, setVendas] = useState([])
+  const [carregando, setCarregando] = useState(true)
+
+  const recarregar = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('vendas')
+      .select(SELECT)
+      .order('criada_em', { ascending: false })
+    if (!error) setVendas(data ?? [])
+    setCarregando(false)
+  }, [])
 
   useEffect(() => {
-    localStorage.setItem(CHAVE, JSON.stringify(vendas))
-  }, [vendas])
+    recarregar()
+  }, [recarregar])
 
-  function adicionarVenda(dados) {
-    const nova = {
-      id: crypto.randomUUID(),
-      criadaEm: new Date().toISOString(),
-      clienteId: '',
-      itens: '',
-      valorTotal: 0,
-      entrada: 0,
-      parcelas: [],
-      ...dados,
-    }
-    setVendas(prev => [...prev, nova])
-    return nova.id
+  async function adicionarVenda(dados) {
+    const { data, error } = await supabase
+      .from('vendas')
+      .insert({
+        cliente_id: dados.clienteId,
+        itens: dados.itens,
+        valor_total: dados.valorTotal,
+        entrada: dados.entrada ?? 0,
+        parcelas: dados.parcelas ?? [],
+      })
+      .select(SELECT)
+      .single()
+    if (error) throw error
+    setVendas(prev => [data, ...prev])
+    return data.id
   }
 
-  function marcarParcelaPaga(vendaId, numeroParcela) {
+  async function atualizarParcelas(vendaId, novasParcelas) {
+    const { error } = await supabase
+      .from('vendas')
+      .update({ parcelas: novasParcelas })
+      .eq('id', vendaId)
+    if (error) throw error
     setVendas(prev =>
-      prev.map(v => {
-        if (v.id !== vendaId) return v
-        return {
-          ...v,
-          parcelas: v.parcelas.map(p =>
-            p.numero === numeroParcela
-              ? { ...p, pago: true, pagoEm: new Date().toISOString() }
-              : p
-          ),
-        }
-      })
+      prev.map(v => (v.id === vendaId ? { ...v, parcelas: novasParcelas } : v))
     )
   }
 
-  function desmarcarParcelaPaga(vendaId, numeroParcela) {
-    setVendas(prev =>
-      prev.map(v => {
-        if (v.id !== vendaId) return v
-        return {
-          ...v,
-          parcelas: v.parcelas.map(p =>
-            p.numero === numeroParcela ? { ...p, pago: false, pagoEm: null } : p
-          ),
-        }
-      })
+  async function marcarParcelaPaga(vendaId, numeroParcela) {
+    const venda = vendas.find(v => v.id === vendaId)
+    if (!venda) return
+    const novas = venda.parcelas.map(p =>
+      p.numero === numeroParcela
+        ? { ...p, pago: true, pagoEm: new Date().toISOString() }
+        : p
     )
+    await atualizarParcelas(vendaId, novas)
   }
 
-  function removerVenda(id) {
+  async function desmarcarParcelaPaga(vendaId, numeroParcela) {
+    const venda = vendas.find(v => v.id === vendaId)
+    if (!venda) return
+    const novas = venda.parcelas.map(p =>
+      p.numero === numeroParcela ? { ...p, pago: false, pagoEm: null } : p
+    )
+    await atualizarParcelas(vendaId, novas)
+  }
+
+  async function removerVenda(id) {
+    const { error } = await supabase.from('vendas').delete().eq('id', id)
+    if (error) throw error
     setVendas(prev => prev.filter(v => v.id !== id))
   }
 
-  return { vendas, adicionarVenda, marcarParcelaPaga, desmarcarParcelaPaga, removerVenda }
+  return {
+    vendas,
+    carregandoVendas: carregando,
+    adicionarVenda,
+    marcarParcelaPaga,
+    desmarcarParcelaPaga,
+    removerVenda,
+  }
 }
