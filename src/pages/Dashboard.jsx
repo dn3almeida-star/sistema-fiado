@@ -1,9 +1,11 @@
 import { useMemo } from 'react'
-import { AlertCircle, Clock, CalendarCheck, BookOpen } from 'lucide-react'
+import { AlertCircle, Clock, CalendarCheck, BookOpen, LogOut } from 'lucide-react'
 import CardResumo from '../components/CardResumo.jsx'
 import { formatarData, hoje, diasAteVencimento } from '../utils/formatadores.js'
+import { useAuth } from '../hooks/useAuth.jsx'
 
 export default function Dashboard({ clientes, vendas, navegar }) {
+  const { logout } = useAuth()
   const stats = useMemo(() => {
     const hj = hoje()
     let totalReceber = 0
@@ -41,8 +43,17 @@ export default function Dashboard({ clientes, vendas, navegar }) {
           <p className="text-[11px] font-semibold text-primary uppercase tracking-widest">Iran Utilidades</p>
           <h1 className="text-2xl font-extrabold text-gray-900 leading-tight">Caderno Digital</h1>
         </div>
-        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-sm">
-          <BookOpen size={20} className="text-white" strokeWidth={2} />
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-sm">
+            <BookOpen size={20} className="text-white" strokeWidth={2} />
+          </div>
+          <button
+            onClick={logout}
+            className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-500 active:bg-gray-50"
+            aria-label="Sair"
+          >
+            <LogOut size={18} />
+          </button>
         </div>
       </div>
 
