@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { BookOpen, LogIn } from 'lucide-react'
+import { BookOpen, LogIn, Mail } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth.jsx'
+import { supabase } from '../lib/supabase.js'
 
 export default function Login() {
   const { login } = useAuth()
@@ -8,6 +9,8 @@ export default function Login() {
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [resetEnviado, setResetEnviado] = useState(false)
+  const [enviandoReset, setEnviandoReset] = useState(false)
 
   async function entrar(e) {
     e.preventDefault()
@@ -19,10 +22,29 @@ export default function Login() {
     setEnviando(true)
     try {
       await login(email, senha)
-      // sucesso: o porteiro em App.jsx troca a tela automaticamente
     } catch {
       setErro('Email ou senha incorretos')
       setEnviando(false)
+    }
+  }
+
+  async function esqueceiSenha() {
+    if (!email.trim()) {
+      setErro('Digite seu email acima antes de redefinir a senha')
+      return
+    }
+    setErro('')
+    setEnviandoReset(true)
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/`,
+      })
+      if (error) throw error
+      setResetEnviado(true)
+    } catch {
+      setErro('Não foi possível enviar o email. Verifique o endereço e tente novamente.')
+    } finally {
+      setEnviandoReset(false)
     }
   }
 
@@ -36,45 +58,74 @@ export default function Login() {
         <p className="text-sm text-gray-500 mt-1">Entre para acessar seus clientes</p>
       </div>
 
-      <form onSubmit={entrar} className="space-y-3">
-        {erro && (
-          <p className="text-sm text-danger bg-red-50 px-3 py-2 rounded-xl text-center">{erro}</p>
-        )}
+      {resetEnviado ? (
+        <div className="text-center space-y-4">
+          <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto">
+            <Mail size={26} className="text-green-600" />
+          </div>
+          <div>
+            <p className="font-bold text-gray-900">Email enviado!</p>
+            <p className="text-sm text-gray-500 mt-1">Verifique sua caixa de entrada em <span className="font-semibold">{email}</span> e clique no link para redefinir sua senha.</p>
+          </div>
+          <button
+            onClick={() => setResetEnviado(false)}
+            className="text-sm text-primary font-semibold underline"
+          >
+            Voltar ao login
+          </button>
+        </div>
+      ) : (
+        <form onSubmit={entrar} className="space-y-3">
+          {erro && (
+            <p className="text-sm text-danger bg-red-50 px-3 py-2 rounded-xl text-center">{erro}</p>
+          )}
 
-        <label className="block">
-          <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Email</span>
-          <input
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="voce@exemplo.com"
-            className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          />
-        </label>
+          <label className="block">
+            <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Email</span>
+            <input
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="voce@exemplo.com"
+              className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            />
+          </label>
 
-        <label className="block">
-          <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Senha</span>
-          <input
-            type="password"
-            autoComplete="current-password"
-            value={senha}
-            onChange={e => setSenha(e.target.value)}
-            placeholder="••••••••"
-            className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          />
-        </label>
+          <label className="block">
+            <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Senha</span>
+            <input
+              type="password"
+              autoComplete="current-password"
+              value={senha}
+              onChange={e => setSenha(e.target.value)}
+              placeholder="••••••••"
+              className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            />
+          </label>
 
-        <button
-          type="submit"
-          disabled={enviando}
-          className="w-full bg-primary text-white py-4 rounded-2xl font-bold text-base active:bg-primary-light transition-colors shadow-sm flex items-center justify-center gap-2 disabled:opacity-60"
-        >
-          <LogIn size={18} />
-          {enviando ? 'Entrando…' : 'Entrar'}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={enviando}
+            className="w-full bg-primary text-white py-4 rounded-2xl font-bold text-base active:bg-primary-light transition-colors shadow-sm flex items-center justify-center gap-2 disabled:opacity-60"
+          >
+            <LogIn size={18} />
+            {enviando ? 'Entrando…' : 'Entrar'}
+          </button>
+
+          <div className="text-center pt-1">
+            <button
+              type="button"
+              onClick={esqueceiSenha}
+              disabled={enviandoReset}
+              className="text-sm text-gray-500 hover:text-primary transition-colors disabled:opacity-50"
+            >
+              {enviandoReset ? 'Enviando…' : 'Esqueci minha senha'}
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   )
 }
