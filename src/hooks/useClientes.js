@@ -1,43 +1,59 @@
-import { useState, useEffect } from 'react'
-
-const CHAVE = 'caderno_clientes'
+import { useState, useEffect, useCallback } from 'react'
+import { supabase } from '../lib/supabase.js'
 
 export function useClientes() {
-  const [clientes, setClientes] = useState(() => {
-    try {
-      const raw = localStorage.getItem(CHAVE)
-      return raw ? JSON.parse(raw) : []
-    } catch {
-      return []
-    }
-  })
+  const [clientes, setClientes] = useState([])
+  const [carregando, setCarregando] = useState(true)
+
+  const recarregar = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('clientes')
+      .select('id, nome, telefone, endereco, bairro, observacoes')
+      .order('nome', { ascending: true })
+    if (!error) setClientes(data ?? [])
+    setCarregando(false)
+  }, [])
 
   useEffect(() => {
-    localStorage.setItem(CHAVE, JSON.stringify(clientes))
-  }, [clientes])
+    recarregar()
+  }, [recarregar])
 
-  function adicionarCliente(dados) {
-    const novo = {
-      id: crypto.randomUUID(),
-      criadoEm: new Date().toISOString(),
-      nome: '',
-      telefone: '',
-      endereco: '',
-      bairro: '',
-      observacoes: '',
-      ...dados,
-    }
-    setClientes(prev => [...prev, novo])
-    return novo.id
+  async function adicionarCliente(dados) {
+    const { data, error } = await supabase
+      .from('clientes')
+      .insert({
+        nome: dados.nome,
+        telefone: dados.telefone ?? '',
+        endereco: dados.endereco ?? '',
+        bairro: dados.bairro ?? '',
+        observacoes: dados.observacoes ?? '',
+      })
+      .select('id, nome, telefone, endereco, bairro, observacoes')
+      .single()
+    if (error) throw error
+    setClientes(prev =>
+      [...prev, data].sort((a, b) => a.nome.localeCompare(b.nome))
+    )
+    return data.id
   }
 
-  function atualizarCliente(id, patch) {
+  async function atualizarCliente(id, patch) {
+    const { error } = await supabase.from('clientes').update(patch).eq('id', id)
+    if (error) throw error
     setClientes(prev => prev.map(c => (c.id === id ? { ...c, ...patch } : c)))
   }
 
-  function removerCliente(id) {
+  async function removerCliente(id) {
+    const { error } = await supabase.from('clientes').delete().eq('id', id)
+    if (error) throw error
     setClientes(prev => prev.filter(c => c.id !== id))
   }
 
-  return { clientes, adicionarCliente, atualizarCliente, removerCliente }
+  return {
+    clientes,
+    carregandoClientes: carregando,
+    adicionarCliente,
+    atualizarCliente,
+    removerCliente,
+  }
 }

@@ -19,16 +19,20 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
     )
   })
 
-  function salvarCliente() {
+  async function salvarCliente() {
     if (!form.nome.trim()) {
       setErro('Nome é obrigatório')
       return
     }
-    adicionarCliente({ ...form, nome: form.nome.trim() })
-    setForm(FORM_INICIAL)
-    setMostrarForm(false)
-    setErro('')
-    mostrarToast('✓ Cliente salvo')
+    try {
+      await adicionarCliente({ ...form, nome: form.nome.trim() })
+      setForm(FORM_INICIAL)
+      setMostrarForm(false)
+      setErro('')
+      mostrarToast('✓ Cliente salvo')
+    } catch {
+      mostrarToast('Erro ao salvar cliente. Tente de novo.', 'error')
+    }
   }
 
   function debitoCliente(clienteId) {
