@@ -19,7 +19,7 @@ export default function BotaoCobranca({ parcela, cliente, venda, onRegistrar }) 
   }
 
   async function enviar() {
-    if (semTelefone) return
+    if (semTelefone || enviando) return
     setEnviando(true)
     try {
       await onRegistrar?.()
