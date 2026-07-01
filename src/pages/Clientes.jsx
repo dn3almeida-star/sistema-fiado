@@ -38,7 +38,7 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
           (c.endereco || '').toLowerCase().includes(q)
         )
       })
-      .sort((a, b) => b.saldo - a.saldo)
+      .sort((a, b) => b.saldo - a.saldo || a.cliente.nome.localeCompare(b.cliente.nome))
 
     return { lista, contagens }
   }, [clientes, vendas, busca, filtro])

@@ -4,7 +4,7 @@ export function resumoCliente(vendas, clienteId, hojeISO) {
     .flatMap(v => v.parcelas)
     .filter(p => !p.pago)
 
-  const saldo = abertas.reduce((acc, p) => acc + p.valor, 0)
+  const saldo = abertas.reduce((acc, p) => acc + (p.valor || 0), 0)
   const emAtraso = abertas.some(p => p.vencimento < hojeISO)
 
   let situacao
