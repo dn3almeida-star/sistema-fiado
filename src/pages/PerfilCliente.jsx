@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { ArrowLeft, Phone, MapPin, Home, FileText, ChevronDown, ChevronUp, CheckCircle, Circle, FileDown, Trash2, Plus, Pencil, Check, X } from 'lucide-react'
 import ModalConfirmar from '../components/ModalConfirmar.jsx'
+import BotaoCobranca from '../components/BotaoCobranca.jsx'
 import { formatarMoeda, formatarData, statusParcela, formatarTelefone } from '../utils/formatadores.js'
 import { gerarCarnetPDF } from '../utils/gerarPDF.js'
 
-export default function PerfilCliente({ clienteId, clientes, vendas, marcarParcelaPaga, desmarcarParcelaPaga, removerVenda, removerCliente, atualizarCliente, navegar, mostrarToast, profile }) {
+export default function PerfilCliente({ clienteId, clientes, vendas, marcarParcelaPaga, desmarcarParcelaPaga, registrarCobranca, removerVenda, removerCliente, atualizarCliente, navegar, mostrarToast, profile }) {
   const [vendasAbertas, setVendasAbertas] = useState({})
   const [modalPago, setModalPago] = useState(null)
   const [modalRemover, setModalRemover] = useState(null)
@@ -336,6 +337,19 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                   {formatarMoeda(p.valor)}
                                 </span>
                               </div>
+                              <BotaoCobranca
+                                parcela={p}
+                                cliente={cliente}
+                                venda={venda}
+                                onRegistrar={async () => {
+                                  try {
+                                    await registrarCobranca(venda.id, p.numero)
+                                    mostrarToast('✓ Cobrança registrada')
+                                  } catch {
+                                    mostrarToast('Erro ao registrar cobrança.', 'error')
+                                  }
+                                }}
+                              />
                             </div>
                           )
                         })}

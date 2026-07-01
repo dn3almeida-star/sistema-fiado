@@ -1,19 +1,12 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Bell } from 'lucide-react'
-import BotaoWhatsApp from '../components/BotaoWhatsApp.jsx'
+import BotaoCobranca from '../components/BotaoCobranca.jsx'
 import EstadoVazio from '../components/EstadoVazio.jsx'
 import { formatarMoeda, formatarData, hoje } from '../utils/formatadores.js'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
 
-function montarMensagem(cliente, parcela) {
-  const valor = formatarMoeda(parcela.valor)
-  const oi = '☺'   // ☺ (BMP — suportado em todos os aparelhos)
-  const ok = '✔'   // ✔
-  return `Olá ${cliente.nome}! ${oi} Passando para lembrar que a parcela ${parcela.numero} no valor de ${valor} vence hoje. Qualquer dúvida é só falar! ${ok}`
-}
-
-export default function CobrancasHoje({ clientes, vendas, navegar }) {
+export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobranca, mostrarToast }) {
   const cobrancas = useMemo(() => {
     const hj = hoje()
     const lista = []
@@ -84,13 +77,19 @@ export default function CobrancasHoje({ clientes, vendas, navegar }) {
                 </button>
 
                 <div className="flex gap-2">
-                  {cliente.telefone && (
-                    <BotaoWhatsApp
-                      telefone={cliente.telefone}
-                      mensagem={montarMensagem(cliente, parcela)}
-                      className="flex-1 justify-center"
-                    />
-                  )}
+                  <BotaoCobranca
+                    parcela={parcela}
+                    cliente={cliente}
+                    venda={venda}
+                    onRegistrar={async () => {
+                      try {
+                        await registrarCobranca(venda.id, parcela.numero)
+                        mostrarToast('✓ Cobrança registrada')
+                      } catch {
+                        mostrarToast('Erro ao registrar cobrança.', 'error')
+                      }
+                    }}
+                  />
                   <button
                     onClick={() => navegar('perfil', { clienteId: cliente.id })}
                     className="flex-1 border-2 border-primary text-primary py-2.5 rounded-xl font-semibold text-sm min-h-touch transition-colors active:bg-primary-50"

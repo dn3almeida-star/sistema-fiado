@@ -68,6 +68,17 @@ export function useVendas() {
     await atualizarParcelas(vendaId, novas)
   }
 
+  async function registrarCobranca(vendaId, numeroParcela) {
+    const venda = vendas.find(v => v.id === vendaId)
+    if (!venda) return
+    const novas = venda.parcelas.map(p =>
+      p.numero === numeroParcela
+        ? { ...p, ultimaCobrancaEm: new Date().toISOString() }
+        : p
+    )
+    await atualizarParcelas(vendaId, novas)
+  }
+
   async function removerVenda(id) {
     const { error } = await supabase.from('vendas').delete().eq('id', id)
     if (error) throw error
@@ -80,6 +91,7 @@ export function useVendas() {
     adicionarVenda,
     marcarParcelaPaga,
     desmarcarParcelaPaga,
+    registrarCobranca,
     removerVenda,
   }
 }
