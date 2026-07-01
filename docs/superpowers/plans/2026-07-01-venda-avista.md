@@ -398,8 +398,8 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
                 />
               </label>
 
-              {modo === 'fiado' ? (
-                <div className="grid grid-cols-2 gap-3">
+              {(() => {
+                const campoValorTotal = (
                   <label className="block">
                     <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Valor Total (R$) *</span>
                     <input
@@ -413,36 +413,29 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
                       className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
                     />
                   </label>
+                )
 
-                  <label className="block">
-                    <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Entrada (R$)</span>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      min="0"
-                      step="0.01"
-                      value={form.entrada}
-                      onChange={e => setForm(f => ({ ...f, entrada: e.target.value }))}
-                      placeholder="0,00"
-                      className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
-                    />
-                  </label>
-                </div>
-              ) : (
-                <label className="block">
-                  <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Valor Total (R$) *</span>
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    min="0"
-                    step="0.01"
-                    value={form.valorTotal}
-                    onChange={e => setForm(f => ({ ...f, valorTotal: e.target.value }))}
-                    placeholder="0,00"
-                    className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
-                  />
-                </label>
-              )}
+                if (modo !== 'fiado') return campoValorTotal
+
+                return (
+                  <div className="grid grid-cols-2 gap-3">
+                    {campoValorTotal}
+                    <label className="block">
+                      <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Entrada (R$)</span>
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        min="0"
+                        step="0.01"
+                        value={form.entrada}
+                        onChange={e => setForm(f => ({ ...f, entrada: e.target.value }))}
+                        placeholder="0,00"
+                        className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
+                      />
+                    </label>
+                  </div>
+                )
+              })()}
 
               {modo === 'fiado' && (
                 <div className="grid grid-cols-2 gap-3">
