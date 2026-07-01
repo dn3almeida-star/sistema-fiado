@@ -13,6 +13,7 @@ import { useAuth } from './hooks/useAuth.jsx'
 import Login from './pages/Login.jsx'
 import Splash from './components/Splash.jsx'
 import PerfilLoja from './pages/PerfilLoja.jsx'
+import RedefinirSenha from './pages/RedefinirSenha.jsx'
 import { useProfile } from './hooks/useProfile.js'
 import { perfilCompleto } from './utils/perfil.js'
 
@@ -27,7 +28,7 @@ export default function App() {
 
   const clientesHook = useClientes()
   const vendasHook = useVendas()
-  const { session, usuario, carregando: carregandoAuth } = useAuth()
+  const { session, usuario, carregando: carregandoAuth, recuperandoSenha } = useAuth()
   const profileHook = useProfile(usuario)
 
   function navegar(pagina, params = {}) {
@@ -54,6 +55,7 @@ export default function App() {
   }
 
   if (carregandoAuth) return <Splash />
+  if (recuperandoSenha) return <RedefinirSenha />
   if (!session) return <Login />
   if (profileHook.carregandoProfile) return <Splash />
   if (!perfilCompleto(profileHook.profile)) {

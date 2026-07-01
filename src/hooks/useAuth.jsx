@@ -6,14 +6,17 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null)
   const [carregando, setCarregando] = useState(true)
+  const [recuperandoSenha, setRecuperandoSenha] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session)
       setCarregando(false)
     })
-    const { data: sub } = supabase.auth.onAuthStateChange((_evt, novaSessao) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((evt, novaSessao) => {
       setSession(novaSessao)
+      if (evt === 'PASSWORD_RECOVERY') setRecuperandoSenha(true)
+      else if (evt === 'SIGNED_IN' || evt === 'SIGNED_OUT') setRecuperandoSenha(false)
     })
     return () => sub.subscription.unsubscribe()
   }, [])
@@ -30,12 +33,21 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut()
   }
 
+  async function updatePassword(novaSenha) {
+    const { error } = await supabase.auth.updateUser({ password: novaSenha })
+    if (error) throw error
+    setRecuperandoSenha(false)
+    await supabase.auth.signOut()
+  }
+
   const valor = {
     session,
     usuario: session?.user ?? null,
     carregando,
+    recuperandoSenha,
     login,
     logout,
+    updatePassword,
   }
 
   return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>
