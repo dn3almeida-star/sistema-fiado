@@ -1,3 +1,5 @@
+import { haptic } from '../utils/haptic.js'
+
 export default function ModalConfirmar({ aberto, titulo, mensagem, onConfirmar, onCancelar, corConfirmar = 'danger' }) {
   if (!aberto) return null
 
@@ -5,6 +7,11 @@ export default function ModalConfirmar({ aberto, titulo, mensagem, onConfirmar, 
     danger: 'bg-danger hover:bg-red-700 text-white',
     success: 'bg-success hover:bg-green-700 text-white',
     primary: 'bg-primary hover:bg-primary-light text-white',
+  }
+
+  function confirmar() {
+    haptic()
+    onConfirmar()
   }
 
   return (
@@ -21,7 +28,7 @@ export default function ModalConfirmar({ aberto, titulo, mensagem, onConfirmar, 
             Cancelar
           </button>
           <button
-            onClick={onConfirmar}
+            onClick={confirmar}
             className={`flex-1 py-3 rounded-xl font-semibold transition-colors ${coresBotao[corConfirmar] || coresBotao.danger}`}
           >
             Confirmar

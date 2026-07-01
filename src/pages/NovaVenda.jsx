@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { ArrowLeft, Search, Check } from 'lucide-react'
 import { calcularParcelas } from '../utils/calcularParcelas.js'
 import { formatarMoeda, formatarData, hoje } from '../utils/formatadores.js'
+import { haptic } from '../utils/haptic.js'
 
 export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecionado, navegar }) {
   const [etapa, setEtapa] = useState(clientePreSelecionado ? 2 : 1)
@@ -56,6 +57,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
         entrada: parseFloat(form.entrada) || 0,
         parcelas: parcelasPreview,
       })
+      haptic()
       setSucesso(true)
       setTimeout(() => navegar('perfil', { clienteId }), 1200)
     } catch {
