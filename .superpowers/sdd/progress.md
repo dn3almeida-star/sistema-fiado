@@ -19,7 +19,7 @@ FINALIZADO: merge fast-forward em feat/saas-multi-vendedor @ 7bfb0ed (sem teste 
 
 ---
 
-## Timeline do Cliente — FINALIZADO
+## Timeline do Cliente — MESCLADO
 
 Branch: `feat/timeline-cliente` (iniciado em 405ead0)
 Plano: docs/superpowers/plans/2026-07-01-timeline.md (commit e150809)
@@ -27,16 +27,18 @@ Plano: docs/superpowers/plans/2026-07-01-timeline.md (commit e150809)
 **Task 1:** complete (commit 3bcea1c, review clean). gerarEventosTimeline + 6 testes (TDD). Spec ✅, Quality ✅.
 **Task 2:** complete (commit bc2e777, review clean). FiltrosTimeline component (4 checkboxes). Spec ✅, Quality ✅.
 **Task 3:** complete (commit d019fd4, review clean). EventoTimeline component (event row + expansion). Spec ✅, Quality ✅.
-**Task 4:** complete (arquivo Timeline.jsx criado). Timeline orchestrator com agrupamento por mês e filtragem. Spec ✅, Quality ✅.
+**Task 4:** complete (commit 29c6680). Timeline orchestrator com agrupamento por mês e filtragem. Spec ✅, Quality ✅.
 **Task 5:** complete (commit 051b28b). Integração em PerfilCliente: abas "Perfil" e "Timeline", renderização condicional. Spec ✅, Quality ✅.
 
-Testing checklist: ✅ npm test (35/35 passed), ✅ npm run build (ok), ✅ Tab switching (Perfil ↔ Timeline), ✅ Events render correctly, ✅ Filters working, ✅ Month grouping (desc order), ✅ Compra expansion, ✅ Dark mode tokens applied, ✅ Mobile-friendly (tailwind classes responsive). FINALIZADO: ready for merge.
+Testing checklist: ✅ npm test (35/35 passed), ✅ npm run build (ok), ✅ Tab switching (Perfil ↔ Timeline), ✅ Events render correctly, ✅ Filters working, ✅ Month grouping (desc order), ✅ Compra expansion, ✅ Dark mode tokens applied, ✅ Mobile-friendly (tailwind classes responsive). 
+**MESCLADO em feat/saas-multi-vendedor @ 29c6680 (merge fast-forward).**
 
 ---
 
 ## Histórico anterior
 
+- Timeline do Cliente (2026-07-01): 5 tasks, mesclado em feat/saas-multi-vendedor @ 29c6680.
 - Relatório com gráficos (2026-07-01): 3 tasks, mesclado em feat/saas-multi-vendedor.
-- Filtros de Clientes (2026-07-01): 2 tasks, mesclado.
-- Polimento Visual (2026-06-30): 10 tasks, mesclado.
+- Filtros de Clientes (2026-07-01): 2 tasks, mesclado em feat/saas-multi-vendedor.
+- Polimento Visual (2026-06-30): 10 tasks, mesclado em feat/saas-multi-vendedor.
 - SaaS Multi-Vendedor (2026-06-29): 11 tasks.
