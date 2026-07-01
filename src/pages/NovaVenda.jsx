@@ -71,8 +71,8 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
         <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center">
           <Check size={32} className="text-success" />
         </div>
-        <p className="text-xl font-bold text-gray-900">Venda registrada!</p>
-        <p className="text-sm text-gray-500 text-center">Redirecionando para o perfil do cliente…</p>
+        <p className="text-xl font-bold text-ink">Venda registrada!</p>
+        <p className="text-sm text-ink-muted text-center">Redirecionando para o perfil do cliente…</p>
       </div>
     )
   }
@@ -105,15 +105,15 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
         {/* Etapa 1: Selecionar cliente */}
         {etapa === 1 && (
           <div className="space-y-3">
-            <h2 className="font-bold text-gray-900">Selecionar Cliente</h2>
+            <h2 className="font-bold text-ink">Selecionar Cliente</h2>
             <div className="relative">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted" />
               <input
                 type="text"
                 placeholder="Buscar cliente…"
                 value={buscaCliente}
                 onChange={e => setBuscaCliente(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white shadow-sm"
+                className="w-full pl-10 pr-4 py-3 border border-border rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-surface shadow-sm"
               />
             </div>
 
@@ -122,19 +122,19 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
                 <button
                   key={c.id}
                   onClick={() => { setClienteId(c.id); setEtapa(2) }}
-                  className="w-full bg-white rounded-2xl shadow-sm p-4 text-left flex items-center gap-3 active:bg-primary-50 transition-colors"
+                  className="w-full bg-surface rounded-2xl shadow-sm p-4 text-left flex items-center gap-3 active:bg-primary-50 transition-colors"
                 >
                   <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
                     <span className="text-primary font-bold">{c.nome[0]?.toUpperCase()}</span>
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">{c.nome}</p>
-                    {c.bairro && <p className="text-sm text-gray-500">{c.bairro}</p>}
+                    <p className="font-semibold text-ink">{c.nome}</p>
+                    {c.bairro && <p className="text-sm text-ink-muted">{c.bairro}</p>}
                   </div>
                 </button>
               ))}
               {clientesFiltrados.length === 0 && (
-                <p className="text-center text-gray-400 py-6 text-sm">Nenhum cliente encontrado</p>
+                <p className="text-center text-ink-muted py-6 text-sm">Nenhum cliente encontrado</p>
               )}
             </div>
           </div>
@@ -147,7 +147,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
             <div className="bg-primary-50 border border-primary/20 rounded-2xl p-3 flex items-center justify-between">
               <div>
                 <p className="text-xs text-primary font-semibold uppercase tracking-wide">Cliente</p>
-                <p className="font-bold text-gray-900 mt-0.5">{clienteSelecionado?.nome}</p>
+                <p className="font-bold text-ink mt-0.5">{clienteSelecionado?.nome}</p>
               </div>
               {!clientePreSelecionado && (
                 <button onClick={() => setEtapa(1)} className="text-sm text-primary font-semibold underline underline-offset-2">
@@ -161,19 +161,19 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
             {/* Formulário */}
             <div className="space-y-3">
               <label className="block">
-                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Itens / Descrição *</span>
+                <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Itens / Descrição *</span>
                 <textarea
                   value={form.itens}
                   onChange={e => setForm(f => ({ ...f, itens: e.target.value }))}
                   placeholder="Ex: Jogo de panelas 5 peças, conjunto de lençol…"
                   rows={3}
-                  className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+                  className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
                 />
               </label>
 
               <div className="grid grid-cols-2 gap-3">
                 <label className="block">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Valor Total (R$) *</span>
+                  <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Valor Total (R$) *</span>
                   <input
                     type="number"
                     inputMode="decimal"
@@ -182,12 +182,12 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
                     value={form.valorTotal}
                     onChange={e => setForm(f => ({ ...f, valorTotal: e.target.value }))}
                     placeholder="0,00"
-                    className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
+                    className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
                   />
                 </label>
 
                 <label className="block">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Entrada (R$)</span>
+                  <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Entrada (R$)</span>
                   <input
                     type="number"
                     inputMode="decimal"
@@ -196,14 +196,14 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
                     value={form.entrada}
                     onChange={e => setForm(f => ({ ...f, entrada: e.target.value }))}
                     placeholder="0,00"
-                    className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
+                    className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
                   />
                 </label>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <label className="block">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Nº de Parcelas *</span>
+                  <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Nº de Parcelas *</span>
                   <input
                     type="number"
                     inputMode="numeric"
@@ -211,17 +211,17 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
                     max="60"
                     value={form.numeroParcelas}
                     onChange={e => setForm(f => ({ ...f, numeroParcelas: e.target.value }))}
-                    className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
+                    className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
                   />
                 </label>
 
                 <label className="block">
-                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">1ª Parcela em *</span>
+                  <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">1ª Parcela em *</span>
                   <input
                     type="date"
                     value={form.dataPrimeiraParcela}
                     onChange={e => setForm(f => ({ ...f, dataPrimeiraParcela: e.target.value }))}
-                    className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   />
                 </label>
               </div>
@@ -229,19 +229,19 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
 
             {/* Preview de parcelas */}
             {parcelasPreview.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-sm p-4">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Preview das Parcelas</p>
+              <div className="bg-surface rounded-2xl shadow-sm p-4">
+                <p className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-3">Preview das Parcelas</p>
                 <div className="space-y-2">
                   {parcelasPreview.map(p => (
                     <div key={p.numero} className="flex justify-between items-center text-sm">
-                      <span className="text-gray-500 font-medium">Parcela {p.numero}</span>
-                      <span className="text-gray-400">{formatarData(p.vencimento)}</span>
-                      <span className="font-bold text-gray-800 tabular-nums">{formatarMoeda(p.valor)}</span>
+                      <span className="text-ink-muted font-medium">Parcela {p.numero}</span>
+                      <span className="text-ink-muted">{formatarData(p.vencimento)}</span>
+                      <span className="font-bold text-ink tabular-nums">{formatarMoeda(p.valor)}</span>
                     </div>
                   ))}
                 </div>
-                <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between text-sm">
-                  <span className="text-gray-500 font-medium">Total parcelado</span>
+                <div className="mt-3 pt-3 border-t border-border flex justify-between text-sm">
+                  <span className="text-ink-muted font-medium">Total parcelado</span>
                   <div>
                     <span className="text-accent text-xs font-semibold">R$ </span>
                     <span className="font-bold text-primary tabular-nums">

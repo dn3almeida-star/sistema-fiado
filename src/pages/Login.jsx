@@ -60,8 +60,8 @@ export default function Login() {
         <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4 shadow-sm">
           <BookOpen size={30} className="text-white" />
         </div>
-        <h1 className="text-2xl font-extrabold text-gray-900">Crediário Digital</h1>
-        <p className="text-sm text-gray-500 mt-1">Entre para acessar seus clientes</p>
+        <h1 className="text-2xl font-extrabold text-ink">Crediário Digital</h1>
+        <p className="text-sm text-ink-muted mt-1">Entre para acessar seus clientes</p>
       </div>
 
       {resetEnviado ? (
@@ -70,8 +70,8 @@ export default function Login() {
             <Mail size={26} className="text-green-600" />
           </div>
           <div>
-            <p className="font-bold text-gray-900">Email enviado!</p>
-            <p className="text-sm text-gray-500 mt-1">Verifique sua caixa de entrada em <span className="font-semibold">{email}</span> e clique no link para redefinir sua senha.</p>
+            <p className="font-bold text-ink">Email enviado!</p>
+            <p className="text-sm text-ink-muted mt-1">Verifique sua caixa de entrada em <span className="font-semibold">{email}</span> e clique no link para redefinir sua senha.</p>
           </div>
           <button
             onClick={() => setResetEnviado(false)}
@@ -87,7 +87,7 @@ export default function Login() {
           )}
 
           <label className="block">
-            <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Email</span>
+            <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Email</span>
             <input
               type="email"
               inputMode="email"
@@ -95,12 +95,12 @@ export default function Login() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="voce@exemplo.com"
-              className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </label>
 
           <label className="block">
-            <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Senha</span>
+            <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Senha</span>
             <div className="relative mt-1.5">
               <input
                 type={verSenha ? 'text' : 'password'}
@@ -108,12 +108,12 @@ export default function Login() {
                 value={senha}
                 onChange={e => setSenha(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                className="w-full px-4 py-3 pr-12 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
               <button
                 type="button"
                 onClick={() => setVerSenha(v => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink p-1"
               >
                 {verSenha ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -134,7 +134,7 @@ export default function Login() {
               type="button"
               onClick={esqueceiSenha}
               disabled={enviandoReset}
-              className="text-sm text-gray-500 hover:text-primary transition-colors disabled:opacity-50"
+              className="text-sm text-ink-muted hover:text-primary transition-colors disabled:opacity-50"
             >
               {enviandoReset ? 'Enviando…' : 'Esqueci minha senha'}
             </button>

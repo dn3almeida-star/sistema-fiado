@@ -6,7 +6,7 @@ export default function Splash() {
       <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center animate-pulse">
         <BookOpen size={26} className="text-white" />
       </div>
-      <p className="text-sm text-gray-400 font-medium">Carregando…</p>
+      <p className="text-sm text-ink-muted font-medium">Carregando…</p>
     </div>
   )
 }

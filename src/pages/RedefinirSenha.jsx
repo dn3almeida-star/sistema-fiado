@@ -31,8 +31,8 @@ export default function RedefinirSenha() {
         <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4">
           <KeyRound size={28} className="text-white" />
         </div>
-        <h1 className="text-2xl font-extrabold text-gray-900">Nova senha</h1>
-        <p className="text-sm text-gray-500 mt-1">Escolha uma senha segura para sua conta</p>
+        <h1 className="text-2xl font-extrabold text-ink">Nova senha</h1>
+        <p className="text-sm text-ink-muted mt-1">Escolha uma senha segura para sua conta</p>
       </div>
 
       <form onSubmit={salvar} className="space-y-3">
@@ -41,7 +41,7 @@ export default function RedefinirSenha() {
         )}
 
         <label className="block">
-          <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Nova senha</span>
+          <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Nova senha</span>
           <div className="relative mt-1.5">
             <input
               type={verSenha ? 'text' : 'password'}
@@ -49,12 +49,12 @@ export default function RedefinirSenha() {
               value={senha}
               onChange={e => setSenha(e.target.value)}
               placeholder="Mínimo 6 caracteres"
-              className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-4 py-3 pr-12 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
             <button
               type="button"
               onClick={() => setVerSenha(v => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink p-1"
             >
               {verSenha ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
@@ -62,7 +62,7 @@ export default function RedefinirSenha() {
         </label>
 
         <label className="block">
-          <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Confirmar senha</span>
+          <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Confirmar senha</span>
           <div className="relative mt-1.5">
             <input
               type={verConfirmar ? 'text' : 'password'}
@@ -70,12 +70,12 @@ export default function RedefinirSenha() {
               value={confirmar}
               onChange={e => setConfirmar(e.target.value)}
               placeholder="Repita a senha"
-              className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-4 py-3 pr-12 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
             <button
               type="button"
               onClick={() => setVerConfirmar(v => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink p-1"
             >
               {verConfirmar ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
