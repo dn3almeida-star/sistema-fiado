@@ -1,4 +1,4 @@
-# Progresso — Carnê Profissional
+# Progresso — Carnê Profissional — MESCLADO
 
 Plano: docs/superpowers/plans/2026-07-01-carne-profissional.md (commit 8cb41ce)
 Spec: docs/superpowers/specs/2026-07-01-carne-profissional-design.md
@@ -14,6 +14,8 @@ Task 2: complete (commit 1a109c1, review clean). Reescrita de gerarCarnetPDF: re
 Confirmou identidade contábil (parcelas somam valorTotal-entrada via calcularParcelas.js) validando a fórmula pago/restante. Traçou a integração Task1↔Task2: todo formato de venda deste app (fiado multi-parcela, parcela única, à vista) sempre fornece pago+vencimento válidos para corPdfStatusParcela — sem risco de dado malformado. 3 achados minor, todos confirmados inatingíveis/opcionais (fallback de cor não usado, 0-parcelas impossível, fórmula financeira poderia ser extraída como função pura testável — não obrigatório).
 **Checklist de verificação visual manual apontada para o humano:** encaixe horizontal do badge de status vs valor da parcela; posição vertical do primeiro ticket com itens de descrição longos (sem guard antes do primeiro ticket); paginação com 10+ parcelas; linha pontilhada + linha de assinatura; logo 24x24 dentro da faixa verde do cabeçalho.
 **Ready to merge: Yes.**
+
+**MESCLADO em feat/saas-multi-vendedor @ 0c7d904 (fast-forward). Branch feat/carne-profissional deletada. 49/49 testes, build ok. Pendente: verificação visual manual do PDF (ver checklist acima) antes/depois do deploy.**
 
 ---
 
