@@ -28,16 +28,16 @@ export default function CobrancasHoje({ clientes, vendas, navegar }) {
     <div className="p-4 space-y-4 pb-6">
       {/* Header */}
       <div className="pt-3 pb-1">
-        <h1 className="text-2xl font-extrabold text-gray-900">Cobranças</h1>
-        <p className="text-sm text-gray-500 mt-0.5 capitalize">
+        <h1 className="text-2xl font-extrabold text-ink">Cobranças</h1>
+        <p className="text-sm text-ink-muted mt-0.5 capitalize">
           {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
       </div>
 
       {cobrancas.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-ink-muted">
           <Bell size={48} className="mx-auto mb-3 opacity-20" />
-          <p className="font-bold text-gray-500">Nenhuma cobrança para hoje!</p>
+          <p className="font-bold text-ink-muted">Nenhuma cobrança para hoje!</p>
           <p className="text-sm mt-1">Aproveite o dia 🎉</p>
         </div>
       ) : (
@@ -52,7 +52,7 @@ export default function CobrancasHoje({ clientes, vendas, navegar }) {
             {cobrancas.map(({ cliente, parcela, venda }) => (
               <div
                 key={`${venda.id}-${parcela.numero}`}
-                className="bg-white rounded-2xl shadow-sm p-4 space-y-3"
+                className="bg-surface rounded-2xl shadow-sm p-4 space-y-3"
               >
                 <button
                   onClick={() => navegar('perfil', { clienteId: cliente.id })}
@@ -63,20 +63,20 @@ export default function CobrancasHoje({ clientes, vendas, navegar }) {
                       <span className="text-primary font-bold text-base">{cliente.nome[0]?.toUpperCase()}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-gray-900">{cliente.nome}</p>
-                      {cliente.bairro && <p className="text-xs text-gray-500">{cliente.bairro}</p>}
+                      <p className="font-bold text-ink">{cliente.nome}</p>
+                      {cliente.bairro && <p className="text-xs text-ink-muted">{cliente.bairro}</p>}
                     </div>
                     <div className="text-right flex-shrink-0">
                       <div className="flex items-baseline gap-0.5 justify-end">
                         <span className="text-accent text-xs font-semibold">R$</span>
-                        <span className="text-xl font-extrabold text-gray-900 tabular-nums">
+                        <span className="text-xl font-extrabold text-ink tabular-nums">
                           {parcela.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-400">Parcela {parcela.numero}</p>
+                      <p className="text-xs text-ink-muted">Parcela {parcela.numero}</p>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-400 mt-2 truncate">📦 {venda.itens}</p>
+                  <p className="text-xs text-ink-muted mt-2 truncate">📦 {venda.itens}</p>
                 </button>
 
                 <div className="flex gap-2">

@@ -70,7 +70,7 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
 
       <div className="p-4 space-y-4">
         {/* Logo */}
-        <div className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-4">
+        <div className="bg-surface rounded-2xl shadow-sm p-4 flex items-center gap-4">
           <div className="w-20 h-20 rounded-2xl bg-primary-50 flex items-center justify-center overflow-hidden flex-shrink-0">
             {logoUrl ? (
               <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
@@ -79,7 +79,7 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
             )}
           </div>
           <label className="flex-1">
-            <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Logo da loja</span>
+            <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Logo da loja</span>
             <div className="mt-1.5 flex items-center gap-2 bg-primary-50 text-primary px-4 py-2.5 rounded-xl font-semibold text-sm cursor-pointer active:bg-primary/10 transition-colors w-fit">
               <Upload size={16} />
               {enviandoLogo ? 'Enviando…' : 'Escolher imagem'}
@@ -91,25 +91,25 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
         {erro && <p className="text-sm text-danger bg-red-50 px-3 py-2 rounded-xl">{erro}</p>}
 
         <label className="block">
-          <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Nome da loja *</span>
+          <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Nome da loja *</span>
           <input
             type="text"
             value={nomeLoja}
             onChange={e => setNomeLoja(e.target.value)}
             placeholder="Ex: Iran Utilidades"
-            className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </label>
 
         <label className="block">
-          <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Telefone / WhatsApp</span>
+          <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Telefone / WhatsApp</span>
           <input
             type="tel"
             inputMode="numeric"
             value={telefone}
             onChange={e => setTelefone(mascaraTelefone(e.target.value))}
             placeholder="(00) 00000-0000"
-            className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </label>
 

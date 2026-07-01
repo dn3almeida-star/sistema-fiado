@@ -44,8 +44,8 @@ export default function Relatorio({ clientes, vendas }) {
     <div className="p-4 space-y-4 pb-6">
       {/* Header */}
       <div className="pt-3 pb-1">
-        <h1 className="text-2xl font-extrabold text-gray-900">Relatório</h1>
-        <p className="text-sm text-gray-500 mt-0.5 capitalize">{mesNome}</p>
+        <h1 className="text-2xl font-extrabold text-ink">Relatório</h1>
+        <p className="text-sm text-ink-muted mt-0.5 capitalize">{mesNome}</p>
       </div>
 
       <div className="space-y-3">
@@ -80,28 +80,28 @@ export default function Relatorio({ clientes, vendas }) {
       </div>
 
       {/* Resumo geral */}
-      <div className="bg-white rounded-2xl shadow-sm p-4 space-y-3">
-        <h2 className="font-bold text-gray-900">Resumo Geral</h2>
+      <div className="bg-surface rounded-2xl shadow-sm p-4 space-y-3">
+        <h2 className="font-bold text-ink">Resumo Geral</h2>
         <div className="space-y-2.5 text-sm">
           <div className="flex justify-between items-center">
-            <span className="text-gray-500">Total de clientes</span>
-            <span className="font-bold text-gray-900">{clientes.length}</span>
+            <span className="text-ink-muted">Total de clientes</span>
+            <span className="font-bold text-ink">{clientes.length}</span>
           </div>
-          <div className="h-px bg-gray-100" />
+          <div className="h-px bg-border" />
           <div className="flex justify-between items-center">
-            <span className="text-gray-500">Total de vendas</span>
-            <span className="font-bold text-gray-900">{vendas.length}</span>
+            <span className="text-ink-muted">Total de vendas</span>
+            <span className="font-bold text-ink">{vendas.length}</span>
           </div>
-          <div className="h-px bg-gray-100" />
+          <div className="h-px bg-border" />
           <div className="flex justify-between items-center">
-            <span className="text-gray-500">Parcelas pendentes</span>
+            <span className="text-ink-muted">Parcelas pendentes</span>
             <span className="font-bold text-danger tabular-nums">
               {vendas.flatMap(v => v.parcelas).filter(p => !p.pago).length}
             </span>
           </div>
-          <div className="h-px bg-gray-100" />
+          <div className="h-px bg-border" />
           <div className="flex justify-between items-center">
-            <span className="text-gray-500">Parcelas quitadas</span>
+            <span className="text-ink-muted">Parcelas quitadas</span>
             <span className="font-bold text-success tabular-nums">
               {vendas.flatMap(v => v.parcelas).filter(p => p.pago).length}
             </span>

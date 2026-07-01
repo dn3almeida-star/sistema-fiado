@@ -41,7 +41,7 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
       <div className="pt-3 pb-1 flex items-center justify-between">
         <div>
           {profile?.nome_loja && <p className="text-[11px] font-semibold text-primary uppercase tracking-widest">{profile.nome_loja}</p>}
-          <h1 className="text-2xl font-extrabold text-gray-900 leading-tight">Crediário Digital</h1>
+          <h1 className="text-2xl font-extrabold text-ink leading-tight">Crediário Digital</h1>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -55,7 +55,7 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
           </button>
           <button
             onClick={logout}
-            className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-500 active:bg-gray-50"
+            className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center text-ink-muted active:bg-surface-2"
             aria-label="Sair"
           >
             <LogOut size={18} />
@@ -105,26 +105,26 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
       {/* Cobranças de hoje */}
       {stats.vencimentosHoje.length > 0 && (
         <div>
-          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-2">Cobranças de Hoje</h2>
+          <h2 className="text-sm font-bold text-ink-muted uppercase tracking-wide mb-2">Cobranças de Hoje</h2>
           <div className="space-y-2">
             {stats.vencimentosHoje.map(({ cliente, parcela, venda }) => (
               <button
                 key={`${venda.id}-${parcela.numero}`}
                 onClick={() => navegar('perfil', { clienteId: cliente.id })}
-                className="w-full bg-white rounded-2xl shadow-sm p-4 text-left flex items-center justify-between active:bg-gray-50 transition-colors"
+                className="w-full bg-surface rounded-2xl shadow-sm p-4 text-left flex items-center justify-between active:bg-surface-2 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
                     <span className="text-orange-700 font-bold text-base">{cliente.nome[0]?.toUpperCase()}</span>
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">{cliente.nome}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">Parcela {parcela.numero} — {formatarData(parcela.vencimento)}</p>
+                    <p className="font-semibold text-ink">{cliente.nome}</p>
+                    <p className="text-xs text-ink-muted mt-0.5">Parcela {parcela.numero} — {formatarData(parcela.vencimento)}</p>
                   </div>
                 </div>
                 <div className="text-right flex-shrink-0">
                   <span className="text-xs text-accent font-semibold">R$</span>
-                  <span className="text-base font-bold text-gray-900 tabular-nums ml-0.5">
+                  <span className="text-base font-bold text-ink tabular-nums ml-0.5">
                     {parcela.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -135,7 +135,7 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
       )}
 
       {stats.vencimentosHoje.length === 0 && stats.emAtraso === 0 && (
-        <div className="text-center py-10 text-gray-400">
+        <div className="text-center py-10 text-ink-muted">
           <CalendarCheck size={40} className="mx-auto mb-2 opacity-30" />
           <p className="text-sm font-medium">Nenhuma cobrança para hoje</p>
         </div>

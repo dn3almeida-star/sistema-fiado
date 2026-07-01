@@ -219,9 +219,9 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
 
       <div className="p-4 space-y-4">
         {/* Saldo total */}
-        <div className="bg-white rounded-2xl shadow-sm p-4 flex items-center justify-between">
+        <div className="bg-surface rounded-2xl shadow-sm p-4 flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Saldo a Receber</p>
+            <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-wider">Saldo a Receber</p>
             <div className="flex items-baseline gap-1 mt-1">
               <span className="text-accent font-bold text-base">R$</span>
               <span className={`text-3xl font-extrabold tabular-nums leading-none ${totalDevido > 0 ? 'text-danger' : 'text-success'}`}>
@@ -248,10 +248,10 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
 
         {/* Vendas */}
         <div>
-          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-2">Histórico de Compras</h2>
+          <h2 className="text-sm font-bold text-ink-muted uppercase tracking-wide mb-2">Histórico de Compras</h2>
 
           {vendasCliente.length === 0 && (
-            <div className="text-center py-8 text-gray-400 bg-white rounded-2xl shadow-sm">
+            <div className="text-center py-8 text-ink-muted bg-surface rounded-2xl shadow-sm">
               <p className="text-sm font-medium">Nenhuma venda registrada</p>
             </div>
           )}
@@ -263,20 +263,20 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
               const pagas = venda.parcelas.filter(p => p.pago).length
 
               return (
-                <div key={venda.id} className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <div key={venda.id} className="bg-surface rounded-2xl shadow-sm overflow-hidden">
                   <button
                     onClick={() => toggleVenda(venda.id)}
-                    className="w-full p-4 text-left flex items-start justify-between gap-2 active:bg-gray-50 transition-colors"
+                    className="w-full p-4 text-left flex items-start justify-between gap-2 active:bg-surface-2 transition-colors"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-gray-900 truncate">{venda.itens}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{formatarData(venda.criadaEm)}</p>
+                      <p className="font-semibold text-ink truncate">{venda.itens}</p>
+                      <p className="text-xs text-ink-muted mt-0.5">{formatarData(venda.criadaEm)}</p>
                       <div className="flex gap-3 mt-1.5">
-                        <span className="text-xs text-gray-500">
-                          Total: <strong className="text-gray-800">{formatarMoeda(venda.valorTotal)}</strong>
+                        <span className="text-xs text-ink-muted">
+                          Total: <strong className="text-ink">{formatarMoeda(venda.valorTotal)}</strong>
                         </span>
                         {venda.entrada > 0 && (
-                          <span className="text-xs text-gray-400">Entrada: {formatarMoeda(venda.entrada)}</span>
+                          <span className="text-xs text-ink-muted">Entrada: {formatarMoeda(venda.entrada)}</span>
                         )}
                       </div>
                       <div className="flex gap-2 mt-2">
@@ -292,20 +292,20 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                         )}
                       </div>
                     </div>
-                    <div className="text-gray-300 flex-shrink-0 mt-0.5">
+                    <div className="text-ink-muted flex-shrink-0 mt-0.5">
                       {aberta ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                     </div>
                   </button>
 
                   {aberta && (
-                    <div className="border-t border-gray-100">
+                    <div className="border-t border-border">
                       <div className="space-y-1 p-3">
                         {venda.parcelas.map(p => {
                           const st = statusParcela(p)
                           return (
                             <div
                               key={p.numero}
-                              className={`flex items-center gap-3 py-2 px-3 rounded-xl ${p.pago ? 'bg-green-50' : 'bg-gray-50'}`}
+                              className={`flex items-center gap-3 py-2 px-3 rounded-xl ${p.pago ? 'bg-green-50' : 'bg-surface-2'}`}
                             >
                               <button
                                 onClick={() => {
@@ -320,11 +320,11 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                               >
                                 {p.pago
                                   ? <CheckCircle size={22} className="text-success" />
-                                  : <Circle size={22} className="text-gray-300" />
+                                  : <Circle size={22} className="text-ink-muted" />
                                 }
                               </button>
                               <div className="flex-1 min-w-0">
-                                <p className={`text-sm font-medium ${p.pago ? 'text-gray-400 line-through' : 'text-gray-800'}`}>
+                                <p className={`text-sm font-medium ${p.pago ? 'text-ink-muted line-through' : 'text-ink'}`}>
                                   Parcela {p.numero} — {formatarData(p.vencimento)}
                                 </p>
                               </div>
@@ -332,7 +332,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                 <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${st.bg} ${st.texto}`}>
                                   {st.label}
                                 </span>
-                                <span className={`text-sm font-bold tabular-nums ${p.pago ? 'text-gray-400' : 'text-gray-800'}`}>
+                                <span className={`text-sm font-bold tabular-nums ${p.pago ? 'text-ink-muted' : 'text-ink'}`}>
                                   {formatarMoeda(p.valor)}
                                 </span>
                               </div>
