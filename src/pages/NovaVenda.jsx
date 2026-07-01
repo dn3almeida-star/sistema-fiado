@@ -144,7 +144,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
         {etapa === 2 && (
           <div className="space-y-4">
             {/* Cliente selecionado */}
-            <div className="bg-primary-50 border border-primary/20 rounded-2xl p-3 flex items-center justify-between">
+            <div className="bg-primary/10 border border-primary/20 rounded-2xl p-3 flex items-center justify-between">
               <div>
                 <p className="text-xs text-primary font-semibold uppercase tracking-wide">Cliente</p>
                 <p className="font-bold text-ink mt-0.5">{clienteSelecionado?.nome}</p>

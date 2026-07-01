@@ -305,7 +305,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                           return (
                             <div
                               key={p.numero}
-                              className={`flex items-center gap-3 py-2 px-3 rounded-xl ${p.pago ? 'bg-green-50' : 'bg-surface-2'}`}
+                              className={`flex items-center gap-3 py-2 px-3 rounded-xl ${p.pago ? 'bg-success/10' : 'bg-surface-2'}`}
                             >
                               <button
                                 onClick={() => {
