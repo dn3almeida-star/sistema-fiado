@@ -86,15 +86,17 @@ Styling:
 - Modal: reusa card-padrão `bg-surface rounded-2xl shadow-sm p-4` com título e textarea
 - Dark mode: tokens semânticos (text-ink, bg-surface, border-border)
 
-### 3. Persistência: Campo em Parcelas
+### 3. Persistência: campo dentro da parcela (JSONB)
 
-**Schema Supabase (tabela `parcelas`):**
-- Adiciona coluna: `ultima_cobranca_em: timestamp with time zone` (nullable, default NULL)
+**Importante:** parcelas NÃO são uma tabela — são um array JSONB dentro da tabela
+`vendas` (coluna `parcelas`), identificadas por `numero`. Portanto **não há
+migration SQL nem endpoint REST**.
 
-Update ao enviar cobrança:
-```sql
-UPDATE parcelas SET ultima_cobranca_em = now() WHERE id = ?
-```
+- O campo `ultimaCobrancaEm` (ISO completo) é adicionado ao objeto da parcela.
+- Novo `registrarCobranca(vendaId, numeroParcela)` no hook `useVendas` mapeia as
+  parcelas, seta `ultimaCobrancaEm` na parcela do `numero`, e chama
+  `atualizarParcelas(vendaId, novas)` — espelhando o `marcarParcelaPaga` já
+  existente.
 
 ---
 
