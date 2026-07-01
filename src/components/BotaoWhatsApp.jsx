@@ -1,10 +1,9 @@
 import { MessageCircle } from 'lucide-react'
+import { linkWhatsApp } from '../utils/mensagensCobranca.js'
 
 export default function BotaoWhatsApp({ telefone, mensagem, className = '' }) {
   function abrirWhatsApp() {
-    const numero = (telefone || '').replace(/\D/g, '')
-    const url = `https://wa.me/55${numero}?text=${encodeURIComponent(mensagem)}`
-    window.open(url, '_blank', 'noopener,noreferrer')
+    window.open(linkWhatsApp(telefone, mensagem), '_blank', 'noopener,noreferrer')
   }
 
   return (
