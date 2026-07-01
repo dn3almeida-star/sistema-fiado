@@ -4,6 +4,7 @@ import ModalConfirmar from '../components/ModalConfirmar.jsx'
 import BotaoCobranca from '../components/BotaoCobranca.jsx'
 import Timeline from '../components/Timeline.jsx'
 import { formatarMoeda, formatarData, statusParcela, formatarTelefone } from '../utils/formatadores.js'
+import { ehVendaAvista } from '../utils/vendaAvista.js'
 import { gerarCarnetPDF } from '../utils/gerarPDF.js'
 
 export default function PerfilCliente({ clienteId, clientes, vendas, marcarParcelaPaga, desmarcarParcelaPaga, registrarCobranca, removerVenda, removerCliente, atualizarCliente, navegar, mostrarToast, profile }) {
@@ -290,6 +291,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                   const aberta = vendasAbertas[venda.id]
                   const parcelasAbertas = venda.parcelas.filter(p => !p.pago).length
                   const pagas = venda.parcelas.filter(p => p.pago).length
+                  const avista = ehVendaAvista(venda)
 
                   return (
                     <div key={venda.id} className="bg-surface rounded-2xl shadow-sm overflow-hidden">
@@ -309,15 +311,23 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                             )}
                           </div>
                           <div className="flex gap-2 mt-2">
-                            {parcelasAbertas > 0 && (
-                              <span className="text-xs bg-red-50 text-red-600 font-semibold px-2 py-0.5 rounded-full">
-                                {parcelasAbertas} em aberto
+                            {avista ? (
+                              <span className="text-xs bg-blue-50 text-blue-700 font-semibold px-2 py-0.5 rounded-full">
+                                À Vista
                               </span>
-                            )}
-                            {pagas > 0 && (
-                              <span className="text-xs bg-green-50 text-green-700 font-semibold px-2 py-0.5 rounded-full">
-                                {pagas} paga{pagas > 1 ? 's' : ''}
-                              </span>
+                            ) : (
+                              <>
+                                {parcelasAbertas > 0 && (
+                                  <span className="text-xs bg-red-50 text-red-600 font-semibold px-2 py-0.5 rounded-full">
+                                    {parcelasAbertas} em aberto
+                                  </span>
+                                )}
+                                {pagas > 0 && (
+                                  <span className="text-xs bg-green-50 text-green-700 font-semibold px-2 py-0.5 rounded-full">
+                                    {pagas} paga{pagas > 1 ? 's' : ''}
+                                  </span>
+                                )}
+                              </>
                             )}
                           </div>
                         </div>
