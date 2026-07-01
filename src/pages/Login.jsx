@@ -42,8 +42,13 @@ export default function Login() {
       })
       if (error) throw error
       setResetEnviado(true)
-    } catch {
-      setErro('Não foi possível enviar o email. Verifique o endereço e tente novamente.')
+    } catch (err) {
+      const msg = err?.message ?? ''
+      if (msg.toLowerCase().includes('rate') || msg.toLowerCase().includes('limit') || msg.toLowerCase().includes('429')) {
+        setErro('Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.')
+      } else {
+        setErro('Não foi possível enviar o email. Verifique o endereço e tente novamente.')
+      }
     } finally {
       setEnviandoReset(false)
     }
