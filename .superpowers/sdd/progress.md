@@ -35,6 +35,15 @@ Testing checklist: ✅ npm test (35/35 passed), ✅ npm run build (ok), ✅ Tab 
 
 ---
 
+## Deploy em Produção — 2026-07-01
+
+**Deployment:** dpl_2GDXizVjc56MFgJq4WKUAeEMPtZ3 (READY, target=production)
+**URL:** https://sistema-fiado.vercel.app (HTTP 200 ✅)
+**Conteúdo:** todas as features de feat/saas-multi-vendedor no ar (Timeline, Filtros de Clientes, Cobrança WhatsApp, Relatório com Gráficos, Polimento Visual).
+**Build:** ok (2287 módulos), 35/35 testes.
+
+---
+
 ## Histórico anterior
 
 - Timeline do Cliente (2026-07-01): 5 tasks, mesclado em feat/saas-multi-vendedor @ 29c6680.
