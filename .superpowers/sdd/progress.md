@@ -1,4 +1,4 @@
-# Progresso — Venda à Vista
+# Progresso — Venda à Vista — MESCLADO
 
 Plano: docs/superpowers/plans/2026-07-01-venda-avista.md (commit 2cfb00c)
 Spec: docs/superpowers/specs/2026-07-01-venda-avista-design.md
@@ -17,6 +17,8 @@ Encontrou 1 Critical + 1 Important (achado só visível olhando a branch inteira
 - IMPORTANT: ehVendaAvista sem guarda para dado malformado (parcelas undefined, criadaEm ausente) → TypeError no render do histórico do cliente.
 FIX aplicado (commit 6bb2c75): dataLocal() converte criadaEm pra data local (mesma lógica do hoje()) antes de comparar; guardas com optional chaining. 3 testes novos (regressão de fuso horário com TZ forçado America/Sao_Paulo + 2 de dado malformado). 44/44 testes, build ok.
 RE-REVIEW (opus): ambos os achados confirmados como resolvidos, sem novos problemas. **Ready to merge: Yes.**
+
+**MESCLADO em feat/saas-multi-vendedor @ 336b990 (fast-forward). Branch feat/venda-avista deletada. 44/44 testes, build ok.**
 
 ---
 
