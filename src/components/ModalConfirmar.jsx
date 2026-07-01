@@ -10,13 +10,13 @@ export default function ModalConfirmar({ aberto, titulo, mensagem, onConfirmar, 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40" onClick={onCancelar} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-        <h2 className="text-lg font-bold text-gray-800 mb-2">{titulo}</h2>
-        {mensagem && <p className="text-gray-600 mb-6 text-sm leading-relaxed">{mensagem}</p>}
+      <div className="relative bg-surface rounded-2xl shadow-2xl w-full max-w-sm p-6">
+        <h2 className="text-lg font-bold text-ink mb-2">{titulo}</h2>
+        {mensagem && <p className="text-ink-muted mb-6 text-sm leading-relaxed">{mensagem}</p>}
         <div className="flex gap-3">
           <button
             onClick={onCancelar}
-            className="flex-1 py-3 rounded-xl border-2 border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 active:bg-gray-100 transition-colors"
+            className="flex-1 py-3 rounded-xl border-2 border-gray-300 text-ink-muted font-semibold hover:bg-surface-2 active:bg-gray-100 transition-colors"
           >
             Cancelar
           </button>

@@ -12,7 +12,7 @@ export default function BottomNav({ paginaAtiva, onNavegar }) {
   const paginaNavBar = paginaAtiva === 'perfil' ? 'clientes' : paginaAtiva
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 shadow-[0_-2px_12px_rgba(0,0,0,0.06)]">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-surface border-t border-border shadow-[0_-2px_12px_rgba(0,0,0,0.06)]">
       <div className="flex items-end">
         {abas.map(({ id, label, Icon }) => {
           const ativo = paginaNavBar === id
@@ -32,7 +32,7 @@ export default function BottomNav({ paginaAtiva, onNavegar }) {
                 >
                   <Icon size={23} className="text-white" strokeWidth={2.5} />
                 </div>
-                <span className={`text-[10px] mt-1 font-semibold ${ativo ? 'text-primary' : 'text-gray-500'}`}>
+                <span className={`text-[10px] mt-1 font-semibold ${ativo ? 'text-primary' : 'text-ink-muted'}`}>
                   {label}
                 </span>
               </button>
@@ -44,7 +44,7 @@ export default function BottomNav({ paginaAtiva, onNavegar }) {
               key={id}
               onClick={() => onNavegar(id)}
               className={`flex-1 flex flex-col items-center justify-center py-2 min-h-[56px] transition-colors ${
-                ativo ? 'text-primary' : 'text-gray-400'
+                ativo ? 'text-primary' : 'text-ink-muted'
               }`}
             >
               <Icon size={21} strokeWidth={ativo ? 2.5 : 1.8} />
