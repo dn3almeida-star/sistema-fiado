@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BookOpen, LogIn, Mail } from 'lucide-react'
+import { BookOpen, LogIn, Mail, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { supabase } from '../lib/supabase.js'
 
@@ -11,6 +11,7 @@ export default function Login() {
   const [enviando, setEnviando] = useState(false)
   const [resetEnviado, setResetEnviado] = useState(false)
   const [enviandoReset, setEnviandoReset] = useState(false)
+  const [verSenha, setVerSenha] = useState(false)
 
   async function entrar(e) {
     e.preventDefault()
@@ -95,14 +96,23 @@ export default function Login() {
 
           <label className="block">
             <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Senha</span>
-            <input
-              type="password"
-              autoComplete="current-password"
-              value={senha}
-              onChange={e => setSenha(e.target.value)}
-              placeholder="••••••••"
-              className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-            />
+            <div className="relative mt-1.5">
+              <input
+                type={verSenha ? 'text' : 'password'}
+                autoComplete="current-password"
+                value={senha}
+                onChange={e => setSenha(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              />
+              <button
+                type="button"
+                onClick={() => setVerSenha(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+              >
+                {verSenha ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </label>
 
           <button

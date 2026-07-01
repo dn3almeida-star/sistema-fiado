@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { KeyRound, Check } from 'lucide-react'
+import { KeyRound, Check, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth.jsx'
 
 export default function RedefinirSenha() {
@@ -8,6 +8,8 @@ export default function RedefinirSenha() {
   const [confirmar, setConfirmar] = useState('')
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState('')
+  const [verSenha, setVerSenha] = useState(false)
+  const [verConfirmar, setVerConfirmar] = useState(false)
 
   async function salvar(e) {
     e.preventDefault()
@@ -40,26 +42,44 @@ export default function RedefinirSenha() {
 
         <label className="block">
           <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Nova senha</span>
-          <input
-            type="password"
-            autoComplete="new-password"
-            value={senha}
-            onChange={e => setSenha(e.target.value)}
-            placeholder="Mínimo 6 caracteres"
-            className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          />
+          <div className="relative mt-1.5">
+            <input
+              type={verSenha ? 'text' : 'password'}
+              autoComplete="new-password"
+              value={senha}
+              onChange={e => setSenha(e.target.value)}
+              placeholder="Mínimo 6 caracteres"
+              className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            />
+            <button
+              type="button"
+              onClick={() => setVerSenha(v => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+            >
+              {verSenha ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
         </label>
 
         <label className="block">
           <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Confirmar senha</span>
-          <input
-            type="password"
-            autoComplete="new-password"
-            value={confirmar}
-            onChange={e => setConfirmar(e.target.value)}
-            placeholder="Repita a senha"
-            className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          />
+          <div className="relative mt-1.5">
+            <input
+              type={verConfirmar ? 'text' : 'password'}
+              autoComplete="new-password"
+              value={confirmar}
+              onChange={e => setConfirmar(e.target.value)}
+              placeholder="Repita a senha"
+              className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            />
+            <button
+              type="button"
+              onClick={() => setVerConfirmar(v => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+            >
+              {verConfirmar ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
         </label>
 
         <button
