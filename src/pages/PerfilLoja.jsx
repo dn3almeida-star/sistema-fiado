@@ -88,7 +88,7 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
           </label>
         </div>
 
-        {erro && <p className="text-sm text-danger bg-red-50 px-3 py-2 rounded-xl">{erro}</p>}
+        {erro && <p className="text-sm text-danger bg-danger/10 px-3 py-2 rounded-xl">{erro}</p>}
 
         <label className="block">
           <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Nome da loja *</span>

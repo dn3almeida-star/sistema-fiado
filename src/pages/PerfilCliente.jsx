@@ -240,9 +240,9 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
 
         {/* Observações */}
         {cliente.observacoes && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-3 flex gap-2">
+          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-3 flex gap-2">
             <FileText size={16} className="text-yellow-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-yellow-800">{cliente.observacoes}</p>
+            <p className="text-sm text-ink">{cliente.observacoes}</p>
           </div>
         )}
 

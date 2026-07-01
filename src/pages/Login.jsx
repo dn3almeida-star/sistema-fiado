@@ -83,7 +83,7 @@ export default function Login() {
       ) : (
         <form onSubmit={entrar} className="space-y-3">
           {erro && (
-            <p className="text-sm text-danger bg-red-50 px-3 py-2 rounded-xl text-center">{erro}</p>
+            <p className="text-sm text-danger bg-danger/10 px-3 py-2 rounded-xl text-center">{erro}</p>
           )}
 
           <label className="block">

@@ -82,7 +82,7 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
             </button>
           </div>
 
-          {erro && <p className="text-sm text-danger bg-red-50 px-3 py-2 rounded-xl">{erro}</p>}
+          {erro && <p className="text-sm text-danger bg-danger/10 px-3 py-2 rounded-xl">{erro}</p>}
 
           <div className="space-y-2">
             <label className="block">
