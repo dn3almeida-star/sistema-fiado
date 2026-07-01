@@ -37,6 +37,21 @@
     -webkit-tap-highlight-color: transparent;
     user-select: none;
   }
+
+  /* Default form-control theming — utilities (e.g. bg-surface, text-white)
+     on individual inputs still override these element-level rules. */
+  input,
+  textarea,
+  select {
+    background-color: rgb(var(--surface-2));
+    color: rgb(var(--ink));
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(var(--ink-muted));
+    opacity: 1;
+  }
 }
 
 @layer utilities {
