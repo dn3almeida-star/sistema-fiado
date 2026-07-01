@@ -38,7 +38,7 @@ export function statusParcela(parcela) {
   if (dias < 0) return { label: `${Math.abs(dias)}d atraso`, cor: 'danger', bg: 'bg-red-100', texto: 'text-red-700' }
   if (dias === 0) return { label: 'Vence hoje', cor: 'danger', bg: 'bg-orange-100', texto: 'text-orange-700' }
   if (dias <= 7) return { label: `${dias}d`, cor: 'warning', bg: 'bg-yellow-100', texto: 'text-yellow-700' }
-  return { label: `${dias}d`, cor: 'normal', bg: 'bg-gray-100', texto: 'text-gray-600' }
+  return { label: `${dias}d`, cor: 'normal', bg: 'bg-surface-2', texto: 'text-ink-muted' }
 }
 
 export function mesAtual() {
