@@ -16,7 +16,7 @@ export default function ModalConfirmar({ aberto, titulo, mensagem, onConfirmar, 
         <div className="flex gap-3">
           <button
             onClick={onCancelar}
-            className="flex-1 py-3 rounded-xl border-2 border-gray-300 text-ink-muted font-semibold hover:bg-surface-2 active:bg-gray-100 transition-colors"
+            className="flex-1 py-3 rounded-xl border-2 border-border text-ink-muted font-semibold hover:bg-surface-2 active:bg-surface-2 transition-colors"
           >
             Cancelar
           </button>
