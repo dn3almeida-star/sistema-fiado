@@ -1,26 +1,47 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Search, Plus, ChevronRight, Users, X } from 'lucide-react'
-import { mascaraTelefone } from '../utils/formatadores.js'
+import { mascaraTelefone, hoje } from '../utils/formatadores.js'
+import { resumoCliente } from '../utils/resumoCliente.js'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
 import EstadoVazio from '../components/EstadoVazio.jsx'
+import FiltroSituacao from '../components/FiltroSituacao.jsx'
 
 const FORM_INICIAL = { nome: '', telefone: '', endereco: '', bairro: '', observacoes: '' }
 
 export default function Clientes({ clientes, vendas, adicionarCliente, navegar, mostrarToast }) {
   const [busca, setBusca] = useState('')
+  const [filtro, setFiltro] = useState('todos')
   const [mostrarForm, setMostrarForm] = useState(false)
   const [form, setForm] = useState(FORM_INICIAL)
   const [erro, setErro] = useState('')
 
-  const clientesFiltrados = clientes.filter(c => {
+  const { lista, contagens } = useMemo(() => {
+    const hojeISO = hoje()
     const q = busca.toLowerCase()
-    return (
-      c.nome.toLowerCase().includes(q) ||
-      (c.bairro || '').toLowerCase().includes(q) ||
-      (c.endereco || '').toLowerCase().includes(q)
-    )
-  })
+    const comResumo = clientes.map(c => ({ cliente: c, ...resumoCliente(vendas, c.id, hojeISO) }))
+
+    const contagens = {
+      todos:   comResumo.length,
+      atraso:  comResumo.filter(x => x.situacao === 'atraso').length,
+      em_dia:  comResumo.filter(x => x.situacao === 'em_dia').length,
+      quitado: comResumo.filter(x => x.situacao === 'quitado').length,
+    }
+
+    const lista = comResumo
+      .filter(x => filtro === 'todos' || x.situacao === filtro)
+      .filter(x => {
+        const c = x.cliente
+        return (
+          c.nome.toLowerCase().includes(q) ||
+          (c.bairro || '').toLowerCase().includes(q) ||
+          (c.endereco || '').toLowerCase().includes(q)
+        )
+      })
+      .sort((a, b) => b.saldo - a.saldo)
+
+    return { lista, contagens }
+  }, [clientes, vendas, busca, filtro])
 
   async function salvarCliente() {
     if (!form.nome.trim()) {
@@ -36,14 +57,6 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
     } catch {
       mostrarToast('Erro ao salvar cliente. Tente de novo.', 'error')
     }
-  }
-
-  function debitoCliente(clienteId) {
-    return vendas
-      .filter(v => v.clienteId === clienteId)
-      .flatMap(v => v.parcelas)
-      .filter(p => !p.pago)
-      .reduce((acc, p) => acc + p.valor, 0)
   }
 
   return (
@@ -71,6 +84,9 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
           className="w-full pl-10 pr-4 py-3 border border-border rounded-2xl text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm"
         />
       </div>
+
+      {/* Filtros de situação */}
+      <FiltroSituacao filtro={filtro} onSelect={setFiltro} contagens={contagens} />
 
       {/* Formulário de novo cliente */}
       {mostrarForm && (
@@ -152,54 +168,59 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
       )}
 
       {/* Lista */}
-      {clientesFiltrados.length === 0 ? (
-        <div className="space-y-2">
-          {busca ? (
-            <div className="text-center py-12 text-ink-muted">
-              <Users size={36} className="mx-auto mb-2 opacity-30" />
-              <p className="text-sm font-medium">Nenhum cliente encontrado</p>
-            </div>
-          ) : (
-            <EstadoVazio
-              icone={Users}
-              titulo="Nenhum cliente ainda"
-              descricao="Cadastre o primeiro cliente para começar"
-              acao={{ label: 'Cadastrar primeiro cliente', onClick: () => { setMostrarForm(true); setErro('') } }}
-            />
-          )}
-        </div>
+      {lista.length === 0 ? (
+        busca ? (
+          <div className="text-center py-12 text-ink-muted">
+            <Users size={36} className="mx-auto mb-2 opacity-30" />
+            <p className="text-sm font-medium">Nenhum cliente encontrado</p>
+          </div>
+        ) : filtro !== 'todos' ? (
+          <EstadoVazio
+            icone={Users}
+            titulo={
+              filtro === 'atraso' ? 'Nenhum cliente em atraso'
+              : filtro === 'em_dia' ? 'Nenhum cliente em dia'
+              : 'Nenhum cliente quitado'
+            }
+            descricao="Nenhum cliente nessa situação por enquanto."
+          />
+        ) : (
+          <EstadoVazio
+            icone={Users}
+            titulo="Nenhum cliente ainda"
+            descricao="Cadastre o primeiro cliente para começar"
+            acao={{ label: 'Cadastrar primeiro cliente', onClick: () => { setMostrarForm(true); setErro('') } }}
+          />
+        )
       ) : (
         <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-2">
-          {clientesFiltrados.map(cliente => {
-            const debito = debitoCliente(cliente.id)
-            return (
-              <motion.div variants={fadeInUp} key={cliente.id}>
-                <button
-                  onClick={() => navegar('perfil', { clienteId: cliente.id })}
-                  className="w-full bg-surface rounded-2xl shadow-sm p-4 text-left flex items-center gap-3 active:bg-surface-2 transition-colors"
-                >
-                  <div className="w-11 h-11 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
-                    <span className="text-primary font-bold text-lg">{cliente.nome[0]?.toUpperCase()}</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-ink truncate">{cliente.nome}</p>
-                    {cliente.bairro && <p className="text-sm text-ink-muted truncate">{cliente.bairro}</p>}
-                  </div>
-                  <div className="text-right flex-shrink-0 flex items-center gap-2">
-                    {debito > 0 && (
-                      <div className="text-right">
-                        <span className="text-[11px] text-accent font-semibold">R$</span>
-                        <span className="text-sm font-bold text-ink tabular-nums ml-0.5">
-                          {debito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                        </span>
-                      </div>
-                    )}
-                    <ChevronRight size={16} className="text-ink-muted" />
-                  </div>
-                </button>
-              </motion.div>
-            )
-          })}
+          {lista.map(({ cliente, saldo }) => (
+            <motion.div variants={fadeInUp} key={cliente.id}>
+              <button
+                onClick={() => navegar('perfil', { clienteId: cliente.id })}
+                className="w-full bg-surface rounded-2xl shadow-sm p-4 text-left flex items-center gap-3 active:bg-surface-2 transition-colors"
+              >
+                <div className="w-11 h-11 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
+                  <span className="text-primary font-bold text-lg">{cliente.nome[0]?.toUpperCase()}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-ink truncate">{cliente.nome}</p>
+                  {cliente.bairro && <p className="text-sm text-ink-muted truncate">{cliente.bairro}</p>}
+                </div>
+                <div className="text-right flex-shrink-0 flex items-center gap-2">
+                  {saldo > 0 && (
+                    <div className="text-right">
+                      <span className="text-[11px] text-accent font-semibold">R$</span>
+                      <span className="text-sm font-bold text-ink tabular-nums ml-0.5">
+                        {saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                  )}
+                  <ChevronRight size={16} className="text-ink-muted" />
+                </div>
+              </button>
+            </motion.div>
+          ))}
         </motion.div>
       )}
     </div>
