@@ -2,7 +2,11 @@ import { useMemo } from 'react'
 import { TrendingUp, TrendingDown, DollarSign, Users, BarChart2 } from 'lucide-react'
 import CardResumo from '../components/CardResumo.jsx'
 import EstadoVazio from '../components/EstadoVazio.jsx'
-import { formatarMoeda, mesAtual, diasAteVencimento } from '../utils/formatadores.js'
+import { formatarMoeda, mesAtual, diasAteVencimento, hoje } from '../utils/formatadores.js'
+import { metricasRelatorio } from '../utils/metricasRelatorio.js'
+import GraficoBarras from '../components/GraficoBarras.jsx'
+import BarrasHorizontais from '../components/BarrasHorizontais.jsx'
+import Donut from '../components/Donut.jsx'
 
 export default function Relatorio({ clientes, vendas }) {
   const stats = useMemo(() => {
@@ -38,6 +42,8 @@ export default function Relatorio({ clientes, vendas }) {
       clientesEmDia: [...clientesEmDia].filter(id => !clientesComAtraso.has(id)).length,
     }
   }, [vendas])
+
+  const metricas = useMemo(() => metricasRelatorio(vendas, clientes, hoje()), [vendas, clientes])
 
   const mesNome = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
 
@@ -86,6 +92,37 @@ export default function Relatorio({ clientes, vendas }) {
               icone={Users}
               cor="success"
             />
+          </div>
+
+          {/* Recebido por mês */}
+          <div className="bg-surface rounded-2xl shadow-sm p-4">
+            <h2 className="font-bold text-ink mb-3">Recebido por mês</h2>
+            <GraficoBarras dados={metricas.recebidoPorMes} cor="#154e30" destaqueIndex={5} />
+          </div>
+
+          {/* A receber por mês */}
+          <div className="bg-surface rounded-2xl shadow-sm p-4">
+            <h2 className="font-bold text-ink mb-3">A receber por mês</h2>
+            <GraficoBarras dados={metricas.aReceberPorMes} cor="#c97c1a" />
+          </div>
+
+          {/* Top devedores */}
+          <div className="bg-surface rounded-2xl shadow-sm p-4">
+            <h2 className="font-bold text-ink mb-3">Top devedores</h2>
+            {metricas.topDevedores.length > 0 ? (
+              <BarrasHorizontais
+                itens={metricas.topDevedores.map(d => ({ label: d.cliente.nome, valor: d.saldo }))}
+                cor="#154e30"
+              />
+            ) : (
+              <p className="text-sm text-ink-muted">Nenhum cliente devendo no momento.</p>
+            )}
+          </div>
+
+          {/* Pago vs em aberto */}
+          <div className="bg-surface rounded-2xl shadow-sm p-4">
+            <h2 className="font-bold text-ink mb-3">Pago vs em aberto</h2>
+            <Donut pago={metricas.pagoVsAberto.pago} aberto={metricas.pagoVsAberto.aberto} />
           </div>
 
           {/* Resumo geral */}
