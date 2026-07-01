@@ -1,3 +1,25 @@
+# Progresso — Venda à Vista
+
+Plano: docs/superpowers/plans/2026-07-01-venda-avista.md (commit 2cfb00c)
+Spec: docs/superpowers/specs/2026-07-01-venda-avista-design.md
+Branch: feat/venda-avista (partiu de feat/saas-multi-vendedor)
+Pre-flight: corrigida duplicação de JSX (campo Valor Total) na Task 2 do plano antes de despachar (commit f85f4b1).
+
+## Tasks
+
+Task 1: complete (commit adc9e2f, review clean). criarParcelaAvista + ehVendaAvista, 6 testes (TDD). Spec ✅, Quality ✅. Minors (não bloqueiam, ver review): ehVendaAvista não trata parcelas/criadaEm malformados (mesmo gap do pseudocódigo do brief); sem teste de valorTotal=0.
+Task 2: complete (commit d2d6d76, review clean). Toggle Fiado/À Vista em NovaVenda, campoValorTotal IIFE evita duplicação JSX. Fluxo fiado intocado (verificado linha a linha pelo reviewer). Spec ✅, Quality ✅. Minor: campos entrada/parcelas não resetam ao trocar de modo (cosmético, sem impacto no payload). ⚠️ apontado pelo reviewer: verificar manualmente se hoje() e criadaEm (timestamp do servidor) batem na integração com ehVendaAvista (Task 3) — sem visual/browser testing feito ainda nesta task (implementer não tinha display).
+Task 3: complete (commit fdeb9ad, review clean). Badge "À Vista" em PerfilCliente, shape do venda compatível com ehVendaAvista confirmado via linhas de contexto. Fiado badges preservados byte-a-byte. Spec ✅, Quality ✅. Minor (para revisão final de branch): badges usam cores Tailwind literais (bg-blue-50 etc) em vez de tokens semânticos — mas segue convenção já existente nos badges vermelho/verde (não introduzido por esta task). Visual/dark-mode ainda não verificado manualmente por nenhum subagente (sem display).
+
+## Revisão Final de Branch (opus)
+Encontrou 1 Critical + 1 Important (achado só visível olhando a branch inteira, nenhuma task isolada revelaria):
+- CRITICAL: ehVendaAvista comparava vencimento local (hoje(), setado no NovaVenda) com criadaEm.slice(0,10) (UTC, timestamptz default now() do Postgres). Em horário noturno no Brasil (UTC-3), o dia UTC vira o dia seguinte → badge "À Vista" falhava silenciosamente.
+- IMPORTANT: ehVendaAvista sem guarda para dado malformado (parcelas undefined, criadaEm ausente) → TypeError no render do histórico do cliente.
+FIX aplicado (commit 6bb2c75): dataLocal() converte criadaEm pra data local (mesma lógica do hoje()) antes de comparar; guardas com optional chaining. 3 testes novos (regressão de fuso horário com TZ forçado America/Sao_Paulo + 2 de dado malformado). 44/44 testes, build ok.
+RE-REVIEW (opus): ambos os achados confirmados como resolvidos, sem novos problemas. **Ready to merge: Yes.**
+
+---
+
 # Progresso — Cobrança por WhatsApp
 
 Plano: docs/superpowers/plans/2026-07-01-cobranca-whatsapp.md
