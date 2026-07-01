@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { AlertCircle, Clock, CalendarCheck, BookOpen, LogOut } from 'lucide-react'
 import CardResumo from '../components/CardResumo.jsx'
+import NumeroAnimado from '../components/NumeroAnimado.jsx'
 import { formatarData, hoje, diasAteVencimento } from '../utils/formatadores.js'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
@@ -33,9 +34,6 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
 
     return { totalReceber, vencemHoje, emAtraso, vencemSemana, vencimentosHoje }
   }, [vendas, clientes])
-
-  const totalFormatado = totalReceber =>
-    totalReceber.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
 
   return (
     <div className="p-4 space-y-4 pb-6">
@@ -70,9 +68,10 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
         <p className="text-[11px] font-semibold uppercase tracking-widest text-white/60">Total a Receber</p>
         <div className="mt-1 flex items-baseline gap-1.5">
           <span className="text-accent font-bold text-xl">R$</span>
-          <span className="text-4xl font-extrabold text-white tabular-nums leading-none">
-            {totalFormatado(stats.totalReceber)}
-          </span>
+          <NumeroAnimado
+            valor={stats.totalReceber}
+            className="text-4xl font-extrabold text-white tabular-nums leading-none"
+          />
         </div>
         <p className="text-xs text-white/40 mt-2">saldo devedor dos clientes</p>
       </div>
