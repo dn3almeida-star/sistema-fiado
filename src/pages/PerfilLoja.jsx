@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { ArrowLeft, Store, Upload } from 'lucide-react'
+import { ArrowLeft, Moon, Store, Sun, Upload } from 'lucide-react'
 import { mascaraTelefone } from '../utils/formatadores.js'
+import { useTheme } from '../hooks/useTheme.js'
 
 export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrarToast, modoInicial = false, onConcluir, navegar }) {
   const [nomeLoja, setNomeLoja] = useState(profile?.nome_loja ?? '')
@@ -9,6 +10,7 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
   const [erro, setErro] = useState('')
   const [salvando, setSalvando] = useState(false)
   const [enviandoLogo, setEnviandoLogo] = useState(false)
+  const { theme, toggle } = useTheme()
 
   async function trocarLogo(e) {
     const file = e.target.files?.[0]
@@ -89,6 +91,21 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
         </div>
 
         {erro && <p className="text-sm text-danger bg-red-50 px-3 py-2 rounded-xl">{erro}</p>}
+
+        {!modoInicial && (
+          <button
+            onClick={toggle}
+            className="w-full bg-surface rounded-2xl shadow-sm p-4 flex items-center justify-between active:bg-surface-2 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+                {theme === 'dark' ? <Moon size={20} className="text-primary" /> : <Sun size={20} className="text-primary" />}
+              </div>
+              <span className="font-semibold text-ink">Tema {theme === 'dark' ? 'escuro' : 'claro'}</span>
+            </div>
+            <span className="text-xs text-ink-muted">Tocar para alternar</span>
+          </button>
+        )}
 
         <label className="block">
           <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Nome da loja *</span>
