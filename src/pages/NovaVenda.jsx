@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { ArrowLeft, Search, Check } from 'lucide-react'
 import { calcularParcelas } from '../utils/calcularParcelas.js'
+import { criarParcelaAvista } from '../utils/vendaAvista.js'
 import { formatarMoeda, formatarData, hoje } from '../utils/formatadores.js'
 import { haptic } from '../utils/haptic.js'
 
@@ -8,6 +9,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
   const [etapa, setEtapa] = useState(clientePreSelecionado ? 2 : 1)
   const [clienteId, setClienteId] = useState(clientePreSelecionado || '')
   const [buscaCliente, setBuscaCliente] = useState('')
+  const [modo, setModo] = useState('fiado') // 'fiado' | 'avista'
   const [form, setForm] = useState({
     itens: '',
     valorTotal: '',
@@ -26,18 +28,25 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
   })
 
   const parcelasPreview = useMemo(() => {
+    if (modo !== 'fiado') return []
     const total = parseFloat(form.valorTotal) || 0
     const entrada = parseFloat(form.entrada) || 0
     const nparcelas = parseInt(form.numeroParcelas) || 1
     if (total <= 0 || !form.dataPrimeiraParcela) return []
     return calcularParcelas(total, entrada, nparcelas, form.dataPrimeiraParcela)
-  }, [form.valorTotal, form.entrada, form.numeroParcelas, form.dataPrimeiraParcela])
+  }, [modo, form.valorTotal, form.entrada, form.numeroParcelas, form.dataPrimeiraParcela])
 
   function validar() {
     if (!clienteId)                        { setErro('Selecione um cliente');                 return false }
     if (!form.itens.trim())                { setErro('Descreva os itens da venda');           return false }
     const total = parseFloat(form.valorTotal)
     if (!total || total <= 0)              { setErro('Informe o valor total');                return false }
+
+    if (modo === 'avista') {
+      setErro('')
+      return true
+    }
+
     const entrada = parseFloat(form.entrada) || 0
     if (entrada > total)                   { setErro('Entrada não pode ser maior que o total'); return false }
     const nparcelas = parseInt(form.numeroParcelas)
@@ -50,13 +59,23 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
   async function salvar() {
     if (!validar()) return
     try {
-      await adicionarVenda({
-        clienteId,
-        itens: form.itens.trim(),
-        valorTotal: parseFloat(form.valorTotal),
-        entrada: parseFloat(form.entrada) || 0,
-        parcelas: parcelasPreview,
-      })
+      const total = parseFloat(form.valorTotal)
+      const dados = modo === 'avista'
+        ? {
+            clienteId,
+            itens: form.itens.trim(),
+            valorTotal: total,
+            entrada: 0,
+            parcelas: [criarParcelaAvista(total, hoje())],
+          }
+        : {
+            clienteId,
+            itens: form.itens.trim(),
+            valorTotal: total,
+            entrada: parseFloat(form.entrada) || 0,
+            parcelas: parcelasPreview,
+          }
+      await adicionarVenda(dados)
       haptic()
       setSucesso(true)
       setTimeout(() => navegar('perfil', { clienteId }), 1200)
@@ -156,6 +175,28 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
               )}
             </div>
 
+            {/* Toggle Fiado / À Vista */}
+            <div className="flex gap-2 bg-surface-2 p-1 rounded-2xl">
+              <button
+                type="button"
+                onClick={() => setModo('fiado')}
+                className={`flex-1 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
+                  modo === 'fiado' ? 'bg-primary text-white shadow-sm' : 'text-ink-muted'
+                }`}
+              >
+                Fiado
+              </button>
+              <button
+                type="button"
+                onClick={() => setModo('avista')}
+                className={`flex-1 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
+                  modo === 'avista' ? 'bg-primary text-white shadow-sm' : 'text-ink-muted'
+                }`}
+              >
+                À Vista
+              </button>
+            </div>
+
             {erro && <p className="text-sm text-danger bg-danger/10 px-3 py-2 rounded-xl">{erro}</p>}
 
             {/* Formulário */}
@@ -171,64 +212,75 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
                 />
               </label>
 
-              <div className="grid grid-cols-2 gap-3">
-                <label className="block">
-                  <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Valor Total (R$) *</span>
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    min="0"
-                    step="0.01"
-                    value={form.valorTotal}
-                    onChange={e => setForm(f => ({ ...f, valorTotal: e.target.value }))}
-                    placeholder="0,00"
-                    className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
-                  />
-                </label>
+              {(() => {
+                const campoValorTotal = (
+                  <label className="block">
+                    <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Valor Total (R$) *</span>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      min="0"
+                      step="0.01"
+                      value={form.valorTotal}
+                      onChange={e => setForm(f => ({ ...f, valorTotal: e.target.value }))}
+                      placeholder="0,00"
+                      className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
+                    />
+                  </label>
+                )
 
-                <label className="block">
-                  <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Entrada (R$)</span>
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    min="0"
-                    step="0.01"
-                    value={form.entrada}
-                    onChange={e => setForm(f => ({ ...f, entrada: e.target.value }))}
-                    placeholder="0,00"
-                    className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
-                  />
-                </label>
-              </div>
+                if (modo !== 'fiado') return campoValorTotal
 
-              <div className="grid grid-cols-2 gap-3">
-                <label className="block">
-                  <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Nº de Parcelas *</span>
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    min="1"
-                    max="60"
-                    value={form.numeroParcelas}
-                    onChange={e => setForm(f => ({ ...f, numeroParcelas: e.target.value }))}
-                    className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
-                  />
-                </label>
+                return (
+                  <div className="grid grid-cols-2 gap-3">
+                    {campoValorTotal}
+                    <label className="block">
+                      <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Entrada (R$)</span>
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        min="0"
+                        step="0.01"
+                        value={form.entrada}
+                        onChange={e => setForm(f => ({ ...f, entrada: e.target.value }))}
+                        placeholder="0,00"
+                        className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
+                      />
+                    </label>
+                  </div>
+                )
+              })()}
 
-                <label className="block">
-                  <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">1ª Parcela em *</span>
-                  <input
-                    type="date"
-                    value={form.dataPrimeiraParcela}
-                    onChange={e => setForm(f => ({ ...f, dataPrimeiraParcela: e.target.value }))}
-                    className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  />
-                </label>
-              </div>
+              {modo === 'fiado' && (
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="block">
+                    <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Nº de Parcelas *</span>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min="1"
+                      max="60"
+                      value={form.numeroParcelas}
+                      onChange={e => setForm(f => ({ ...f, numeroParcelas: e.target.value }))}
+                      className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary tabular-nums"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">1ª Parcela em *</span>
+                    <input
+                      type="date"
+                      value={form.dataPrimeiraParcela}
+                      onChange={e => setForm(f => ({ ...f, dataPrimeiraParcela: e.target.value }))}
+                      className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    />
+                  </label>
+                </div>
+              )}
             </div>
 
             {/* Preview de parcelas */}
-            {parcelasPreview.length > 0 && (
+            {modo === 'fiado' && parcelasPreview.length > 0 && (
               <div className="bg-surface rounded-2xl shadow-sm p-4">
                 <p className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-3">Preview das Parcelas</p>
                 <div className="space-y-2">
