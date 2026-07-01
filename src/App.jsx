@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import BottomNav from './components/BottomNav.jsx'
 import Toast from './components/Toast.jsx'
 import Dashboard from './pages/Dashboard.jsx'
@@ -77,17 +78,27 @@ export default function App() {
       <Toast key={toastKey} mensagem={toast?.mensagem} tipo={toast?.tipo} />
 
       <main className="flex-1 overflow-y-auto pb-20">
-        {paginaAtiva === 'dashboard' && <Dashboard {...props} />}
-        {paginaAtiva === 'clientes' && <Clientes {...props} />}
-        {paginaAtiva === 'perfil' && (
-          <PerfilCliente {...props} clienteId={clienteAtivoId} />
-        )}
-        {paginaAtiva === 'nova-venda' && (
-          <NovaVenda {...props} clientePreSelecionado={vendaParaCliente} />
-        )}
-        {paginaAtiva === 'cobrancas' && <CobrancasHoje {...props} />}
-        {paginaAtiva === 'relatorio' && <Relatorio {...props} />}
-        {paginaAtiva === 'perfil-loja' && <PerfilLoja {...props} />}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={paginaAtiva}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            {paginaAtiva === 'dashboard' && <Dashboard {...props} />}
+            {paginaAtiva === 'clientes' && <Clientes {...props} />}
+            {paginaAtiva === 'perfil' && (
+              <PerfilCliente {...props} clienteId={clienteAtivoId} />
+            )}
+            {paginaAtiva === 'nova-venda' && (
+              <NovaVenda {...props} clientePreSelecionado={vendaParaCliente} />
+            )}
+            {paginaAtiva === 'cobrancas' && <CobrancasHoje {...props} />}
+            {paginaAtiva === 'relatorio' && <Relatorio {...props} />}
+            {paginaAtiva === 'perfil-loja' && <PerfilLoja {...props} />}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       <BottomNav paginaAtiva={paginaAtiva} onNavegar={navegar} />

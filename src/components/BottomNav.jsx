@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { Home, Users, PlusCircle, Bell, BarChart2 } from 'lucide-react'
 
 const abas = [
@@ -20,9 +21,10 @@ export default function BottomNav({ paginaAtiva, onNavegar }) {
 
           if (isCentro) {
             return (
-              <button
+              <motion.button
                 key={id}
                 onClick={() => onNavegar(id)}
+                whileTap={{ scale: 0.92 }}
                 className="flex-1 flex flex-col items-center pb-2 pt-1"
               >
                 <div
@@ -35,14 +37,15 @@ export default function BottomNav({ paginaAtiva, onNavegar }) {
                 <span className={`text-[10px] mt-1 font-semibold ${ativo ? 'text-primary' : 'text-ink-muted'}`}>
                   {label}
                 </span>
-              </button>
+              </motion.button>
             )
           }
 
           return (
-            <button
+            <motion.button
               key={id}
               onClick={() => onNavegar(id)}
+              whileTap={{ scale: 0.96 }}
               className={`flex-1 flex flex-col items-center justify-center py-2 min-h-[56px] transition-colors ${
                 ativo ? 'text-primary' : 'text-ink-muted'
               }`}
@@ -52,7 +55,7 @@ export default function BottomNav({ paginaAtiva, onNavegar }) {
                 {label}
               </span>
               {ativo && <div className="w-1 h-1 rounded-full bg-primary mt-0.5" />}
-            </button>
+            </motion.button>
           )
         })}
       </div>

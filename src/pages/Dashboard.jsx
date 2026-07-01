@@ -109,7 +109,7 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
           <h2 className="text-sm font-bold text-ink-muted uppercase tracking-wide mb-2">Cobranças de Hoje</h2>
           <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-2">
             {stats.vencimentosHoje.map(({ cliente, parcela, venda }) => (
-              <motion.div variants={fadeInUp} key={`${venda.id}-${parcela.numero}`}>
+              <motion.div variants={fadeInUp} whileTap={{ scale: 0.98 }} key={`${venda.id}-${parcela.numero}`}>
                 <button
                   onClick={() => navegar('perfil', { clienteId: cliente.id })}
                   className="w-full bg-surface rounded-2xl shadow-sm p-4 text-left flex items-center justify-between active:bg-surface-2 transition-colors"
