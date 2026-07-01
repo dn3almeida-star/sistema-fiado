@@ -40,7 +40,7 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
       {/* Header */}
       <div className="pt-3 pb-1 flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-semibold text-primary uppercase tracking-widest">Iran Utilidades</p>
+          {profile?.nome_loja && <p className="text-[11px] font-semibold text-primary uppercase tracking-widest">{profile.nome_loja}</p>}
           <h1 className="text-2xl font-extrabold text-gray-900 leading-tight">Caderno Digital</h1>
         </div>
         <div className="flex items-center gap-2">
