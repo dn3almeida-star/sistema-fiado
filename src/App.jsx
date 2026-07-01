@@ -17,6 +17,7 @@ import PerfilLoja from './pages/PerfilLoja.jsx'
 import RedefinirSenha from './pages/RedefinirSenha.jsx'
 import { useProfile } from './hooks/useProfile.js'
 import { perfilCompleto } from './utils/perfil.js'
+import { SkeletonDashboard } from './components/Skeleton.jsx'
 
 export default function App() {
   const [paginaAtiva, setPaginaAtiva] = useState('dashboard')
@@ -71,34 +72,38 @@ export default function App() {
       />
     )
   }
-  if (clientesHook.carregandoClientes || vendasHook.carregandoVendas) return <Splash />
+  const carregandoDados = clientesHook.carregandoClientes || vendasHook.carregandoVendas
 
   return (
     <div className="flex flex-col min-h-screen bg-ground">
       <Toast key={toastKey} mensagem={toast?.mensagem} tipo={toast?.tipo} />
 
       <main className="flex-1 overflow-y-auto pb-20">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={paginaAtiva}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-          >
-            {paginaAtiva === 'dashboard' && <Dashboard {...props} />}
-            {paginaAtiva === 'clientes' && <Clientes {...props} />}
-            {paginaAtiva === 'perfil' && (
-              <PerfilCliente {...props} clienteId={clienteAtivoId} />
-            )}
-            {paginaAtiva === 'nova-venda' && (
-              <NovaVenda {...props} clientePreSelecionado={vendaParaCliente} />
-            )}
-            {paginaAtiva === 'cobrancas' && <CobrancasHoje {...props} />}
-            {paginaAtiva === 'relatorio' && <Relatorio {...props} />}
-            {paginaAtiva === 'perfil-loja' && <PerfilLoja {...props} />}
-          </motion.div>
-        </AnimatePresence>
+        {carregandoDados ? (
+          <SkeletonDashboard />
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={paginaAtiva}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+            >
+              {paginaAtiva === 'dashboard' && <Dashboard {...props} />}
+              {paginaAtiva === 'clientes' && <Clientes {...props} />}
+              {paginaAtiva === 'perfil' && (
+                <PerfilCliente {...props} clienteId={clienteAtivoId} />
+              )}
+              {paginaAtiva === 'nova-venda' && (
+                <NovaVenda {...props} clientePreSelecionado={vendaParaCliente} />
+              )}
+              {paginaAtiva === 'cobrancas' && <CobrancasHoje {...props} />}
+              {paginaAtiva === 'relatorio' && <Relatorio {...props} />}
+              {paginaAtiva === 'perfil-loja' && <PerfilLoja {...props} />}
+            </motion.div>
+          </AnimatePresence>
+        )}
       </main>
 
       <BottomNav paginaAtiva={paginaAtiva} onNavegar={navegar} />
