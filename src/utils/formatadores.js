@@ -57,3 +57,11 @@ export function mascaraTelefone(valor) {
 export function formatarTelefone(tel) {
   return mascaraTelefone(tel || '')
 }
+
+export function formatarCompacto(valor) {
+  const n = valor || 0
+  if (n >= 1000) {
+    return (n / 1000).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 }) + 'k'
+  }
+  return Math.round(n).toLocaleString('pt-BR')
+}
