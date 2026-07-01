@@ -1,7 +1,7 @@
-import jsPDF from 'jspdf'
 import { formatarData, formatarMoeda } from './formatadores.js'
 
 export async function gerarCarnetPDF(cliente, venda, loja = {}) {
+  const { default: jsPDF } = await import('jspdf')
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const largura = 190
   const margem = 10
