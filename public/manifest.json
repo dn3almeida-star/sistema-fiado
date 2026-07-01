@@ -1,6 +1,6 @@
 {
-  "name": "Caderno Digital",
-  "short_name": "Caderno",
+  "name": "Crediário Digital",
+  "short_name": "Crediário",
   "description": "Controle de vendas a prazo (fiado) para vendedor informal",
   "start_url": "/",
   "display": "standalone",

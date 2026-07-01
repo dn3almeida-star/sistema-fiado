@@ -54,7 +54,7 @@ export default function Login() {
         <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4 shadow-sm">
           <BookOpen size={30} className="text-white" />
         </div>
-        <h1 className="text-2xl font-extrabold text-gray-900">Caderno Digital</h1>
+        <h1 className="text-2xl font-extrabold text-gray-900">Crediário Digital</h1>
         <p className="text-sm text-gray-500 mt-1">Entre para acessar seus clientes</p>
       </div>
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'caderno-digital-v2'
+const CACHE_NAME = 'crediario-digital-v1'
 const ASSETS_PARA_CACHE = [
   '/',
   '/index.html',
