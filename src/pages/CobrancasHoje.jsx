@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Bell } from 'lucide-react'
 import BotaoWhatsApp from '../components/BotaoWhatsApp.jsx'
+import EstadoVazio from '../components/EstadoVazio.jsx'
 import { formatarMoeda, formatarData, hoje } from '../utils/formatadores.js'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
 
@@ -37,11 +38,11 @@ export default function CobrancasHoje({ clientes, vendas, navegar }) {
       </div>
 
       {cobrancas.length === 0 ? (
-        <div className="text-center py-16 text-ink-muted">
-          <Bell size={48} className="mx-auto mb-3 opacity-20" />
-          <p className="font-bold text-ink-muted">Nenhuma cobrança para hoje!</p>
-          <p className="text-sm mt-1">Aproveite o dia 🎉</p>
-        </div>
+        <EstadoVazio
+          icone={Bell}
+          titulo="Tudo em dia!"
+          descricao="Nenhuma cobrança pendente."
+        />
       ) : (
         <>
           <div className="bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3">

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Search, Plus, ChevronRight, Users, X } from 'lucide-react'
 import { mascaraTelefone } from '../utils/formatadores.js'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
+import EstadoVazio from '../components/EstadoVazio.jsx'
 
 const FORM_INICIAL = { nome: '', telefone: '', endereco: '', bairro: '', observacoes: '' }
 
@@ -153,20 +154,19 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
       {/* Lista */}
       {clientesFiltrados.length === 0 ? (
         <div className="space-y-2">
-          <div className="text-center py-12 text-ink-muted">
-            <Users size={36} className="mx-auto mb-2 opacity-30" />
-            <p className="text-sm font-medium">
-              {busca ? 'Nenhum cliente encontrado' : 'Nenhum cliente cadastrado ainda'}
-            </p>
-            {!busca && (
-              <button
-                onClick={() => { setMostrarForm(true); setErro('') }}
-                className="mt-3 text-sm text-primary font-semibold underline underline-offset-2"
-              >
-                Cadastrar primeiro cliente
-              </button>
-            )}
-          </div>
+          {busca ? (
+            <div className="text-center py-12 text-ink-muted">
+              <Users size={36} className="mx-auto mb-2 opacity-30" />
+              <p className="text-sm font-medium">Nenhum cliente encontrado</p>
+            </div>
+          ) : (
+            <EstadoVazio
+              icone={Users}
+              titulo="Nenhum cliente ainda"
+              descricao="Cadastre o primeiro cliente para começar"
+              acao={{ label: 'Cadastrar primeiro cliente', onClick: () => { setMostrarForm(true); setErro('') } }}
+            />
+          )}
         </div>
       ) : (
         <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-2">

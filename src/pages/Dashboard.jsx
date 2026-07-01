@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { AlertCircle, Clock, CalendarCheck, BookOpen, LogOut } from 'lucide-react'
 import CardResumo from '../components/CardResumo.jsx'
 import NumeroAnimado from '../components/NumeroAnimado.jsx'
+import EstadoVazio from '../components/EstadoVazio.jsx'
 import { formatarData, hoje, diasAteVencimento } from '../utils/formatadores.js'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
@@ -137,10 +138,7 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
       )}
 
       {stats.vencimentosHoje.length === 0 && stats.emAtraso === 0 && (
-        <div className="text-center py-10 text-ink-muted">
-          <CalendarCheck size={40} className="mx-auto mb-2 opacity-30" />
-          <p className="text-sm font-medium">Nenhuma cobrança para hoje</p>
-        </div>
+        <EstadoVazio icone={CalendarCheck} titulo="Nenhuma cobrança para hoje" />
       )}
     </div>
   )
