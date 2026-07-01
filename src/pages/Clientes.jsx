@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { Search, Plus, ChevronRight, Users, X } from 'lucide-react'
 import { mascaraTelefone } from '../utils/formatadores.js'
+import { staggerContainer, fadeInUp } from '../utils/motion.js'
 
 const FORM_INICIAL = { nome: '', telefone: '', endereco: '', bairro: '', observacoes: '' }
 
@@ -149,8 +151,8 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
       )}
 
       {/* Lista */}
-      <div className="space-y-2">
-        {clientesFiltrados.length === 0 && (
+      {clientesFiltrados.length === 0 ? (
+        <div className="space-y-2">
           <div className="text-center py-12 text-ink-muted">
             <Users size={36} className="mx-auto mb-2 opacity-30" />
             <p className="text-sm font-medium">
@@ -165,38 +167,41 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
               </button>
             )}
           </div>
-        )}
-
-        {clientesFiltrados.map(cliente => {
-          const debito = debitoCliente(cliente.id)
-          return (
-            <button
-              key={cliente.id}
-              onClick={() => navegar('perfil', { clienteId: cliente.id })}
-              className="w-full bg-surface rounded-2xl shadow-sm p-4 text-left flex items-center gap-3 active:bg-surface-2 transition-colors"
-            >
-              <div className="w-11 h-11 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
-                <span className="text-primary font-bold text-lg">{cliente.nome[0]?.toUpperCase()}</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-ink truncate">{cliente.nome}</p>
-                {cliente.bairro && <p className="text-sm text-ink-muted truncate">{cliente.bairro}</p>}
-              </div>
-              <div className="text-right flex-shrink-0 flex items-center gap-2">
-                {debito > 0 && (
-                  <div className="text-right">
-                    <span className="text-[11px] text-accent font-semibold">R$</span>
-                    <span className="text-sm font-bold text-ink tabular-nums ml-0.5">
-                      {debito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </span>
+        </div>
+      ) : (
+        <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-2">
+          {clientesFiltrados.map(cliente => {
+            const debito = debitoCliente(cliente.id)
+            return (
+              <motion.div variants={fadeInUp} key={cliente.id}>
+                <button
+                  onClick={() => navegar('perfil', { clienteId: cliente.id })}
+                  className="w-full bg-surface rounded-2xl shadow-sm p-4 text-left flex items-center gap-3 active:bg-surface-2 transition-colors"
+                >
+                  <div className="w-11 h-11 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
+                    <span className="text-primary font-bold text-lg">{cliente.nome[0]?.toUpperCase()}</span>
                   </div>
-                )}
-                <ChevronRight size={16} className="text-ink-muted" />
-              </div>
-            </button>
-          )
-        })}
-      </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-ink truncate">{cliente.nome}</p>
+                    {cliente.bairro && <p className="text-sm text-ink-muted truncate">{cliente.bairro}</p>}
+                  </div>
+                  <div className="text-right flex-shrink-0 flex items-center gap-2">
+                    {debito > 0 && (
+                      <div className="text-right">
+                        <span className="text-[11px] text-accent font-semibold">R$</span>
+                        <span className="text-sm font-bold text-ink tabular-nums ml-0.5">
+                          {debito.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                    )}
+                    <ChevronRight size={16} className="text-ink-muted" />
+                  </div>
+                </button>
+              </motion.div>
+            )
+          })}
+        </motion.div>
+      )}
     </div>
   )
 }

@@ -1,7 +1,9 @@
 import { useMemo } from 'react'
+import { motion } from 'framer-motion'
 import { Bell } from 'lucide-react'
 import BotaoWhatsApp from '../components/BotaoWhatsApp.jsx'
 import { formatarMoeda, formatarData, hoje } from '../utils/formatadores.js'
+import { staggerContainer, fadeInUp } from '../utils/motion.js'
 
 function montarMensagem(cliente, parcela) {
   const valor = formatarMoeda(parcela.valor)
@@ -48,9 +50,10 @@ export default function CobrancasHoje({ clientes, vendas, navegar }) {
             </p>
           </div>
 
-          <div className="space-y-3">
+          <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-3">
             {cobrancas.map(({ cliente, parcela, venda }) => (
-              <div
+              <motion.div
+                variants={fadeInUp}
                 key={`${venda.id}-${parcela.numero}`}
                 className="bg-surface rounded-2xl shadow-sm p-4 space-y-3"
               >
@@ -94,9 +97,9 @@ export default function CobrancasHoje({ clientes, vendas, navegar }) {
                     Ver Perfil
                   </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </>
       )}
     </div>

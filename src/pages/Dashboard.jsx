@@ -1,8 +1,10 @@
 import { useMemo } from 'react'
+import { motion } from 'framer-motion'
 import { AlertCircle, Clock, CalendarCheck, BookOpen, LogOut } from 'lucide-react'
 import CardResumo from '../components/CardResumo.jsx'
 import { formatarData, hoje, diasAteVencimento } from '../utils/formatadores.js'
 import { useAuth } from '../hooks/useAuth.jsx'
+import { staggerContainer, fadeInUp } from '../utils/motion.js'
 
 export default function Dashboard({ clientes, vendas, navegar, profile }) {
   const { logout } = useAuth()
@@ -106,31 +108,32 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
       {stats.vencimentosHoje.length > 0 && (
         <div>
           <h2 className="text-sm font-bold text-ink-muted uppercase tracking-wide mb-2">Cobranças de Hoje</h2>
-          <div className="space-y-2">
+          <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-2">
             {stats.vencimentosHoje.map(({ cliente, parcela, venda }) => (
-              <button
-                key={`${venda.id}-${parcela.numero}`}
-                onClick={() => navegar('perfil', { clienteId: cliente.id })}
-                className="w-full bg-surface rounded-2xl shadow-sm p-4 text-left flex items-center justify-between active:bg-surface-2 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-orange-700 font-bold text-base">{cliente.nome[0]?.toUpperCase()}</span>
+              <motion.div variants={fadeInUp} key={`${venda.id}-${parcela.numero}`}>
+                <button
+                  onClick={() => navegar('perfil', { clienteId: cliente.id })}
+                  className="w-full bg-surface rounded-2xl shadow-sm p-4 text-left flex items-center justify-between active:bg-surface-2 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-orange-700 font-bold text-base">{cliente.nome[0]?.toUpperCase()}</span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-ink">{cliente.nome}</p>
+                      <p className="text-xs text-ink-muted mt-0.5">Parcela {parcela.numero} — {formatarData(parcela.vencimento)}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-semibold text-ink">{cliente.nome}</p>
-                    <p className="text-xs text-ink-muted mt-0.5">Parcela {parcela.numero} — {formatarData(parcela.vencimento)}</p>
+                  <div className="text-right flex-shrink-0">
+                    <span className="text-xs text-accent font-semibold">R$</span>
+                    <span className="text-base font-bold text-ink tabular-nums ml-0.5">
+                      {parcela.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </span>
                   </div>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <span className="text-xs text-accent font-semibold">R$</span>
-                  <span className="text-base font-bold text-ink tabular-nums ml-0.5">
-                    {parcela.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                  </span>
-                </div>
-              </button>
+                </button>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       )}
 
