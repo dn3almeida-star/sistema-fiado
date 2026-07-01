@@ -1,15 +1,17 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { AlertCircle, Clock, CalendarCheck, BookOpen, LogOut } from 'lucide-react'
+import { AlertCircle, Clock, CalendarCheck, BookOpen, LogOut, Sun, Moon } from 'lucide-react'
 import CardResumo from '../components/CardResumo.jsx'
 import NumeroAnimado from '../components/NumeroAnimado.jsx'
 import EstadoVazio from '../components/EstadoVazio.jsx'
 import { formatarData, hoje, diasAteVencimento } from '../utils/formatadores.js'
 import { useAuth } from '../hooks/useAuth.jsx'
+import { useTheme } from '../hooks/useTheme.js'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
 
 export default function Dashboard({ clientes, vendas, navegar, profile }) {
   const { logout } = useAuth()
+  const { theme, toggle } = useTheme()
   const stats = useMemo(() => {
     const hj = hoje()
     let totalReceber = 0
@@ -45,6 +47,13 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
           <h1 className="text-2xl font-extrabold text-ink leading-tight">Crediário Digital</h1>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={toggle}
+            className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center text-ink-muted active:bg-surface-2"
+            aria-label={theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
           <button
             onClick={() => navegar('perfil-loja')}
             className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-sm overflow-hidden"
