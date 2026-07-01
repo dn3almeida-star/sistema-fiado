@@ -1,3 +1,22 @@
+# Progresso — Carnê Profissional
+
+Plano: docs/superpowers/plans/2026-07-01-carne-profissional.md (commit 8cb41ce)
+Spec: docs/superpowers/specs/2026-07-01-carne-profissional-design.md
+Branch: feat/carne-profissional (partiu de feat/saas-multi-vendedor @ 8cb41ce, já inclui code-splitting + venda à vista mesclados)
+Pre-flight: scan limpo, sem conflitos no plano.
+
+## Tasks
+
+Task 1: complete (commit e1da6a2, review clean). corPdfStatusParcela mapeia statusParcela → RGB, 5 testes (TDD). Reviewer verificou que as 5 chaves de CORES_PDF batem exatamente com os 5 valores de bg retornados por statusParcela (sem risco de undefined). Spec ✅, Quality ✅.
+Task 2: complete (commit 1a109c1, review clean). Reescrita de gerarCarnetPDF: resumo financeiro, badge colorido, canhoto com linha pontilhada, paginação automática, logo maior. Reviewer traçou a geometria (limite de página, footer, cores, fórmula financeira c/ venda à vista, reset de dash pattern) e confirmou sem off-by-one nem vazamento de estado. Spec ✅, Quality ✅. Minor: caso hipotético de venda com 0 parcelas não tratado explicitamente (provavelmente inatingível na prática). Visual/PDF renderizado ainda não verificado por ninguém com navegador.
+
+## Revisão Final de Branch (opus)
+Confirmou identidade contábil (parcelas somam valorTotal-entrada via calcularParcelas.js) validando a fórmula pago/restante. Traçou a integração Task1↔Task2: todo formato de venda deste app (fiado multi-parcela, parcela única, à vista) sempre fornece pago+vencimento válidos para corPdfStatusParcela — sem risco de dado malformado. 3 achados minor, todos confirmados inatingíveis/opcionais (fallback de cor não usado, 0-parcelas impossível, fórmula financeira poderia ser extraída como função pura testável — não obrigatório).
+**Checklist de verificação visual manual apontada para o humano:** encaixe horizontal do badge de status vs valor da parcela; posição vertical do primeiro ticket com itens de descrição longos (sem guard antes do primeiro ticket); paginação com 10+ parcelas; linha pontilhada + linha de assinatura; logo 24x24 dentro da faixa verde do cabeçalho.
+**Ready to merge: Yes.**
+
+---
+
 # Progresso — Venda à Vista — MESCLADO
 
 Plano: docs/superpowers/plans/2026-07-01-venda-avista.md (commit 2cfb00c)
