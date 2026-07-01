@@ -5,9 +5,9 @@ import { formatarMoeda, formatarData, hoje } from '../utils/formatadores.js'
 
 function montarMensagem(cliente, parcela) {
   const valor = formatarMoeda(parcela.valor)
-  const oi = String.fromCodePoint(0x1F60A)   // 😊
-  const obg = String.fromCodePoint(0x1F64F)  // 🙏
-  return `Olá ${cliente.nome}! ${oi} Passando para lembrar que a parcela ${parcela.numero} no valor de ${valor} vence hoje. Qualquer dúvida é só falar! ${obg}`
+  const oi = '☺'   // ☺ (BMP — suportado em todos os aparelhos)
+  const ok = '✔'   // ✔
+  return `Olá ${cliente.nome}! ${oi} Passando para lembrar que a parcela ${parcela.numero} no valor de ${valor} vence hoje. Qualquer dúvida é só falar! ${ok}`
 }
 
 export default function CobrancasHoje({ clientes, vendas, navegar }) {
