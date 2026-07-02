@@ -13,9 +13,9 @@ import { SkeletonDashboard } from './components/Skeleton.jsx'
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'))
 const Clientes = lazy(() => import('./pages/Clientes.jsx'))
 const PerfilCliente = lazy(() => import('./pages/PerfilCliente.jsx'))
-const NovaVenda = lazy(() => import('./pages/NovaVenda.jsx'))
 const CobrancasHoje = lazy(() => import('./pages/CobrancasHoje.jsx'))
 const Relatorio = lazy(() => import('./pages/Relatorio.jsx'))
+const VendasTab = lazy(() => import('./components/VendasTab.jsx'))
 const Login = lazy(() => import('./pages/Login.jsx'))
 const PerfilLoja = lazy(() => import('./pages/PerfilLoja.jsx'))
 const RedefinirSenha = lazy(() => import('./pages/RedefinirSenha.jsx'))
@@ -100,7 +100,7 @@ export default function App() {
                   <PerfilCliente {...props} clienteId={clienteAtivoId} />
                 )}
                 {paginaAtiva === 'nova-venda' && (
-                  <NovaVenda {...props} clientePreSelecionado={vendaParaCliente} />
+                  <VendasTab {...props} clientePreSelecionado={vendaParaCliente} />
                 )}
                 {paginaAtiva === 'cobrancas' && <CobrancasHoje {...props} />}
                 {paginaAtiva === 'relatorio' && <Relatorio {...props} />}
