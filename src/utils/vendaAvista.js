@@ -8,7 +8,7 @@ export function criarParcelaAvista(valorTotal, dataVenda) {
   }
 }
 
-function dataLocal(isoString) {
+export function dataLocal(isoString) {
   const d = new Date(isoString)
   const ano = d.getFullYear()
   const mes = String(d.getMonth() + 1).padStart(2, '0')
