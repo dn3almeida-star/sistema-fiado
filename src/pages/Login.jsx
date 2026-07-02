@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BookOpen, LogIn, Mail, Eye, EyeOff } from 'lucide-react'
+import { LogIn, Mail, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { supabase } from '../lib/supabase.js'
 
@@ -57,8 +57,8 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col justify-center px-6 bg-ground">
       <div className="text-center mb-8">
-        <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4 shadow-sm">
-          <BookOpen size={30} className="text-white" />
+        <div className="w-16 h-16 rounded-2xl overflow-hidden mx-auto mb-4 shadow-sm">
+          <img src="/icons/icon-512.png" alt="Crediário Digital" className="w-full h-full object-cover" />
         </div>
         <h1 className="text-2xl font-extrabold text-ink">Crediário Digital</h1>
         <p className="text-sm text-ink-muted mt-1">Entre para acessar seus clientes</p>
