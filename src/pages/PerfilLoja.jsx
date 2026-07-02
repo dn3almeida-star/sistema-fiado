@@ -108,7 +108,7 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
             inputMode="numeric"
             value={telefone}
             onChange={e => setTelefone(mascaraTelefone(e.target.value))}
-            placeholder="(00) 00000-0000"
+            placeholder="(00)00000-0000"
             className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </label>
