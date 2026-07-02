@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { diasDoMes, nomeDoMes, decadaDoAno } from './calendario.js'
+import { diasDoMes, nomeDoMes, decadaDoAno, rotuloPeriodo } from './calendario.js'
 
 describe('diasDoMes', () => {
   it('julho de 2026 tem 31 dias, começando numa quarta (3 slots vazios antes do dia 1)', () => {
@@ -57,5 +57,25 @@ describe('decadaDoAno', () => {
   })
   it('outra década', () => {
     expect(decadaDoAno(1999)).toBe(1990)
+  })
+})
+
+describe('rotuloPeriodo', () => {
+  it('dia: formata DD/MM/YYYY', () => {
+    expect(rotuloPeriodo('dia', '2026-07-15')).toBe('15/07/2026')
+  })
+
+  it('mes: formata "Mês de YYYY"', () => {
+    expect(rotuloPeriodo('mes', '2026-07')).toBe('Julho de 2026')
+  })
+
+  it('ano: retorna o próprio valor', () => {
+    expect(rotuloPeriodo('ano', '2026')).toBe('2026')
+  })
+
+  it('valor vazio retorna string vazia, em qualquer granularidade', () => {
+    expect(rotuloPeriodo('dia', '')).toBe('')
+    expect(rotuloPeriodo('mes', '')).toBe('')
+    expect(rotuloPeriodo('ano', '')).toBe('')
   })
 })
