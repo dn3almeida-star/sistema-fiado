@@ -3,7 +3,7 @@ import { ArrowLeft, Phone, MapPin, Home, FileText, ChevronDown, ChevronUp, Check
 import ModalConfirmar from '../components/ModalConfirmar.jsx'
 import BotaoCobranca from '../components/BotaoCobranca.jsx'
 import Timeline from '../components/Timeline.jsx'
-import { formatarMoeda, formatarData, statusParcela, formatarTelefone } from '../utils/formatadores.js'
+import { formatarMoeda, formatarData, statusParcela, formatarTelefone, mascaraTelefone } from '../utils/formatadores.js'
 import { ehVendaAvista } from '../utils/vendaAvista.js'
 import { gerarCarnetPDF } from '../utils/gerarPDF.js'
 
@@ -23,7 +23,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
   function abrirEdicao() {
     setForm({
       nome: cliente.nome,
-      telefone: cliente.telefone ?? '',
+      telefone: mascaraTelefone(cliente.telefone ?? ''),
       endereco: cliente.endereco ?? '',
       bairro: cliente.bairro ?? '',
       observacoes: cliente.observacoes ?? '',
