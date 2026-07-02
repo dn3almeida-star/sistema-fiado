@@ -1,3 +1,22 @@
+# Progresso — Tom de Cobrança
+
+Plano: docs/superpowers/plans/2026-07-01-tom-cobranca.md (commit 3613774)
+Spec: docs/superpowers/specs/2026-07-01-tom-cobranca-design.md
+Branch: feat/tom-cobranca (partiu de feat/saas-multi-vendedor, já inclui code-splitting + venda à vista + carnê profissional + fixes de telefone mesclados)
+Pre-flight: scan limpo, sem conflitos no plano.
+
+## Tasks
+
+Task 1: complete (commit bdc80ff, review clean). gerarMensagemCobranca ganha parâmetro tom (default 'educado'), 3 variações formais por diasAteVencimento (atrasada/hoje/futura), parcela paga ignora tom (guard estrutural, testado por igualdade completa de mensagem). Reviewer verificou diasAteVencimento é local-consistente (sem risco de fuso, mesmo padrão do bug corrigido em venda-avista). 11 testes (6 originais + 5 novos). Spec ✅, Quality ✅. Minor: pequena duplicação do bloco "(Pedido #N)" entre os branches educado/formal (aceitável nesse tamanho).
+Task 2: complete (commit 05cd490, review clean). Toggle Educado/Formal em BotaoCobranca.jsx, visível só pra cobrança (parcela não paga), sempre reseta pra Educado ao abrir o modal, troca de tom regenera a mensagem sem stale-closure. Estilo idêntico ao toggle Fiado/À Vista de NovaVenda.jsx. Reviewer traçou abrir()/trocarTom() e confirmou sem risco de estado obsoleto. 54/54 testes, build ok. Spec ✅, Quality ✅. Minor: botões de toggle não têm disabled={enviando} (janela de corrida muito estreita e de baixo risco); diferença cosmética de padding (py-2 vs py-2.5) vs NovaVenda. Visual/interação ainda não verificado por ninguém com navegador.
+
+## Revisão Final de Branch (opus)
+Confirmou fidelidade total ao plano, integração correta entre as 2 tasks (ordem de argumentos de gerarMensagemCobranca em abrir()/trocarTom()), nenhum dos 2 consumidores (CobrancasHoje.jsx, PerfilCliente.jsx) precisa mudar. Todos os achados minor das task reviews confirmados como aceitáveis, nada crítico ou importante.
+**Checklist de verificação manual apontada para o humano:** testar Formal em parcela atrasada/vence hoje/futura (só PerfilCliente mostra os 3 casos; CobrancasHoje só mostra vence-hoje); toggle sumir em parcela já paga; modal resetar pra Educado ao reabrir; edição manual do texto ser substituída ao trocar de tom; referência "(Pedido #N)" aparecer certinho no tom formal.
+**Ready to merge: Yes.**
+
+---
+
 # Progresso — Carnê Profissional — MESCLADO
 
 Plano: docs/superpowers/plans/2026-07-01-carne-profissional.md (commit 8cb41ce)
