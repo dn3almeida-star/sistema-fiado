@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react'
-import { Search, ChevronRight, ShoppingBag, Filter } from 'lucide-react'
+import { Search, ChevronRight, ShoppingBag, Filter, Calendar as CalendarIcon } from 'lucide-react'
 import { formatarMoeda, formatarData } from '../utils/formatadores.js'
 import { statusVenda } from '../utils/statusVenda.js'
 import { vendaNoPeriodo } from '../utils/filtroVendas.js'
+import { rotuloPeriodo } from '../utils/calendario.js'
 import SeletorPeriodo from './SeletorPeriodo.jsx'
 
 export default function ListaVendas({ vendas, clientes, navegar }) {
@@ -10,6 +11,7 @@ export default function ListaVendas({ vendas, clientes, navegar }) {
   const [busca, setBusca] = useState('')
   const [granularidadePeriodo, setGranularidadePeriodo] = useState('dia')
   const [menuAberto, setMenuAberto] = useState(false)
+  const [calendarioAberto, setCalendarioAberto] = useState(false)
 
   function escolherModo(novoModo) {
     setModo(novoModo)
@@ -38,6 +40,7 @@ export default function ListaVendas({ vendas, clientes, navegar }) {
   }
 
   const placeholderTexto = modo === 'cliente' ? 'Buscar por cliente…' : 'Buscar por produto…'
+  const rotuloAtual = modo === 'periodo' ? rotuloPeriodo(granularidadePeriodo, busca) : ''
 
   return (
     <div className="space-y-3">
@@ -56,9 +59,16 @@ export default function ListaVendas({ vendas, clientes, navegar }) {
             </>
           )}
           {modo === 'periodo' && (
-            <div className="flex items-center h-11 px-1 text-sm text-ink-muted font-medium">
-              Filtrando por período
-            </div>
+            <button
+              type="button"
+              onClick={() => setCalendarioAberto(true)}
+              className="w-full flex items-center gap-2 h-11 px-4 border border-border rounded-2xl text-sm bg-surface shadow-sm text-left"
+            >
+              <CalendarIcon size={16} className="text-ink-muted flex-shrink-0" />
+              <span className={rotuloAtual ? 'text-ink font-medium' : 'text-ink-muted'}>
+                {rotuloAtual || 'Escolher período'}
+              </span>
+            </button>
           )}
         </div>
 
@@ -103,10 +113,13 @@ export default function ListaVendas({ vendas, clientes, navegar }) {
 
       {modo === 'periodo' && (
         <SeletorPeriodo
+          aberto={calendarioAberto}
+          onFechar={() => setCalendarioAberto(false)}
           valor={busca}
           onSelecionar={(novaGranularidade, novoValor) => {
             setGranularidadePeriodo(novaGranularidade)
             setBusca(novoValor)
+            setCalendarioAberto(false)
           }}
         />
       )}
