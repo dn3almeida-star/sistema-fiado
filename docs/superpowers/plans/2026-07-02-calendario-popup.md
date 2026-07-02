@@ -39,9 +39,11 @@
 
 **Interfaces:**
 - Consumes: nada de outras tasks.
-- Produces: `rotuloPeriodo(granularidade, valor) → string` — `granularidade` é `'dia'|'mes'|'ano'`, `valor` é a string no formato que `vendaNoPeriodo` já usa (`'YYYY-MM-DD'`/`'YYYY-MM'`/`'YYYY'`). Retorna `''` se `valor` for vazio. Usado por `ListaVendas.jsx` (Task 3). `decadaDoAno` deixa de existir (nenhuma outra task/arquivo a usa mais).
+- Produces: `rotuloPeriodo(granularidade, valor) → string` — `granularidade` é `'dia'|'mes'|'ano'`, `valor` é a string no formato que `vendaNoPeriodo` já usa (`'YYYY-MM-DD'`/`'YYYY-MM'`/`'YYYY'`). Retorna `''` se `valor` for vazio. Usado por `ListaVendas.jsx` (Task 3).
 
-- [ ] **Step 1: Escrever os testes novos que falham (adicionar, sem remover nada ainda)**
+**Nota de sequenciamento:** `decadaDoAno` continua existindo e é usada por `src/components/SeletorPeriodo.jsx` **até a Task 2 rodar** (é a Task 2 que reescreve esse componente e para de usá-la). Por isso esta task NÃO remove `decadaDoAno` — só adiciona `rotuloPeriodo`. A remoção de `decadaDoAno` (código + testes) fica dentro da Task 2, no mesmo commit que reescreve `SeletorPeriodo.jsx`, pra nenhum commit individual deixar o build quebrado.
+
+- [ ] **Step 1: Escrever os testes novos que falham**
 
 Editar `src/utils/calendario.test.js` — trocar a linha de import:
 
@@ -106,59 +108,24 @@ export function rotuloPeriodo(granularidade, valor) {
 }
 ```
 
-- [ ] **Step 4: Rodar os testes e ver que tudo passa (incluindo o `decadaDoAno` antigo, ainda presente)**
+- [ ] **Step 4: Rodar os testes e ver que tudo passa**
 
 Run: `npm test -- calendario`
 Expected: PASS — 13 testes (4 `diasDoMes` + 1 `nomeDoMes` + 4 `decadaDoAno` + 4 `rotuloPeriodo`).
 
-- [ ] **Step 5: Remover `decadaDoAno` (órfã) e seus testes**
-
-Editar `src/utils/calendario.test.js` — remover o bloco inteiro:
-
-```js
-describe('decadaDoAno', () => {
-  it('ano no meio da década', () => {
-    expect(decadaDoAno(2026)).toBe(2020)
-  })
-  it('ano no início da década', () => {
-    expect(decadaDoAno(2020)).toBe(2020)
-  })
-  it('ano no fim da década', () => {
-    expect(decadaDoAno(2029)).toBe(2020)
-  })
-  it('outra década', () => {
-    expect(decadaDoAno(1999)).toBe(1990)
-  })
-})
-```
-
-E trocar a linha de import de volta pra sem `decadaDoAno`:
-
-```js
-import { diasDoMes, nomeDoMes, rotuloPeriodo } from './calendario.js'
-```
-
-Editar `src/utils/calendario.js` — remover a função:
-
-```js
-export function decadaDoAno(ano) {
-  return Math.floor(ano / 10) * 10
-}
-```
-
-- [ ] **Step 6: Rodar a suíte completa (garantir zero regressão)**
+- [ ] **Step 5: Rodar a suíte completa e o build (garantir zero regressão)**
 
 Run: `npm test`
-Expected: PASS — 73 testes (mesma contagem de antes: -4 de `decadaDoAno` +4 de `rotuloPeriodo`).
+Expected: PASS — 77 testes (73 de antes + 4 `rotuloPeriodo` novos; `decadaDoAno` continua presente e usada por `SeletorPeriodo.jsx`, então nada foi removido nesta task).
 
 Run: `npm run build`
-Expected: `✓ built` sem erros (confirma que nada mais importa `decadaDoAno`).
+Expected: `✓ built` sem erros.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add src/utils/calendario.js src/utils/calendario.test.js
-git commit -m "feat(vendas): add rotuloPeriodo helper and remove orphaned decadaDoAno"
+git commit -m "feat(vendas): add rotuloPeriodo helper"
 ```
 
 ---
@@ -167,9 +134,12 @@ git commit -m "feat(vendas): add rotuloPeriodo helper and remove orphaned decada
 
 **Files:**
 - Modify: `src/components/SeletorPeriodo.jsx` (reescrever o arquivo inteiro)
+- Modify: `src/utils/calendario.js` (remover `decadaDoAno` — ver Step 2)
+- Modify: `src/utils/calendario.test.js` (remover os testes de `decadaDoAno` — ver Step 2)
 
 **Interfaces:**
-- Consumes: `diasDoMes`, `nomeDoMes` de `src/utils/calendario.js` (`decadaDoAno` não é mais usado — Task 1). `motion`, `AnimatePresence` de `framer-motion` (já é dependência do projeto).
+- Consumes: `diasDoMes`, `nomeDoMes` de `src/utils/calendario.js`. `motion`, `AnimatePresence` de `framer-motion` (já é dependência do projeto).
+- Esta task é quem torna `decadaDoAno` (de `src/utils/calendario.js`, criada numa feature anterior) órfã — o novo `SeletorPeriodo.jsx` não a usa mais (a aba Ano agora começa no ano atual, não numa década fixa). Por isso a remoção de `decadaDoAno` acontece **nesta task**, no mesmo commit que para de usá-la — não na Task 1, que rodou antes desta e não pode deixar o build quebrado.
 - Produces: componente default `SeletorPeriodo({ aberto, onFechar, valor, onSelecionar })` — **contrato novo**, usado por `ListaVendas.jsx` (Task 3):
   - `aberto` (boolean): controla a visibilidade do popup. O componente nunca desmonta por conta disso — só alterna entre mostrar o modal e não mostrar nada.
   - `onFechar` (function): chamado ao fechar explicitamente (botão X), sem selecionar nada.
@@ -431,21 +401,59 @@ export default function SeletorPeriodo({ aberto, onFechar, valor, onSelecionar }
 - A pílula deslizante usa `layoutId` do `framer-motion` — só a aba ativa renderiza o `motion.div` da pílula; ao trocar de aba, o `framer-motion` anima a transição de posição automaticamente porque o `layoutId` é o mesmo.
 - A aba Ano não usa mais `decadaDoAno` — a página inicial é sempre o ano atual, e a seta "anterior" fica desabilitada (`disabled`, com opacidade reduzida) quando já está na primeira página.
 
-- [ ] **Step 2: Verificar o build**
+- [ ] **Step 2: Remover `decadaDoAno` (agora órfã) e seus testes**
+
+Editar `src/utils/calendario.test.js` — remover o bloco inteiro:
+
+```js
+describe('decadaDoAno', () => {
+  it('ano no meio da década', () => {
+    expect(decadaDoAno(2026)).toBe(2020)
+  })
+  it('ano no início da década', () => {
+    expect(decadaDoAno(2020)).toBe(2020)
+  })
+  it('ano no fim da década', () => {
+    expect(decadaDoAno(2029)).toBe(2020)
+  })
+  it('outra década', () => {
+    expect(decadaDoAno(1999)).toBe(1990)
+  })
+})
+```
+
+E trocar a linha de import de volta pra sem `decadaDoAno`:
+
+```js
+import { diasDoMes, nomeDoMes, rotuloPeriodo } from './calendario.js'
+```
+
+Editar `src/utils/calendario.js` — remover a função:
+
+```js
+export function decadaDoAno(ano) {
+  return Math.floor(ano / 10) * 10
+}
+```
+
+- [ ] **Step 3: Verificar o build**
 
 Run: `npm run build`
-Expected: `✓ built` sem erros.
+Expected: `✓ built` sem erros (confirma que nada mais importa `decadaDoAno`).
 
-- [ ] **Step 3: Rodar a suíte de testes (garantir zero regressão)**
+- [ ] **Step 4: Rodar a suíte de testes (garantir zero regressão)**
 
 Run: `npm test`
-Expected: PASS — mesma contagem da Task 1 (73 testes; nenhum automatizado pra este componente, seguindo a convenção do projeto).
+Expected: PASS — 73 testes (77 depois da Task 1, -4 de `decadaDoAno` removida agora).
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add src/components/SeletorPeriodo.jsx
-git commit -m "feat(vendas): turn SeletorPeriodo into a popup with 5-minute navigation memory and visual polish"
+git add src/components/SeletorPeriodo.jsx src/utils/calendario.js src/utils/calendario.test.js
+git commit -m "feat(vendas): turn SeletorPeriodo into a popup with 5-minute navigation memory and visual polish
+
+Also removes decadaDoAno, now orphaned since the Ano tab starts from
+the current year instead of a fixed decade."
 ```
 
 ---
