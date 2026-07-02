@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { diasDoMes, nomeDoMes, decadaDoAno, rotuloPeriodo } from './calendario.js'
+import { diasDoMes, nomeDoMes, rotuloPeriodo } from './calendario.js'
 
 describe('diasDoMes', () => {
   it('julho de 2026 tem 31 dias, começando numa quarta (3 slots vazios antes do dia 1)', () => {
@@ -42,21 +42,6 @@ describe('nomeDoMes', () => {
     expect(nomeDoMes(10)).toBe('Outubro')
     expect(nomeDoMes(11)).toBe('Novembro')
     expect(nomeDoMes(12)).toBe('Dezembro')
-  })
-})
-
-describe('decadaDoAno', () => {
-  it('ano no meio da década', () => {
-    expect(decadaDoAno(2026)).toBe(2020)
-  })
-  it('ano no início da década', () => {
-    expect(decadaDoAno(2020)).toBe(2020)
-  })
-  it('ano no fim da década', () => {
-    expect(decadaDoAno(2029)).toBe(2020)
-  })
-  it('outra década', () => {
-    expect(decadaDoAno(1999)).toBe(1990)
   })
 })
 

@@ -17,10 +17,6 @@ export function nomeDoMes(mes) {
   return NOMES_MESES[mes - 1]
 }
 
-export function decadaDoAno(ano) {
-  return Math.floor(ano / 10) * 10
-}
-
 export function rotuloPeriodo(granularidade, valor) {
   if (!valor) return ''
   if (granularidade === 'dia') {
