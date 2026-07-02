@@ -344,50 +344,51 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                               return (
                                 <div
                                   key={p.numero}
-                                  className={`flex items-center gap-3 py-2 px-3 rounded-xl ${p.pago ? 'bg-success/10' : 'bg-surface-2'}`}
+                                  className={`space-y-2 py-2.5 px-3 rounded-xl ${p.pago ? 'bg-success/10' : 'bg-surface-2'}`}
                                 >
-                                  <button
-                                    onClick={() => {
-                                      if (!p.pago) setModalPago({ vendaId: venda.id, numeroParcela: p.numero, valor: p.valor })
-                                      else {
-                                        desmarcarParcelaPaga(venda.id, p.numero)
-                                          .then(() => mostrarToast('Parcela desmarcada', 'info'))
-                                          .catch(() => mostrarToast('Erro ao atualizar a parcela.', 'error'))
+                                  <div className="flex items-center gap-3">
+                                    <button
+                                      onClick={() => {
+                                        if (!p.pago) setModalPago({ vendaId: venda.id, numeroParcela: p.numero, valor: p.valor })
+                                        else {
+                                          desmarcarParcelaPaga(venda.id, p.numero)
+                                            .then(() => mostrarToast('Parcela desmarcada', 'info'))
+                                            .catch(() => mostrarToast('Erro ao atualizar a parcela.', 'error'))
+                                        }
+                                      }}
+                                      className="flex-shrink-0 min-h-touch min-w-touch flex items-center justify-center"
+                                    >
+                                      {p.pago
+                                        ? <CheckCircle size={22} className="text-success" />
+                                        : <Circle size={22} className="text-ink-muted" />
                                       }
-                                    }}
-                                    className="flex-shrink-0 min-h-touch min-w-touch flex items-center justify-center"
-                                  >
-                                    {p.pago
-                                      ? <CheckCircle size={22} className="text-success" />
-                                      : <Circle size={22} className="text-ink-muted" />
-                                    }
-                                  </button>
-                                  <div className="flex-1 min-w-0">
-                                    <p className={`text-sm font-medium ${p.pago ? 'text-ink-muted line-through' : 'text-ink'}`}>
-                                      Parcela {p.numero} — {formatarData(p.vencimento)}
+                                    </button>
+                                    <p className={`flex-1 min-w-0 text-sm font-medium ${p.pago ? 'text-ink-muted line-through' : 'text-ink'}`}>
+                                      Parcela {p.numero}
                                     </p>
-                                  </div>
-                                  <div className="flex items-center gap-2 flex-shrink-0">
-                                    <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${st.bg} ${st.texto}`}>
+                                    <span className={`text-xs px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${st.bg} ${st.texto}`}>
                                       {st.label}
                                     </span>
-                                    <span className={`text-sm font-bold tabular-nums ${p.pago ? 'text-ink-muted' : 'text-ink'}`}>
+                                    <span className={`text-sm font-bold tabular-nums flex-shrink-0 ${p.pago ? 'text-ink-muted' : 'text-ink'}`}>
                                       {formatarMoeda(p.valor)}
                                     </span>
                                   </div>
-                                  <BotaoCobranca
-                                    parcela={p}
-                                    cliente={cliente}
-                                    venda={venda}
-                                    onRegistrar={async () => {
-                                      try {
-                                        await registrarCobranca(venda.id, p.numero)
-                                        mostrarToast('✓ Cobrança registrada')
-                                      } catch {
-                                        mostrarToast('Erro ao registrar cobrança.', 'error')
-                                      }
-                                    }}
-                                  />
+                                  <div className="flex items-center justify-between gap-2 pl-9">
+                                    <span className="text-xs text-ink-muted">{formatarData(p.vencimento)}</span>
+                                    <BotaoCobranca
+                                      parcela={p}
+                                      cliente={cliente}
+                                      venda={venda}
+                                      onRegistrar={async () => {
+                                        try {
+                                          await registrarCobranca(venda.id, p.numero)
+                                          mostrarToast('✓ Cobrança registrada')
+                                        } catch {
+                                          mostrarToast('Erro ao registrar cobrança.', 'error')
+                                        }
+                                      }}
+                                    />
+                                  </div>
                                 </div>
                               )
                             })}

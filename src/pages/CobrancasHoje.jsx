@@ -3,16 +3,15 @@ import { motion } from 'framer-motion'
 import { Bell } from 'lucide-react'
 import BotaoCobranca from '../components/BotaoCobranca.jsx'
 import EstadoVazio from '../components/EstadoVazio.jsx'
-import { formatarMoeda, formatarData, hoje } from '../utils/formatadores.js'
+import { formatarMoeda, formatarData, diasAteVencimento } from '../utils/formatadores.js'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
 
 export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobranca, mostrarToast }) {
   const cobrancas = useMemo(() => {
-    const hj = hoje()
     const lista = []
     vendas.forEach(venda => {
       venda.parcelas.forEach(parcela => {
-        if (parcela.pago || parcela.vencimento !== hj) return
+        if (parcela.pago || diasAteVencimento(parcela.vencimento) > 0) return
         const cliente = clientes.find(c => c.id === venda.clienteId)
         if (cliente) lista.push({ cliente, parcela, venda })
       })
@@ -40,7 +39,7 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
         <>
           <div className="bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3">
             <p className="text-sm text-orange-800 font-medium">
-              <strong>{cobrancas.length}</strong> {cobrancas.length === 1 ? 'parcela vence' : 'parcelas vencem'} hoje.
+              <strong>{cobrancas.length}</strong> {cobrancas.length === 1 ? 'parcela pendente' : 'parcelas pendentes'} (hoje ou atrasada{cobrancas.length === 1 ? '' : 's'}).
             </p>
           </div>
 
