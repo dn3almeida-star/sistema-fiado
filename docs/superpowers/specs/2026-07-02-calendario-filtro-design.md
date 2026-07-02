@@ -46,7 +46,7 @@ D  S  T  Q  Q  S  S           ← grade (dias, meses, ou anos)
 
 ### Aba Ano
 - Cabeçalho: `‹ {década, ex: 2020–2029} ›`, com setas pra década anterior/seguinte.
-- Grade de 3 colunas × 4 linhas com os 12 anos daquela década.
+- Grade de 2 colunas × 5 linhas com os 10 anos daquela década (ex: década 2020 → 2020, 2021, ..., 2029).
 - Ano selecionado com fundo verde. Tocar num ano → aplica o filtro (aquele ano inteiro). Tocar de novo → desmarca.
 
 ### Trocar de aba
