@@ -3,18 +3,18 @@ import { Search, ChevronRight, ShoppingBag, Filter } from 'lucide-react'
 import { formatarMoeda, formatarData } from '../utils/formatadores.js'
 import { statusVenda } from '../utils/statusVenda.js'
 import { vendaNoPeriodo } from '../utils/filtroVendas.js'
+import SeletorPeriodo from './SeletorPeriodo.jsx'
 
 export default function ListaVendas({ vendas, clientes, navegar }) {
   const [modo, setModo] = useState('cliente')
   const [busca, setBusca] = useState('')
+  const [granularidadePeriodo, setGranularidadePeriodo] = useState('dia')
   const [menuAberto, setMenuAberto] = useState(false)
-  const [submenuPeriodo, setSubmenuPeriodo] = useState(false)
 
   function escolherModo(novoModo) {
     setModo(novoModo)
     setBusca('')
     setMenuAberto(false)
-    setSubmenuPeriodo(false)
   }
 
   const lista = useMemo(() => {
@@ -23,10 +23,10 @@ export default function ListaVendas({ vendas, clientes, navegar }) {
       .filter(({ venda, cliente }) => {
         if (modo === 'cliente') return (cliente?.nome || '').toLowerCase().includes(busca.toLowerCase())
         if (modo === 'produto') return (venda.itens || '').toLowerCase().includes(busca.toLowerCase())
-        return vendaNoPeriodo(venda, modo, busca)
+        return vendaNoPeriodo(venda, granularidadePeriodo, busca)
       })
       .sort((a, b) => new Date(b.venda.criadaEm) - new Date(a.venda.criadaEm))
-  }, [vendas, clientes, busca, modo])
+  }, [vendas, clientes, busca, modo, granularidadePeriodo])
 
   if (vendas.length === 0) {
     return (
@@ -43,47 +43,29 @@ export default function ListaVendas({ vendas, clientes, navegar }) {
     <div className="space-y-3">
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none" />
           {(modo === 'cliente' || modo === 'produto') && (
-            <input
-              type="text"
-              placeholder={placeholderTexto}
-              value={busca}
-              onChange={e => setBusca(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-border rounded-2xl text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm"
-            />
+            <>
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none" />
+              <input
+                type="text"
+                placeholder={placeholderTexto}
+                value={busca}
+                onChange={e => setBusca(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-border rounded-2xl text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm"
+              />
+            </>
           )}
-          {modo === 'dia' && (
-            <input
-              type="date"
-              value={busca}
-              onChange={e => setBusca(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-border rounded-2xl text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm"
-            />
-          )}
-          {modo === 'mes' && (
-            <input
-              type="month"
-              value={busca}
-              onChange={e => setBusca(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-border rounded-2xl text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm"
-            />
-          )}
-          {modo === 'ano' && (
-            <input
-              type="number"
-              placeholder="Ano (ex: 2026)"
-              value={busca}
-              onChange={e => setBusca(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-border rounded-2xl text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm tabular-nums"
-            />
+          {modo === 'periodo' && (
+            <div className="flex items-center h-11 px-1 text-sm text-ink-muted font-medium">
+              Filtrando por período
+            </div>
           )}
         </div>
 
         <div className="relative">
           <button
             type="button"
-            onClick={() => { setMenuAberto(a => !a); setSubmenuPeriodo(false) }}
+            onClick={() => setMenuAberto(a => !a)}
             className={`flex items-center justify-center w-11 h-11 rounded-2xl border transition-colors ${
               modo !== 'cliente' ? 'bg-primary border-primary text-white' : 'bg-surface border-border text-ink-muted'
             }`}
@@ -93,59 +75,41 @@ export default function ListaVendas({ vendas, clientes, navegar }) {
 
           {menuAberto && (
             <div className="absolute right-0 mt-2 w-44 bg-surface border border-border rounded-2xl shadow-sm p-1.5 z-10">
-              {!submenuPeriodo ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => escolherModo('cliente')}
-                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-ink active:bg-surface-2"
-                  >
-                    Cliente
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => escolherModo('produto')}
-                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-ink active:bg-surface-2"
-                  >
-                    Produto
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSubmenuPeriodo(true)}
-                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-ink active:bg-surface-2"
-                  >
-                    Período
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => escolherModo('dia')}
-                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-ink active:bg-surface-2"
-                  >
-                    Dia
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => escolherModo('mes')}
-                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-ink active:bg-surface-2"
-                  >
-                    Mês
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => escolherModo('ano')}
-                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-ink active:bg-surface-2"
-                  >
-                    Ano
-                  </button>
-                </>
-              )}
+              <button
+                type="button"
+                onClick={() => escolherModo('cliente')}
+                className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-ink active:bg-surface-2"
+              >
+                Cliente
+              </button>
+              <button
+                type="button"
+                onClick={() => escolherModo('produto')}
+                className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-ink active:bg-surface-2"
+              >
+                Produto
+              </button>
+              <button
+                type="button"
+                onClick={() => escolherModo('periodo')}
+                className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-ink active:bg-surface-2"
+              >
+                Período
+              </button>
             </div>
           )}
         </div>
       </div>
+
+      {modo === 'periodo' && (
+        <SeletorPeriodo
+          valor={busca}
+          onSelecionar={(novaGranularidade, novoValor) => {
+            setGranularidadePeriodo(novaGranularidade)
+            setBusca(novoValor)
+          }}
+        />
+      )}
 
       {lista.length === 0 ? (
         <p className="text-center text-ink-muted py-6 text-sm">Nenhuma venda encontrada</p>
