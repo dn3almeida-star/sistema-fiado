@@ -3,7 +3,7 @@ import { corPdfStatusParcela } from './corPdfStatus.js'
 
 const MARGEM = 10
 const LARGURA = 190
-const ALTURA_BLOCO_PARCELA = 16
+const ALTURA_BLOCO_PARCELA = 21
 const LIMITE_PAGINA = 260
 
 export async function gerarCarnetPDF(cliente, venda, loja = {}) {
@@ -135,19 +135,19 @@ export async function gerarCarnetPDF(cliente, venda, loja = {}) {
     doc.text(cor.label, margem + 160, y + 4, { align: 'center' })
     doc.setTextColor(0, 0, 0)
 
-    // Linha 2: canhoto de assinatura
+    // Linha 2: canhoto de assinatura (espaço maior acima da linha para assinar)
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(9)
     doc.setTextColor(100, 100, 100)
-    doc.text(`Parcela ${p.numero}/${totalParcelas} — Assinatura:`, margem, y + 10)
+    doc.text(`Parcela ${p.numero}/${totalParcelas} — Assinatura:`, margem, y + 15)
     doc.setDrawColor(180, 180, 180)
-    doc.line(margem + 60, y + 10, margem + largura, y + 10)
+    doc.line(margem + 60, y + 15, margem + largura, y + 15)
     doc.setTextColor(0, 0, 0)
 
     // Linha de corte pontilhada — fronteira entre esta parcela (completa) e a próxima
     doc.setDrawColor(180, 180, 180)
     doc.setLineDashPattern([1, 1], 0)
-    doc.line(margem, y + 13, margem + largura, y + 13)
+    doc.line(margem, y + 18, margem + largura, y + 18)
     doc.setLineDashPattern([], 0)
 
     y += ALTURA_BLOCO_PARCELA
