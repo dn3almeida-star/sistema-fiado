@@ -7,24 +7,15 @@ export default function BotaoCobranca({ parcela, cliente, venda, onRegistrar }) 
   const [mensagem, setMensagem] = useState('')
   const [titulo, setTitulo] = useState('')
   const [enviando, setEnviando] = useState(false)
-  const [tom, setTom] = useState('educado')
 
   const semTelefone = !cliente?.telefone
 
   function abrir() {
     if (semTelefone) return
-    setTom('educado')
-    const g = gerarMensagemCobranca(parcela, cliente, venda, 'educado')
+    const g = gerarMensagemCobranca(parcela, cliente, venda)
     setMensagem(g.mensagem)
     setTitulo(g.titulo)
     setAberto(true)
-  }
-
-  function trocarTom(novoTom) {
-    setTom(novoTom)
-    const g = gerarMensagemCobranca(parcela, cliente, venda, novoTom)
-    setMensagem(g.mensagem)
-    setTitulo(g.titulo)
   }
 
   async function enviar() {
@@ -66,29 +57,6 @@ export default function BotaoCobranca({ parcela, cliente, venda, onRegistrar }) 
                 <X size={20} />
               </button>
             </div>
-
-            {!parcela.pago && (
-              <div className="flex gap-2 bg-surface-2 p-1 rounded-2xl">
-                <button
-                  type="button"
-                  onClick={() => trocarTom('educado')}
-                  className={`flex-1 py-2 rounded-xl font-semibold text-sm transition-colors ${
-                    tom === 'educado' ? 'bg-primary text-white shadow-sm' : 'text-ink-muted'
-                  }`}
-                >
-                  Educado
-                </button>
-                <button
-                  type="button"
-                  onClick={() => trocarTom('formal')}
-                  className={`flex-1 py-2 rounded-xl font-semibold text-sm transition-colors ${
-                    tom === 'formal' ? 'bg-primary text-white shadow-sm' : 'text-ink-muted'
-                  }`}
-                >
-                  Formal
-                </button>
-              </div>
-            )}
 
             <textarea
               value={mensagem}
