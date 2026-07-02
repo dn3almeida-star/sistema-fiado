@@ -154,7 +154,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
               type="tel"
               inputMode="numeric"
               value={form.telefone}
-              onChange={e => setForm(f => ({ ...f, telefone: e.target.value }))}
+              onChange={e => setForm(f => ({ ...f, telefone: mascaraTelefone(e.target.value) }))}
               placeholder="(00)00000-0000"
               className="w-full bg-white/15 text-white placeholder-white/50 px-4 py-3 rounded-xl text-base outline-none focus:bg-white/25 transition-colors"
             />
