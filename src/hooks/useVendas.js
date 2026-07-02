@@ -3,20 +3,26 @@ import { supabase } from '../lib/supabase.js'
 
 const SELECT = 'id, clienteId:cliente_id, itens, valorTotal:valor_total, entrada, parcelas, criadaEm:criada_em'
 
-export function useVendas() {
+export function useVendas(usuario) {
   const [vendas, setVendas] = useState([])
   const [carregando, setCarregando] = useState(true)
 
   const recarregar = useCallback(async () => {
+    if (!usuario) {
+      setVendas([])
+      setCarregando(false)
+      return
+    }
     const { data, error } = await supabase
       .from('vendas')
       .select(SELECT)
       .order('criada_em', { ascending: false })
     if (!error) setVendas(data ?? [])
     setCarregando(false)
-  }, [])
+  }, [usuario])
 
   useEffect(() => {
+    setCarregando(true)
     recarregar()
   }, [recarregar])
 

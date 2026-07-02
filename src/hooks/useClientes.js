@@ -1,20 +1,26 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase.js'
 
-export function useClientes() {
+export function useClientes(usuario) {
   const [clientes, setClientes] = useState([])
   const [carregando, setCarregando] = useState(true)
 
   const recarregar = useCallback(async () => {
+    if (!usuario) {
+      setClientes([])
+      setCarregando(false)
+      return
+    }
     const { data, error } = await supabase
       .from('clientes')
       .select('id, nome, telefone, endereco, bairro, observacoes')
       .order('nome', { ascending: true })
     if (!error) setClientes(data ?? [])
     setCarregando(false)
-  }, [])
+  }, [usuario])
 
   useEffect(() => {
+    setCarregando(true)
     recarregar()
   }, [recarregar])
 

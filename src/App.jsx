@@ -29,9 +29,9 @@ export default function App() {
   const [toastKey, setToastKey] = useState(0)
   const toastTimer = useRef(null)
 
-  const clientesHook = useClientes()
-  const vendasHook = useVendas()
   const { session, usuario, carregando: carregandoAuth, recuperandoSenha } = useAuth()
+  const clientesHook = useClientes(usuario)
+  const vendasHook = useVendas(usuario)
   const profileHook = useProfile(usuario)
 
   function navegar(pagina, params = {}) {
