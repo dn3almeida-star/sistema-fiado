@@ -1,4 +1,4 @@
-# Progresso — Tom de Cobrança
+# Progresso — Tom de Cobrança — MESCLADO
 
 Plano: docs/superpowers/plans/2026-07-01-tom-cobranca.md (commit 3613774)
 Spec: docs/superpowers/specs/2026-07-01-tom-cobranca-design.md
@@ -14,6 +14,8 @@ Task 2: complete (commit 05cd490, review clean). Toggle Educado/Formal em BotaoC
 Confirmou fidelidade total ao plano, integração correta entre as 2 tasks (ordem de argumentos de gerarMensagemCobranca em abrir()/trocarTom()), nenhum dos 2 consumidores (CobrancasHoje.jsx, PerfilCliente.jsx) precisa mudar. Todos os achados minor das task reviews confirmados como aceitáveis, nada crítico ou importante.
 **Checklist de verificação manual apontada para o humano:** testar Formal em parcela atrasada/vence hoje/futura (só PerfilCliente mostra os 3 casos; CobrancasHoje só mostra vence-hoje); toggle sumir em parcela já paga; modal resetar pra Educado ao reabrir; edição manual do texto ser substituída ao trocar de tom; referência "(Pedido #N)" aparecer certinho no tom formal.
 **Ready to merge: Yes.**
+
+**MESCLADO em feat/saas-multi-vendedor @ 342db23 (fast-forward). Branch feat/tom-cobranca deletada. 54/54 testes, build ok. Pendente: verificação visual manual do toggle (ver checklist acima) antes/depois do deploy.**
 
 ---
 
