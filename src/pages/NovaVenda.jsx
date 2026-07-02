@@ -5,7 +5,7 @@ import { criarParcelaAvista } from '../utils/vendaAvista.js'
 import { formatarMoeda, formatarData, hoje } from '../utils/formatadores.js'
 import { haptic } from '../utils/haptic.js'
 
-export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecionado, navegar }) {
+export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecionado, navegar, toggle }) {
   const [etapa, setEtapa] = useState(clientePreSelecionado ? 2 : 1)
   const [clienteId, setClienteId] = useState(clientePreSelecionado || '')
   const [buscaCliente, setBuscaCliente] = useState('')
@@ -108,6 +108,8 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
           <span className="text-sm font-medium">Cancelar</span>
         </button>
         <h1 className="text-xl font-bold">Nova Venda</h1>
+
+        {toggle && <div className="mt-3">{toggle}</div>}
 
         {/* Progresso */}
         <div className="flex gap-2 mt-3">
