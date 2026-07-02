@@ -1,6 +1,6 @@
 {
   "name": "Crediário Digital",
-  "short_name": "Crediário",
+  "short_name": "Crediário Digital",
   "description": "Controle de vendas a prazo (fiado) para vendedor informal",
   "start_url": "/",
   "display": "standalone",
