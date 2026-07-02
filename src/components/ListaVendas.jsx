@@ -83,7 +83,7 @@ export default function ListaVendas({ vendas, clientes, navegar }) {
         <div className="relative">
           <button
             type="button"
-            onClick={() => setMenuAberto(a => !a)}
+            onClick={() => { setMenuAberto(a => !a); setSubmenuPeriodo(false) }}
             className={`flex items-center justify-center w-11 h-11 rounded-2xl border transition-colors ${
               modo !== 'cliente' ? 'bg-primary border-primary text-white' : 'bg-surface border-border text-ink-muted'
             }`}
