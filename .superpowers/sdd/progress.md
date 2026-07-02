@@ -1,24 +1,34 @@
-# Progresso — Calendário Visual no Filtro de Período
+# Progresso — Calendário como Popup + Polimento Visual
 
-Plano: docs/superpowers/plans/2026-07-02-calendario-filtro.md (base e973cca)
-Spec: docs/superpowers/specs/2026-07-02-calendario-filtro-design.md (grade de Ano corrigida pra 2x5/10 anos antes do plano)
+Plano: docs/superpowers/plans/2026-07-02-calendario-popup.md (base aab2fae)
+Spec: docs/superpowers/specs/2026-07-02-calendario-popup-design.md
 Branch: feat/saas-multi-vendedor
 Pre-flight: scan limpo, sem conflitos no plano.
 
+**Nota:** esta feature usa numeração de Task 1/2/3 igual à feature anterior ("Calendário Visual no Filtro de Período", já mesclada — ver histórico abaixo). São tasks DIFERENTES. Este bloco no topo é o que vale pra sessão atual.
+
 ## Tasks
 
-Task 1: complete (commit 532a2f4, review clean). diasDoMes/nomeDoMes/decadaDoAno — só Date nativo, sem lib de datas. Reviewer traçou à mão o cálculo de dia da semana (1º julho/2026 = quarta, confirmado por contagem manual) e bissexto (fev/2028=29 via new Date(ano,2,0), fev/2026=28). 9 testes focados + 73 na suíte completa (64+9). Spec ✅, Quality ✅. Nota: o plano dizia "12 testes" no texto (contagem errada minha, contando asserts como testes) — não é defeito real, só imprecisão de documentação no plano.
-Task 2: complete (commit 3ad0de3, review clean). SeletorPeriodo.jsx: 3 abas (Dia/Mês/Ano) com estado de navegação independente por aba (confirmado sem cross-read entre elas), Dia default no mês atual, Ano com grade exata 2x5/10 anos, rollover de mês/ano em ambas direções traçado à mão, seleção/desseleção constrói o valor certo. Build ok, 73 testes. Spec ✅, Quality ✅. Minors: key={i} em vez de valor estável na grade de Dia (Ano já faz certo); condição de rollover lê estado fechado em vez de updater funcional (sem bug real na prática); new Date() não memoizado (barato, inofensivo). Visual/interação ainda não verificado por ninguém.
-Task 3: complete (commit 5d785d3, review clean). ListaVendas.jsx: modo restrito a cliente/produto/periodo, menu volta a 1 nível, novo granularidadePeriodo (default 'dia') alimentado só pelo onSelecionar do SeletorPeriodo. vendaNoPeriodo recebe granularidadePeriodo (não modo) — reviewer confirmou não é o bug clássico de argumento errado. useMemo com deps completas. Reviewer confirmou (grep + leitura completa) zero resíduo do submenuPeriodo antigo. Build ok, 73 testes. Spec ✅, Quality ✅. Nota de tooling: o script review-package truncou o diff no meio de um hunk — reviewer contornou lendo o arquivo completo, sem impacto na revisão (é limitação da ferramenta do skill, fora do escopo desta feature).
+Task 1: complete (commits 1e8b5f9 + 9e75bfc, review clean). Corrigido defeito de sequenciamento no plano (decadaDoAno é usada por SeletorPeriodo.jsx atual até a Task 2 rodar — removê-la na Task 1 quebrava o build). Plano ajustado: Task 1 só adiciona rotuloPeriodo; remoção de decadaDoAno migrou pra Task 2. rotuloPeriodo reusa nomeDoMes, sem duplicar tabela de meses. Reviewer confirmou (via diff) decadaDoAno 100% intocada. 77 testes (73+4). Spec ✅, Quality ✅. Minor: rotuloPeriodo não valida formato malformado de valor (aceitável, bate com o brief).
+Task 2: complete (commit 9534ef4, review clean). SeletorPeriodo.jsx: novo contrato {aberto, onFechar, valor, onSelecionar}, popup via AnimatePresence (sem early return — hooks ficam incondicionais no topo), timer de 5min traçado à mão nos 3 casos (primeira abertura/<5min/>=5min) via par de refs (ultimoFechamento + abertoAnterior, ordem leitura-antes-escrita confirmada correta). Aba Ano começa no ano atual (Math.max + disabled redundantes no limite inferior). decadaDoAno removida de vez (grep confirma zero referência). Dias circulares, anel de "hoje" só quando não selecionado, pílula deslizante via layoutId, transições de entrada/saída do modal. Build ok, 73 testes (77-4). Spec ✅, Quality ✅. Minor: hoje/anoAtual não reativo a virada de ano com popup aberto (edge case extremo, já assim no brief).
+Task 3: complete (commit 90c0ea7, review clean). ListaVendas.jsx: botão clicável no lugar do texto estático "Filtrando por período", mostra rotuloPeriodo(granularidadePeriodo, busca) ou placeholder. SeletorPeriodo continua renderizado condicionado só a modo==='periodo' (reviewer confirmou via linha de contexto — não ficou adicionalmente condicionado a calendarioAberto, o que destruiria a memória de 5min da Task 2). onFechar só fecha; onSelecionar fecha E atualiza o filtro. Diffstat reconciliado (17/-4), zero mudança fora do esperado. Build ok, 73 testes. Spec ✅, Quality ✅. Sem achados.
 
 ## AS 3 tasks completas.
 
 ## Revisão Final de Branch (opus)
-Ready to merge: Yes. Sem críticas/importantes. Verificou o contrato de string granularidade ponta a ponta com vendaNoPeriodo (fora do diff) — sem drift de case/grafia. Formatos de valor batem exatamente (YYYY-MM-DD/YYYY-MM/YYYY). Confirmou consistência de fuso horário (dataLocal usa getters locais, calendário semeia de new Date() local — sem risco de virada de dia). Reset-por-remontagem confirmado (sem key, sem atalho pra modo='periodo' que pule o reset do busca). Desseleção limpa. Zero código órfão do menu antigo (grep confirma). Sem migração de banco. 73 testes, build ok.
-Minors triados como aceitáveis: key={i} na grade de Dia (Ano/Mês já usam key estável); rollover lê estado fechado em vez de updater funcional (sem bug real); new Date() não memoizado; sem JSDoc (convenção do projeto).
-**Checklist de QA manual pro humano:** entrar fresco (abre em Dia, mês atual, nada selecionado); selecionar/desselecionar dia com venda de horário tarde da noite (fronteira de fuso); navegação com virada de ano (dez→jan e jan→dez); aba Mês (navegar anos, selecionar mês); aba Ano (grade 2x5/10 anos, navegar décadas); navegação independente por aba (Dia em mar/2025, Mês em 2023, Ano nos 2010s, voltar pra Dia deve manter mar/2025); reset ao trocar pra Cliente e voltar pra Período; troca de aba com seleção ativa não mostra destaque errado no outro formato.
+Ready to merge: Yes. Sem críticas/importantes. Verificou a garantia mais crítica: SeletorPeriodo continua renderizado condicionado só a modo==='periodo' (não a calendarioAberto) — a memória de 5min sobrevive de verdade ao fechar/reabrir o popup. Traçou o round-trip completo (botão→popup→seleção→fecha→rótulo atualiza) nos arquivos reais. decadaDoAno sem consumidor órfão em lugar nenhum (grep em src/ inteiro). Zero resíduo do design antigo (inline, sem popup). framer-motion confirmado pré-existente no package.json, sem lib nova, sem migração. Ano trava no ano atual (seta desabilitada), Dia/Mês navegam livre pro passado.
+Minors aceitos como estão: botão X sem type="button" (sem form ao redor, inofensivo); desselecionar fecha o popup e limpa o filtro (comportamento do próprio contrato de toggle, não um bug); rotuloPeriodo sem validação de formato malformado; reset-effect não reativo a virada real de ano/mês com popup aberto (edge case extremo).
+**Checklist de QA manual pro humano:** round-trip abrir→escolher→rótulo atualiza (nos 3 modos); pílula deslizando ao trocar aba (sem corte abrupto); dias circulares + anel de hoje (distinto do selecionado); trava no ano atual na aba Ano; Dia/Mês navegam pro passado normalmente; memória de 5min mantém posição em reabertura rápida SEM sair do modo Período; memória reseta depois de 5+ min (ou fast-forward no DevTools); fechar sem selecionar nunca muda o filtro/lista já aplicados.
 
 ## Deploy pendente.
+
+---
+
+# Progresso — Calendário Visual no Filtro de Período — MESCLADO (feature anterior, mesma branch)
+
+Plano: docs/superpowers/plans/2026-07-02-calendario-filtro.md (base e973cca)
+3 tasks completas, revisão final "Ready to merge: Yes", deploy feito.
+Ledger detalhado desta feature arquivado — ver `git log` nos commits de docs entre e973cca e 5d785d3 se precisar dos detalhes de cada task/review.
 
 ---
 
