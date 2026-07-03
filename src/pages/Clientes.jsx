@@ -211,7 +211,7 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
                   {saldo > 0 && (
                     <div className="text-right">
                       <span className="text-[11px] text-accent font-semibold">R$</span>
-                      <span className="text-sm font-bold text-ink tabular-nums ml-0.5">
+                      <span className="font-ledger text-sm font-semibold text-ink tabular-nums ml-0.5">
                         {saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     </div>

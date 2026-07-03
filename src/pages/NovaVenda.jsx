@@ -290,7 +290,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
                     <div key={p.numero} className="flex justify-between items-center text-sm">
                       <span className="text-ink-muted font-medium">Parcela {p.numero}</span>
                       <span className="text-ink-muted">{formatarData(p.vencimento)}</span>
-                      <span className="font-bold text-ink tabular-nums">{formatarMoeda(p.valor)}</span>
+                      <span className="font-ledger font-semibold text-ink tabular-nums">{formatarMoeda(p.valor)}</span>
                     </div>
                   ))}
                 </div>
@@ -298,7 +298,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
                   <span className="text-ink-muted font-medium">Total parcelado</span>
                   <div>
                     <span className="text-accent text-xs font-semibold">R$ </span>
-                    <span className="font-bold text-primary tabular-nums">
+                    <span className="font-ledger font-semibold text-primary tabular-nums">
                       {parcelasPreview.reduce((a, p) => a + p.valor, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </span>
                   </div>

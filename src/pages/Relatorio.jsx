@@ -70,6 +70,7 @@ export default function Relatorio({ clientes, vendas }) {
               sub="saldo devedor total"
               icone={DollarSign}
               cor="primary"
+              moeda
             />
             <CardResumo
               titulo={`Recebido em ${new Date().toLocaleDateString('pt-BR', { month: 'long' })}`}
@@ -77,6 +78,7 @@ export default function Relatorio({ clientes, vendas }) {
               sub="parcelas pagas no mês"
               icone={TrendingUp}
               cor="success"
+              moeda
             />
             <CardResumo
               titulo="Em Atraso (valor)"
@@ -84,6 +86,7 @@ export default function Relatorio({ clientes, vendas }) {
               sub={`${stats.clientesComAtraso} cliente${stats.clientesComAtraso !== 1 ? 's' : ''} com atraso`}
               icone={TrendingDown}
               cor={stats.totalAtraso > 0 ? 'danger' : 'success'}
+              moeda
             />
             <CardResumo
               titulo="Clientes Em Dia"

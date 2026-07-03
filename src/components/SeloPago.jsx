@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 
-export default function SeloPago({ className = '' }) {
+export default function SeloPago({ label = 'Pago', className = '' }) {
   return (
     <motion.span
       initial={{ scale: 1.5, rotate: -18, opacity: 0 }}
@@ -11,7 +11,7 @@ export default function SeloPago({ className = '' }) {
       style={{ boxShadow: '0 0 0 1px rgb(var(--surface)), 0 0 0 2px rgba(22,163,74,0.35)' }}
     >
       <Check size={12} strokeWidth={3} />
-      Pago
+      {label}
     </motion.span>
   )
 }

@@ -5,6 +5,7 @@ import { statusVenda } from '../utils/statusVenda.js'
 import { vendaNoPeriodo } from '../utils/filtroVendas.js'
 import { rotuloPeriodo } from '../utils/calendario.js'
 import SeletorPeriodo from './SeletorPeriodo.jsx'
+import SeloPago from './SeloPago.jsx'
 
 export default function ListaVendas({ vendas, clientes, navegar }) {
   const [modo, setModo] = useState('cliente')
@@ -145,14 +146,18 @@ export default function ListaVendas({ vendas, clientes, navegar }) {
                   <p className="font-semibold text-ink truncate">{nome}</p>
                   <p className="text-sm text-ink-muted truncate">{venda.itens}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs font-bold text-ink tabular-nums">{formatarMoeda(venda.valorTotal)}</span>
+                    <span className="font-ledger text-xs font-semibold text-ink tabular-nums">{formatarMoeda(venda.valorTotal)}</span>
                     <span className="text-xs text-ink-muted">{formatarData(venda.criadaEm)}</span>
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${status.classe}`}>
-                    {status.label}
-                  </span>
+                  {status.label === 'Quitada' ? (
+                    <SeloPago label="Quitada" />
+                  ) : (
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${status.classe}`}>
+                      {status.label}
+                    </span>
+                  )}
                   <ChevronRight size={16} className="text-ink-muted" />
                 </div>
               </button>

@@ -1,4 +1,4 @@
-export default function CardResumo({ titulo, valor, sub, cor = 'primary', icone: Icone }) {
+export default function CardResumo({ titulo, valor, sub, cor = 'primary', icone: Icone, moeda = false }) {
   const cores = {
     primary: { pill: 'bg-primary-50', icone: 'text-primary', valor: 'text-primary' },
     danger:  { pill: 'bg-red-50',      icone: 'text-danger',  valor: 'text-danger'  },
@@ -16,7 +16,7 @@ export default function CardResumo({ titulo, valor, sub, cor = 'primary', icone:
       )}
       <div className="flex-1 min-w-0">
         <p className="text-xs text-ink-muted font-semibold uppercase tracking-wider truncate">{titulo}</p>
-        <p className={`text-2xl font-bold ${c.valor} leading-tight tabular-nums`}>{valor}</p>
+        <p className={`${moeda ? 'font-ledger font-semibold' : 'font-bold'} text-2xl ${c.valor} leading-tight tabular-nums`}>{valor}</p>
         {sub && <p className="text-xs text-ink-muted mt-0.5">{sub}</p>}
       </div>
     </div>
