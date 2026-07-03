@@ -11,7 +11,7 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
     const lista = []
     vendas.forEach(venda => {
       venda.parcelas.forEach(parcela => {
-        if (parcela.pago || diasAteVencimento(parcela.vencimento) > 7) return
+        if (parcela.pago) return
         const cliente = clientes.find(c => c.id === venda.clienteId)
         if (cliente) lista.push({ cliente, parcela, venda })
       })
@@ -42,7 +42,7 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
         <>
           <div className="bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3">
             <p className="text-sm text-orange-800 font-medium">
-              <strong>{cobrancas.length}</strong> {cobrancas.length === 1 ? 'cobrança pendente' : 'cobranças pendentes'}: atrasadas, vencendo hoje ou nos próximos 7 dias.
+              <strong>{cobrancas.length}</strong> {cobrancas.length === 1 ? 'parcela em aberto' : 'parcelas em aberto'}, da mais urgente para a mais distante.
             </p>
           </div>
 
