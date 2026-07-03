@@ -1,7 +1,8 @@
-import { useState, useRef, lazy, Suspense } from 'react'
+import { useState, useRef, useEffect, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import BottomNav from './components/BottomNav.jsx'
 import Toast from './components/Toast.jsx'
+import AvisoAtualizacao from './components/AvisoAtualizacao.jsx'
 import { useClientes } from './hooks/useClientes.js'
 import { useVendas } from './hooks/useVendas.js'
 import { useAuth } from './hooks/useAuth.jsx'
@@ -9,6 +10,7 @@ import Splash from './components/Splash.jsx'
 import { useProfile } from './hooks/useProfile.js'
 import { perfilCompleto } from './utils/perfil.js'
 import { SkeletonDashboard } from './components/Skeleton.jsx'
+import { iniciarChecagemDeAtualizacao } from './utils/checarAtualizacao.js'
 
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'))
 const Clientes = lazy(() => import('./pages/Clientes.jsx'))
@@ -28,6 +30,11 @@ export default function App() {
   const [toast, setToast] = useState(null)
   const [toastKey, setToastKey] = useState(0)
   const toastTimer = useRef(null)
+  const [novaVersaoDisponivel, setNovaVersaoDisponivel] = useState(false)
+
+  useEffect(() => {
+    return iniciarChecagemDeAtualizacao(() => setNovaVersaoDisponivel(true))
+  }, [])
 
   const { session, usuario, carregando: carregandoAuth, recuperandoSenha } = useAuth()
   const clientesHook = useClientes(usuario)
@@ -79,7 +86,11 @@ export default function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-ground">
-      <Toast key={toastKey} mensagem={toast?.mensagem} tipo={toast?.tipo} />
+      {novaVersaoDisponivel ? (
+        <AvisoAtualizacao />
+      ) : (
+        <Toast key={toastKey} mensagem={toast?.mensagem} tipo={toast?.tipo} />
+      )}
 
       <main className="flex-1 overflow-y-auto pb-20">
         {carregandoDados ? (

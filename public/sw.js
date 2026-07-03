@@ -1,4 +1,4 @@
-const CACHE_NAME = 'crediario-digital-v2'
+const CACHE_NAME = 'crediario-digital-v3'
 const ASSETS_PARA_CACHE = [
   '/',
   '/index.html',
@@ -23,9 +23,12 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return
 
-  // Navegação (HTML) e manifest: sempre busca a versão mais recente na rede
-  // primeiro, pra não prender o usuário num bundle/manifest antigo após um deploy.
-  if (event.request.mode === 'navigate' || event.request.url.endsWith('/manifest.json')) {
+  // Navegação (HTML), manifest e a raiz '/': sempre busca a versão mais recente
+  // na rede primeiro, pra não prender o usuário num bundle/manifest antigo após
+  // um deploy. A raiz também cobre a checagem de nova versão feita pelo app
+  // (fetch('/') programático, que não tem mode:'navigate').
+  const url = new URL(event.request.url)
+  if (event.request.mode === 'navigate' || url.pathname === '/manifest.json' || url.pathname === '/') {
     event.respondWith(
       fetch(event.request)
         .then(response => {
