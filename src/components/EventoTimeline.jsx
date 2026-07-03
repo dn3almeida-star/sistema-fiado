@@ -40,7 +40,7 @@ export default function EventoTimeline({ evento, expandido, onToggle }) {
             </span>
           </div>
           <p className="text-sm text-ink mt-1">{evento.descricao}</p>
-          <p className="font-ledger text-sm font-semibold text-ink mt-1">{formatarMoeda(evento.valor)}</p>
+          <p className="text-sm font-semibold text-ink mt-1">{formatarMoeda(evento.valor)}</p>
         </div>
 
         {evento.tipo === 'compra' && (

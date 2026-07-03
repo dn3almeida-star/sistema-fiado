@@ -146,7 +146,7 @@ export default function ListaVendas({ vendas, clientes, navegar }) {
                   <p className="font-semibold text-ink truncate">{nome}</p>
                   <p className="text-sm text-ink-muted truncate">{venda.itens}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="font-ledger text-xs font-semibold text-ink tabular-nums">{formatarMoeda(venda.valorTotal)}</span>
+                    <span className="text-xs font-bold text-ink tabular-nums">{formatarMoeda(venda.valorTotal)}</span>
                     <span className="text-xs text-ink-muted">{formatarData(venda.criadaEm)}</span>
                   </div>
                 </div>

@@ -80,7 +80,7 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
           <span className="text-accent font-bold text-xl">R$</span>
           <NumeroAnimado
             valor={stats.totalReceber}
-            className="font-ledger text-4xl font-semibold text-white tabular-nums leading-none"
+            className="text-4xl font-extrabold text-white tabular-nums leading-none"
           />
         </div>
         <p className="text-xs text-white/40 mt-2">saldo devedor dos clientes</p>
@@ -135,7 +135,7 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
                   </div>
                   <div className="text-right flex-shrink-0">
                     <span className="text-xs text-accent font-semibold">R$</span>
-                    <span className="font-ledger text-base font-semibold text-ink tabular-nums ml-0.5">
+                    <span className="text-base font-bold text-ink tabular-nums ml-0.5">
                       {parcela.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </span>
                   </div>

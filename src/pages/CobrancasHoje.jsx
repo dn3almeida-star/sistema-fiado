@@ -65,7 +65,7 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
                     <div className="text-right flex-shrink-0">
                       <div className="flex items-baseline gap-0.5 justify-end">
                         <span className="text-accent text-xs font-semibold">R$</span>
-                        <span className="font-ledger text-xl font-semibold text-ink tabular-nums">
+                        <span className="text-xl font-extrabold text-ink tabular-nums">
                           {parcela.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </span>
                       </div>

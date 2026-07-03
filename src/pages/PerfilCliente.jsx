@@ -255,7 +255,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                 <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-wider">Saldo a Receber</p>
                 <div className="flex items-baseline gap-1 mt-1">
                   <span className="text-accent font-bold text-base">R$</span>
-                  <span className={`font-ledger text-3xl font-semibold tabular-nums leading-none ${totalDevido > 0 ? 'text-danger' : 'text-success'}`}>
+                  <span className={`text-3xl font-extrabold tabular-nums leading-none ${totalDevido > 0 ? 'text-danger' : 'text-success'}`}>
                     {totalDevido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -374,7 +374,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                         {st.label}
                                       </span>
                                     )}
-                                    <span className={`font-ledger text-sm font-semibold tabular-nums flex-shrink-0 ${p.pago ? 'text-ink-muted' : 'text-ink'}`}>
+                                    <span className={`text-sm font-bold tabular-nums flex-shrink-0 ${p.pago ? 'text-ink-muted' : 'text-ink'}`}>
                                       {formatarMoeda(p.valor)}
                                     </span>
                                   </div>
