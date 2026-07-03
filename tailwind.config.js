@@ -25,6 +25,7 @@ export default {
       },
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        ledger: ['"Fraunces"', 'ui-serif', 'serif'],
       },
       fontSize: {
         base: ['1.0625rem', { lineHeight: '1.5' }],

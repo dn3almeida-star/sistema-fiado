@@ -13,10 +13,10 @@
   }
 
   .dark {
-    --ground: 17 21 19;         /* verde-quase-preto */
-    --surface: 26 32 29;
-    --surface-2: 34 42 38;
-    --border: 48 58 52;
+    --ground: 13 17 15;         /* verde-quase-preto */
+    --surface: 23 29 26;
+    --surface-2: 37 46 41;
+    --border: 56 68 60;
     --ink: 237 244 240;
     --ink-muted: 156 168 161;
   }
