@@ -87,10 +87,10 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
   if (sucesso) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-8 gap-4">
-        <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center">
-          <Check size={32} className="text-success" />
+        <div className="w-16 h-16 rounded-2xl bg-brand/10 flex items-center justify-center">
+          <Check size={32} className="text-brand" />
         </div>
-        <p className="text-xl font-bold text-ink">Venda registrada!</p>
+        <p className="text-xl font-display font-semibold text-ink">Venda registrada!</p>
         <p className="text-sm text-ink-muted text-center">Redirecionando para o perfil do cliente…</p>
       </div>
     )
@@ -107,7 +107,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
           <ArrowLeft size={20} />
           <span className="text-sm font-medium">Cancelar</span>
         </button>
-        <h1 className="text-xl font-bold">Nova Venda</h1>
+        <h1 className="text-xl font-display font-semibold">Nova Venda</h1>
 
         {toggle && <div className="mt-3">{toggle}</div>}
 
@@ -126,7 +126,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
         {/* Etapa 1: Selecionar cliente */}
         {etapa === 1 && (
           <div className="space-y-3">
-            <h2 className="font-bold text-ink">Selecionar Cliente</h2>
+            <h2 className="font-display font-semibold text-ink">Selecionar Cliente</h2>
             <div className="relative">
               <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted" />
               <input
@@ -145,8 +145,8 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
                   onClick={() => { setClienteId(c.id); setEtapa(2) }}
                   className="w-full bg-surface rounded-2xl shadow-sm p-4 text-left flex items-center gap-3 active:bg-primary-50 transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
-                    <span className="text-primary font-bold">{c.nome[0]?.toUpperCase()}</span>
+                  <div className="w-10 h-10 rounded-xl bg-surface-2 border border-border flex items-center justify-center flex-shrink-0">
+                    <span className="font-display font-semibold text-ink-muted">{c.nome[0]?.toUpperCase()}</span>
                   </div>
                   <div>
                     <p className="font-semibold text-ink">{c.nome}</p>
@@ -167,8 +167,8 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
             {/* Cliente selecionado */}
             <div className="bg-primary/10 border border-primary/20 rounded-2xl p-3 flex items-center justify-between">
               <div>
-                <p className="text-xs text-primary font-semibold uppercase tracking-wide">Cliente</p>
-                <p className="font-bold text-ink mt-0.5">{clienteSelecionado?.nome}</p>
+                <p className="text-[11px] font-mono font-medium text-primary uppercase tracking-wide">Cliente</p>
+                <p className="font-semibold text-ink mt-0.5">{clienteSelecionado?.nome}</p>
               </div>
               {!clientePreSelecionado && (
                 <button onClick={() => setEtapa(1)} className="text-sm text-primary font-semibold underline underline-offset-2">
@@ -204,7 +204,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
             {/* Formulário */}
             <div className="space-y-3">
               <label className="block">
-                <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Itens / Descrição *</span>
+                <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Itens / Descrição *</span>
                 <textarea
                   value={form.itens}
                   onChange={e => setForm(f => ({ ...f, itens: e.target.value }))}
@@ -217,7 +217,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
               {(() => {
                 const campoValorTotal = (
                   <label className="block">
-                    <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Valor Total (R$) *</span>
+                    <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Valor Total (R$) *</span>
                     <input
                       type="number"
                       inputMode="decimal"
@@ -237,7 +237,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
                   <div className="grid grid-cols-2 gap-3">
                     {campoValorTotal}
                     <label className="block">
-                      <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Entrada (R$)</span>
+                      <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Entrada (R$)</span>
                       <input
                         type="number"
                         inputMode="decimal"
@@ -256,7 +256,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
               {modo === 'fiado' && (
                 <div className="grid grid-cols-2 gap-3">
                   <label className="block">
-                    <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Nº de Parcelas *</span>
+                    <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Nº de Parcelas *</span>
                     <input
                       type="number"
                       inputMode="numeric"
@@ -269,7 +269,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
                   </label>
 
                   <label className="block">
-                    <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">1ª Parcela em *</span>
+                    <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">1ª Parcela em *</span>
                     <input
                       type="date"
                       value={form.dataPrimeiraParcela}
@@ -284,21 +284,21 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
             {/* Preview de parcelas */}
             {modo === 'fiado' && parcelasPreview.length > 0 && (
               <div className="bg-surface rounded-2xl shadow-sm p-4">
-                <p className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-3">Preview das Parcelas</p>
+                <p className="text-[11px] font-mono font-semibold text-ink-muted uppercase tracking-widest mb-3">Preview das Parcelas</p>
                 <div className="space-y-2">
                   {parcelasPreview.map(p => (
-                    <div key={p.numero} className="flex justify-between items-center text-sm">
+                    <div key={p.numero} className="flex justify-between items-center text-sm font-mono">
                       <span className="text-ink-muted font-medium">Parcela {p.numero}</span>
                       <span className="text-ink-muted">{formatarData(p.vencimento)}</span>
-                      <span className="font-bold text-ink tabular-nums">{formatarMoeda(p.valor)}</span>
+                      <span className="font-semibold text-ink tabular-nums">{formatarMoeda(p.valor)}</span>
                     </div>
                   ))}
                 </div>
                 <div className="mt-3 pt-3 border-t border-border flex justify-between text-sm">
                   <span className="text-ink-muted font-medium">Total parcelado</span>
-                  <div>
-                    <span className="text-accent text-xs font-semibold">R$ </span>
-                    <span className="font-bold text-primary tabular-nums">
+                  <div className="font-mono">
+                    <span className="text-accent text-xs font-medium">R$ </span>
+                    <span className="font-semibold text-primary tabular-nums">
                       {parcelasPreview.reduce((a, p) => a + p.valor, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </span>
                   </div>

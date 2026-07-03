@@ -33,12 +33,12 @@ export function diasAteVencimento(iso) {
 }
 
 export function statusParcela(parcela) {
-  if (parcela.pago) return { label: 'Pago', cor: 'success', bg: 'bg-green-100', texto: 'text-green-700' }
+  if (parcela.pago) return { label: 'Pago', tier: 'pago', cor: 'success', bg: 'bg-brand/10', texto: 'text-brand' }
   const dias = diasAteVencimento(parcela.vencimento)
-  if (dias < 0) return { label: `${Math.abs(dias)}d atraso`, cor: 'danger', bg: 'bg-red-100', texto: 'text-red-700' }
-  if (dias === 0) return { label: 'Vence hoje', cor: 'danger', bg: 'bg-orange-100', texto: 'text-orange-700' }
-  if (dias <= 7) return { label: `${dias}d`, cor: 'warning', bg: 'bg-yellow-100', texto: 'text-yellow-700' }
-  return { label: `${dias}d`, cor: 'normal', bg: 'bg-surface-2', texto: 'text-ink-muted' }
+  if (dias < 0) return { label: `${Math.abs(dias)}d atraso`, tier: 'atraso', cor: 'danger', bg: 'bg-red-500/10', texto: 'text-red-500' }
+  if (dias === 0) return { label: 'Vence hoje', tier: 'hoje', cor: 'danger', bg: 'bg-accent/10', texto: 'text-accent' }
+  if (dias <= 7) return { label: `${dias}d`, tier: 'proximo', cor: 'warning', bg: 'bg-accent/10', texto: 'text-accent' }
+  return { label: `${dias}d`, tier: 'normal', cor: 'normal', bg: 'bg-surface-2', texto: 'text-ink-muted' }
 }
 
 export function mesAtual() {

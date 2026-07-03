@@ -63,7 +63,7 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
     <div className="p-4 space-y-3 pb-6">
       {/* Header */}
       <div className="flex items-center justify-between pt-3 pb-1">
-        <h1 className="text-2xl font-extrabold text-ink">Clientes</h1>
+        <h1 className="text-2xl font-display font-semibold text-ink">Clientes</h1>
         <button
           onClick={() => { setMostrarForm(true); setErro('') }}
           className="flex items-center gap-1.5 bg-primary text-white px-4 py-2 rounded-xl font-semibold text-sm active:bg-primary-light transition-colors min-h-touch shadow-sm"
@@ -92,7 +92,7 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
       {mostrarForm && (
         <div className="bg-surface border border-border rounded-2xl p-4 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="font-bold text-ink">Novo Cliente</h2>
+            <h2 className="font-display font-semibold text-ink">Novo Cliente</h2>
             <button onClick={() => { setMostrarForm(false); setErro('') }} className="text-ink-muted hover:text-ink p-1">
               <X size={20} />
             </button>
@@ -102,7 +102,7 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
 
           <div className="space-y-2">
             <label className="block">
-              <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Nome *</span>
+              <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Nome *</span>
               <input
                 type="text"
                 value={form.nome}
@@ -113,7 +113,7 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
             </label>
 
             <label className="block">
-              <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Telefone / WhatsApp</span>
+              <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Telefone / WhatsApp</span>
               <input
                 type="tel"
                 inputMode="numeric"
@@ -125,7 +125,7 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
             </label>
 
             <label className="block">
-              <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Endereço</span>
+              <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Endereço</span>
               <input
                 type="text"
                 value={form.endereco}
@@ -136,7 +136,7 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
             </label>
 
             <label className="block">
-              <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Bairro / Referência</span>
+              <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Bairro / Referência</span>
               <input
                 type="text"
                 value={form.bairro}
@@ -147,7 +147,7 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
             </label>
 
             <label className="block">
-              <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Observações</span>
+              <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Observações</span>
               <textarea
                 value={form.observacoes}
                 onChange={e => setForm(f => ({ ...f, observacoes: e.target.value }))}
@@ -200,18 +200,18 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
                 onClick={() => navegar('perfil', { clienteId: cliente.id })}
                 className="w-full bg-surface rounded-2xl shadow-sm p-4 text-left flex items-center gap-3 active:bg-surface-2 transition-colors"
               >
-                <div className="w-11 h-11 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
-                  <span className="text-primary font-bold text-lg">{cliente.nome[0]?.toUpperCase()}</span>
+                <div className="w-11 h-11 rounded-xl bg-surface-2 border border-border flex items-center justify-center flex-shrink-0">
+                  <span className="font-display font-semibold text-ink-muted text-lg">{cliente.nome[0]?.toUpperCase()}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-ink truncate">{cliente.nome}</p>
                   {cliente.bairro && <p className="text-sm text-ink-muted truncate">{cliente.bairro}</p>}
                 </div>
-                <div className="text-right flex-shrink-0 flex items-center gap-2">
+                <div className="text-right flex-shrink-0 flex items-center gap-2 font-mono">
                   {saldo > 0 && (
                     <div className="text-right">
-                      <span className="text-[11px] text-accent font-semibold">R$</span>
-                      <span className="text-sm font-bold text-ink tabular-nums ml-0.5">
+                      <span className="text-[11px] text-accent font-medium">R$</span>
+                      <span className="text-sm font-semibold text-ink tabular-nums ml-0.5">
                         {saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     </div>

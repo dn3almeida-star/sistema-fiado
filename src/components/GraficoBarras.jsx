@@ -9,14 +9,14 @@ export default function GraficoBarras({ dados, cor = '#154e30', destaqueIndex = 
         const destaque = destaqueIndex === null || i === destaqueIndex
         return (
           <div key={d.mes} className="flex-1 flex flex-col items-center justify-end gap-1 h-full">
-            <span className="text-[10px] font-semibold text-ink-muted tabular-nums h-3 leading-3">
+            <span className="text-[10px] font-mono font-semibold text-ink-muted tabular-nums h-3 leading-3">
               {d.valor > 0 ? formatarCompacto(d.valor) : ''}
             </span>
             <div
               className="w-full rounded-t-md"
               style={{ height: `${alturaPct}%`, backgroundColor: cor, opacity: destaque ? 1 : 0.4 }}
             />
-            <span className="text-[10px] text-ink-muted">{d.label}</span>
+            <span className="text-[10px] font-mono text-ink-muted">{d.label}</span>
           </div>
         )
       })}

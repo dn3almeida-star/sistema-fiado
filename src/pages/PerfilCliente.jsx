@@ -185,11 +185,11 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
           <>
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-extrabold text-2xl">{cliente.nome[0]?.toUpperCase()}</span>
+                <span className="text-white font-display font-semibold text-2xl">{cliente.nome[0]?.toUpperCase()}</span>
               </div>
               <div>
-                <h1 className="text-xl font-bold leading-tight">{cliente.nome}</h1>
-                {cliente.bairro && <p className="text-white/60 text-sm mt-0.5">{cliente.bairro}</p>}
+                <h1 className="text-xl font-display font-semibold leading-tight">{cliente.nome}</h1>
+                {cliente.bairro && <p className="text-white/60 text-sm font-mono mt-0.5">{cliente.bairro}</p>}
               </div>
             </div>
 
@@ -252,10 +252,10 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
             {/* Saldo total */}
             <div className="bg-surface rounded-2xl shadow-sm p-4 flex items-center justify-between">
               <div>
-                <p className="text-[11px] font-semibold text-ink-muted uppercase tracking-wider">Saldo a Receber</p>
-                <div className="flex items-baseline gap-1 mt-1">
-                  <span className="text-accent font-bold text-base">R$</span>
-                  <span className={`text-3xl font-extrabold tabular-nums leading-none ${totalDevido > 0 ? 'text-danger' : 'text-success'}`}>
+                <p className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wider">Saldo a Receber</p>
+                <div className="flex items-baseline gap-1 mt-1 font-mono">
+                  <span className="text-accent font-medium text-base">R$</span>
+                  <span className={`text-3xl font-semibold tabular-nums leading-none ${totalDevido > 0 ? 'text-danger' : 'text-success'}`}>
                     {totalDevido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -279,7 +279,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
 
             {/* Vendas */}
             <div>
-              <h2 className="text-sm font-bold text-ink-muted uppercase tracking-wide mb-2">Histórico de Compras</h2>
+              <h2 className="text-[11px] font-mono font-semibold text-ink-muted uppercase tracking-widest mb-2">Histórico de Compras</h2>
 
               {vendasCliente.length === 0 && (
                 <div className="text-center py-8 text-ink-muted bg-surface rounded-2xl shadow-sm">
@@ -302,10 +302,10 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                       >
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-ink truncate">{venda.itens}</p>
-                          <p className="text-xs text-ink-muted mt-0.5">{formatarData(venda.criadaEm)}</p>
-                          <div className="flex gap-3 mt-1.5">
+                          <p className="text-xs font-mono text-ink-muted mt-0.5">{formatarData(venda.criadaEm)}</p>
+                          <div className="flex gap-3 mt-1.5 font-mono">
                             <span className="text-xs text-ink-muted">
-                              Total: <strong className="text-ink">{formatarMoeda(venda.valorTotal)}</strong>
+                              Total: <strong className="text-ink font-semibold">{formatarMoeda(venda.valorTotal)}</strong>
                             </span>
                             {venda.entrada > 0 && (
                               <span className="text-xs text-ink-muted">Entrada: {formatarMoeda(venda.entrada)}</span>
@@ -313,18 +313,18 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                           </div>
                           <div className="flex gap-2 mt-2">
                             {avista ? (
-                              <span className="text-xs bg-blue-50 text-blue-700 font-semibold px-2 py-0.5 rounded-full">
+                              <span className="text-[10px] font-mono bg-blue-500/10 text-blue-500 font-semibold uppercase tracking-wide px-2 py-0.5 rounded-md">
                                 À Vista
                               </span>
                             ) : (
                               <>
                                 {parcelasAbertas > 0 && (
-                                  <span className="text-xs bg-red-50 text-red-600 font-semibold px-2 py-0.5 rounded-full">
+                                  <span className="text-[10px] font-mono bg-red-500/10 text-red-500 font-semibold uppercase tracking-wide px-2 py-0.5 rounded-md">
                                     {parcelasAbertas} em aberto
                                   </span>
                                 )}
                                 {pagas > 0 && (
-                                  <span className="text-xs bg-green-50 text-green-700 font-semibold px-2 py-0.5 rounded-full">
+                                  <span className="text-[10px] font-mono bg-brand/10 text-brand font-semibold uppercase tracking-wide px-2 py-0.5 rounded-md">
                                     {pagas} paga{pagas > 1 ? 's' : ''}
                                   </span>
                                 )}
@@ -370,16 +370,16 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                     {p.pago ? (
                                       <SeloPago className="flex-shrink-0" />
                                     ) : (
-                                      <span className={`text-xs px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${st.bg} ${st.texto}`}>
+                                      <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-semibold uppercase tracking-wide flex-shrink-0 ${st.bg} ${st.texto}`}>
                                         {st.label}
                                       </span>
                                     )}
-                                    <span className={`text-sm font-bold tabular-nums flex-shrink-0 ${p.pago ? 'text-ink-muted' : 'text-ink'}`}>
+                                    <span className={`text-sm font-mono font-semibold tabular-nums flex-shrink-0 ${p.pago ? 'text-ink-muted' : 'text-ink'}`}>
                                       {formatarMoeda(p.valor)}
                                     </span>
                                   </div>
                                   <div className="flex items-center justify-between gap-2 pl-9">
-                                    <span className="text-xs text-ink-muted">{formatarData(p.vencimento)}</span>
+                                    <span className="text-xs font-mono text-ink-muted">{formatarData(p.vencimento)}</span>
                                     <BotaoCobranca
                                       parcela={p}
                                       cliente={cliente}

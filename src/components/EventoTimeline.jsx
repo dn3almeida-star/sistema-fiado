@@ -2,10 +2,10 @@ import { ChevronDown, Package, CheckCircle, Clock, MessageCircle } from 'lucide-
 import { formatarData, formatarMoeda } from '../utils/formatadores.js'
 
 const TIPO_CONFIG = {
-  compra: { icon: Package, color: 'info', colorBg: 'bg-blue-100', colorText: 'text-blue-700', label: 'Compra' },
-  pagamento: { icon: CheckCircle, color: 'success', colorBg: 'bg-green-100', colorText: 'text-green-700', label: 'Pagamento' },
-  vencimento: { icon: Clock, color: 'warning', colorBg: 'bg-orange-100', colorText: 'text-orange-700', label: 'Vencimento' },
-  cobranca: { icon: MessageCircle, color: 'accent', colorBg: 'bg-purple-100', colorText: 'text-purple-700', label: 'Cobrança' }
+  compra: { icon: Package, color: 'info', colorBg: 'bg-blue-500/10', colorText: 'text-blue-500', label: 'Compra' },
+  pagamento: { icon: CheckCircle, color: 'success', colorBg: 'bg-brand/10', colorText: 'text-brand', label: 'Pagamento' },
+  vencimento: { icon: Clock, color: 'warning', colorBg: 'bg-accent/10', colorText: 'text-accent', label: 'Vencimento' },
+  cobranca: { icon: MessageCircle, color: 'accent', colorBg: 'bg-purple-500/10', colorText: 'text-purple-500', label: 'Cobrança' }
 }
 
 export default function EventoTimeline({ evento, expandido, onToggle }) {
@@ -34,13 +34,13 @@ export default function EventoTimeline({ evento, expandido, onToggle }) {
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-ink-muted">{formatarData(evento.data)}</span>
-            <span className={`px-2 py-1 rounded text-xs font-semibold ${config.colorBg} ${config.colorText}`}>
+            <span className="text-xs font-mono font-medium text-ink-muted">{formatarData(evento.data)}</span>
+            <span className={`px-2 py-1 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wide ${config.colorBg} ${config.colorText}`}>
               {config.label}
             </span>
           </div>
           <p className="text-sm text-ink mt-1">{evento.descricao}</p>
-          <p className="text-sm font-semibold text-ink mt-1">{formatarMoeda(evento.valor)}</p>
+          <p className="text-sm font-mono font-semibold text-ink mt-1">{formatarMoeda(evento.valor)}</p>
         </div>
 
         {evento.tipo === 'compra' && (

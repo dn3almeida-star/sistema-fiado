@@ -43,8 +43,8 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
       {/* Header */}
       <div className="pt-3 pb-1 flex items-center justify-between">
         <div>
-          {profile?.nome_loja && <p className="text-[11px] font-semibold text-primary uppercase tracking-widest">{profile.nome_loja}</p>}
-          <h1 className="text-2xl font-extrabold text-ink leading-tight">Crediário Digital</h1>
+          {profile?.nome_loja && <p className="text-[11px] font-mono font-medium text-primary uppercase tracking-widest">{profile.nome_loja}</p>}
+          <h1 className="text-2xl font-display font-semibold text-ink leading-tight">Crediário Digital</h1>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -75,15 +75,15 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
 
       {/* Hero — Total a Receber */}
       <div className="bg-primary rounded-2xl p-5 shadow-sm">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-white/60">Total a Receber</p>
-        <div className="mt-1 flex items-baseline gap-1.5">
-          <span className="text-accent font-bold text-xl">R$</span>
+        <p className="text-[11px] font-mono font-medium uppercase tracking-widest text-white/60">Total a Receber</p>
+        <div className="mt-1.5 flex items-baseline gap-1.5">
+          <span className="text-accent font-mono font-medium text-lg">R$</span>
           <NumeroAnimado
             valor={stats.totalReceber}
-            className="text-4xl font-extrabold text-white tabular-nums leading-none"
+            className="text-4xl font-mono font-semibold text-white tabular-nums leading-none"
           />
         </div>
-        <p className="text-xs text-white/40 mt-2">saldo devedor dos clientes</p>
+        <p className="text-xs text-white/40 mt-2.5">saldo devedor dos clientes</p>
       </div>
 
       {/* Grid de stats */}
@@ -116,7 +116,7 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
       {/* Cobranças de hoje */}
       {stats.vencimentosHoje.length > 0 && (
         <div>
-          <h2 className="text-sm font-bold text-ink-muted uppercase tracking-wide mb-2">Cobranças de Hoje</h2>
+          <h2 className="text-[11px] font-mono font-semibold text-ink-muted uppercase tracking-widest mb-2">Cobranças de Hoje</h2>
           <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-2">
             {stats.vencimentosHoje.map(({ cliente, parcela, venda }) => (
               <motion.div variants={fadeInUp} whileTap={{ scale: 0.98 }} key={`${venda.id}-${parcela.numero}`}>
@@ -125,17 +125,17 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
                   className="w-full bg-surface rounded-2xl shadow-sm p-4 text-left flex items-center justify-between active:bg-surface-2 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
-                      <span className="text-orange-700 font-bold text-base">{cliente.nome[0]?.toUpperCase()}</span>
+                    <div className="w-10 h-10 rounded-xl bg-surface-2 border border-border flex items-center justify-center flex-shrink-0">
+                      <span className="font-display font-semibold text-ink-muted text-base">{cliente.nome[0]?.toUpperCase()}</span>
                     </div>
                     <div>
-                      <p className="font-semibold text-ink">{cliente.nome}</p>
-                      <p className="text-xs text-ink-muted mt-0.5">Parcela {parcela.numero} — {formatarData(parcela.vencimento)}</p>
+                      <p className="font-medium text-ink">{cliente.nome}</p>
+                      <p className="text-xs font-mono text-ink-muted mt-0.5">Parcela {parcela.numero} — {formatarData(parcela.vencimento)}</p>
                     </div>
                   </div>
-                  <div className="text-right flex-shrink-0">
-                    <span className="text-xs text-accent font-semibold">R$</span>
-                    <span className="text-base font-bold text-ink tabular-nums ml-0.5">
+                  <div className="text-right flex-shrink-0 font-mono">
+                    <span className="text-xs text-accent font-medium">R$</span>
+                    <span className="text-base font-semibold text-ink tabular-nums ml-0.5">
                       {parcela.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </span>
                   </div>

@@ -62,7 +62,7 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
             <span className="text-sm font-medium">Início</span>
           </button>
         )}
-        <h1 className="text-xl font-bold">{modoInicial ? 'Bem-vindo!' : 'Perfil da Loja'}</h1>
+        <h1 className="text-xl font-display font-semibold">{modoInicial ? 'Bem-vindo!' : 'Perfil da Loja'}</h1>
         {modoInicial && (
           <p className="text-white/70 text-sm mt-1">Antes de começar, conte sobre a sua loja.</p>
         )}
@@ -79,7 +79,7 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
             )}
           </div>
           <label className="flex-1">
-            <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Logo da loja</span>
+            <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Logo da loja</span>
             <div className="mt-1.5 flex items-center gap-2 bg-primary-50 text-primary px-4 py-2.5 rounded-xl font-semibold text-sm cursor-pointer active:bg-primary/10 transition-colors w-fit">
               <Upload size={16} />
               {enviandoLogo ? 'Enviando…' : 'Escolher imagem'}
@@ -91,7 +91,7 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
         {erro && <p className="text-sm text-danger bg-danger/10 px-3 py-2 rounded-xl">{erro}</p>}
 
         <label className="block">
-          <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Nome da loja *</span>
+          <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Nome da loja *</span>
           <input
             type="text"
             value={nomeLoja}
@@ -102,7 +102,7 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
         </label>
 
         <label className="block">
-          <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Telefone / WhatsApp</span>
+          <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Telefone / WhatsApp</span>
           <input
             type="tel"
             inputMode="numeric"

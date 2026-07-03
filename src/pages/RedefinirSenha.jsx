@@ -31,7 +31,7 @@ export default function RedefinirSenha() {
         <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4">
           <KeyRound size={28} className="text-white" />
         </div>
-        <h1 className="text-2xl font-extrabold text-ink">Nova senha</h1>
+        <h1 className="text-2xl font-display font-semibold text-ink">Nova senha</h1>
         <p className="text-sm text-ink-muted mt-1">Escolha uma senha segura para sua conta</p>
       </div>
 
@@ -41,7 +41,7 @@ export default function RedefinirSenha() {
         )}
 
         <label className="block">
-          <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Nova senha</span>
+          <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Nova senha</span>
           <div className="relative mt-1.5">
             <input
               type={verSenha ? 'text' : 'password'}
@@ -62,7 +62,7 @@ export default function RedefinirSenha() {
         </label>
 
         <label className="block">
-          <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Confirmar senha</span>
+          <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Confirmar senha</span>
           <div className="relative mt-1.5">
             <input
               type={verConfirmar ? 'text' : 'password'}

@@ -26,7 +26,7 @@ describe('statusVenda', () => {
     }
     const r = statusVenda(venda)
     expect(r.label).toBe('Quitada')
-    expect(r.classe).toContain('green')
+    expect(r.classe).toContain('brand')
   })
 
   it('Em aberto: tem ao menos uma parcela não paga', () => {

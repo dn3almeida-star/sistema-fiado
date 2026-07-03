@@ -22,9 +22,12 @@ export default {
         border: 'rgb(var(--border) / <alpha-value>)',
         ink: 'rgb(var(--ink) / <alpha-value>)',
         'ink-muted': 'rgb(var(--ink-muted) / <alpha-value>)',
+        brand: 'rgb(var(--brand-bright) / <alpha-value>)',
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        sans: ['"Inter"', 'system-ui', 'sans-serif'],
+        display: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+        mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
       },
       fontSize: {
         base: ['1.0625rem', { lineHeight: '1.5' }],

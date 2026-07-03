@@ -60,17 +60,17 @@ export default function Login() {
         <div className="w-16 h-16 rounded-2xl overflow-hidden mx-auto mb-4 shadow-sm">
           <img src="/icons/icon-512.png" alt="Crediário Digital" className="w-full h-full object-cover" />
         </div>
-        <h1 className="text-2xl font-extrabold text-ink">Crediário Digital</h1>
+        <h1 className="text-2xl font-display font-semibold text-ink">Crediário Digital</h1>
         <p className="text-sm text-ink-muted mt-1">Entre para acessar seus clientes</p>
       </div>
 
       {resetEnviado ? (
         <div className="text-center space-y-4">
-          <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto">
-            <Mail size={26} className="text-green-600" />
+          <div className="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center mx-auto">
+            <Mail size={26} className="text-brand" />
           </div>
           <div>
-            <p className="font-bold text-ink">Email enviado!</p>
+            <p className="font-display font-semibold text-ink">Email enviado!</p>
             <p className="text-sm text-ink-muted mt-1">Verifique sua caixa de entrada em <span className="font-semibold">{email}</span> e clique no link para redefinir sua senha.</p>
           </div>
           <button
@@ -87,7 +87,7 @@ export default function Login() {
           )}
 
           <label className="block">
-            <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Email</span>
+            <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Email</span>
             <input
               type="email"
               inputMode="email"
@@ -100,7 +100,7 @@ export default function Login() {
           </label>
 
           <label className="block">
-            <span className="text-xs font-semibold text-ink-muted uppercase tracking-wide">Senha</span>
+            <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Senha</span>
             <div className="relative mt-1.5">
               <input
                 type={verSenha ? 'text' : 'password'}

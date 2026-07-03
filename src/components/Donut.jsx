@@ -20,14 +20,14 @@ export default function Donut({ pago, aberto }) {
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: '#16a34a' }} />
           <span className="text-ink-muted">Pago</span>
-          <span className="font-bold text-ink ml-auto tabular-nums">{formatarMoeda(pago)}</span>
+          <span className="font-mono font-semibold text-ink ml-auto tabular-nums">{formatarMoeda(pago)}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-surface-2 border border-border flex-shrink-0" />
           <span className="text-ink-muted">Em aberto</span>
-          <span className="font-bold text-ink ml-auto tabular-nums">{formatarMoeda(aberto)}</span>
+          <span className="font-mono font-semibold text-ink ml-auto tabular-nums">{formatarMoeda(aberto)}</span>
         </div>
-        <p className="text-xs text-ink-muted pt-1">{Math.round(pct * 100)}% quitado</p>
+        <p className="text-xs font-mono text-ink-muted pt-1">{Math.round(pct * 100)}% quitado</p>
       </div>
     </div>
   )

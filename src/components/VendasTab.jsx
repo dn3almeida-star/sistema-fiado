@@ -48,7 +48,7 @@ export default function VendasTab(props) {
           <ArrowLeft size={20} />
           <span className="text-sm font-medium">Cancelar</span>
         </button>
-        <h1 className="text-xl font-bold">Vendas</h1>
+        <h1 className="text-xl font-display font-semibold">Vendas</h1>
         <div className="mt-3">{toggle}</div>
       </div>
 

@@ -139,22 +139,22 @@ export default function ListaVendas({ vendas, clientes, navegar }) {
                 disabled={!cliente}
                 className="w-full bg-surface rounded-2xl shadow-sm p-4 text-left flex items-center gap-3 active:bg-surface-2 transition-colors disabled:opacity-60"
               >
-                <div className="w-11 h-11 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
-                  <span className="text-primary font-bold text-lg">{nome[0]?.toUpperCase()}</span>
+                <div className="w-11 h-11 rounded-xl bg-surface-2 border border-border flex items-center justify-center flex-shrink-0">
+                  <span className="font-display font-semibold text-ink-muted text-lg">{nome[0]?.toUpperCase()}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-ink truncate">{nome}</p>
+                  <p className="font-medium text-ink truncate">{nome}</p>
                   <p className="text-sm text-ink-muted truncate">{venda.itens}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs font-bold text-ink tabular-nums">{formatarMoeda(venda.valorTotal)}</span>
-                    <span className="text-xs text-ink-muted">{formatarData(venda.criadaEm)}</span>
+                    <span className="text-xs font-mono font-semibold text-ink tabular-nums">{formatarMoeda(venda.valorTotal)}</span>
+                    <span className="text-xs font-mono text-ink-muted">{formatarData(venda.criadaEm)}</span>
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
                   {status.label === 'Quitada' ? (
                     <SeloPago label="Quitada" />
                   ) : (
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${status.classe}`}>
+                    <span className={`text-[10px] font-mono font-semibold uppercase tracking-wide px-2 py-0.5 rounded-md ${status.classe}`}>
                       {status.label}
                     </span>
                   )}

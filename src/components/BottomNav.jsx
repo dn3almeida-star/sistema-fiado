@@ -34,7 +34,7 @@ export default function BottomNav({ paginaAtiva, onNavegar }) {
                 >
                   <Icon size={23} className="text-white" strokeWidth={2.5} />
                 </div>
-                <span className={`text-[10px] mt-1 font-semibold ${ativo ? 'text-primary' : 'text-ink-muted'}`}>
+                <span className={`text-[10px] mt-1 font-mono uppercase tracking-wide font-semibold ${ativo ? 'text-primary' : 'text-ink-muted'}`}>
                   {label}
                 </span>
               </motion.button>
@@ -51,7 +51,7 @@ export default function BottomNav({ paginaAtiva, onNavegar }) {
               }`}
             >
               <Icon size={21} strokeWidth={ativo ? 2.5 : 1.8} />
-              <span className={`text-[10px] mt-0.5 ${ativo ? 'font-semibold' : 'font-medium'}`}>
+              <span className={`text-[10px] mt-0.5 font-mono uppercase tracking-wide ${ativo ? 'font-semibold' : 'font-medium'}`}>
                 {label}
               </span>
               {ativo && <div className="w-1 h-1 rounded-full bg-primary mt-0.5" />}

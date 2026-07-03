@@ -4,21 +4,23 @@
 
 @layer base {
   :root {
-    --ground: 245 245 243;      /* #f5f5f3 */
+    --ground: 243 244 241;      /* #F3F4F1 */
     --surface: 255 255 255;     /* #ffffff */
-    --surface-2: 249 250 251;   /* #f9fafb (gray-50) */
-    --border: 229 231 235;      /* #e5e7eb (gray-200) */
-    --ink: 17 24 39;            /* #111827 (gray-900) */
-    --ink-muted: 107 114 128;   /* #6b7280 (gray-500) */
+    --surface-2: 241 243 239;   /* #F1F3EF */
+    --border: 226 230 225;      /* #E2E6E1 */
+    --ink: 18 22 15;            /* #12160F */
+    --ink-muted: 90 100 92;     /* #5A645C */
+    --brand-bright: 21 78 48;   /* #154e30 — verde da marca */
   }
 
   .dark {
-    --ground: 13 17 15;         /* verde-quase-preto */
-    --surface: 23 29 26;
-    --surface-2: 37 46 41;
-    --border: 56 68 60;
-    --ink: 237 244 240;
-    --ink-muted: 156 168 161;
+    --ground: 11 15 13;         /* #0B0F0D — carbono-esverdeado */
+    --surface: 18 24 21;        /* #121815 */
+    --surface-2: 26 34 29;      /* #1A221D */
+    --border: 38 48 41;         /* #263029 */
+    --ink: 233 240 235;         /* #E9F0EB */
+    --ink-muted: 128 141 133;   /* #808D85 */
+    --brand-bright: 47 181 108; /* #2FB56C — verde legível no escuro */
   }
 
   * { touch-action: manipulation; }
@@ -28,7 +30,7 @@
     min-height: 100dvh;
     background-color: rgb(var(--ground));
     color: rgb(var(--ink));
-    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

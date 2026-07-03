@@ -24,7 +24,7 @@ export default function FiltroSituacao({ filtro, onSelect, contagens }) {
             }`}
           >
             {o.label}
-            <span className={`text-xs tabular-nums ${ativo ? 'text-white/80' : 'text-ink-muted'}`}>
+            <span className={`text-xs font-mono tabular-nums ${ativo ? 'text-white/80' : 'text-ink-muted'}`}>
               {contagens[o.id] ?? 0}
             </span>
           </motion.button>

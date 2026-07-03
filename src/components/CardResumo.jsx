@@ -15,8 +15,8 @@ export default function CardResumo({ titulo, valor, sub, cor = 'primary', icone:
         </div>
       )}
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-ink-muted font-semibold uppercase tracking-wider truncate">{titulo}</p>
-        <p className={`text-2xl font-bold ${c.valor} leading-tight tabular-nums`}>{valor}</p>
+        <p className="text-[11px] font-mono text-ink-muted font-medium uppercase tracking-wider truncate">{titulo}</p>
+        <p className={`text-2xl font-mono font-semibold ${c.valor} leading-tight tabular-nums`}>{valor}</p>
         {sub && <p className="text-xs text-ink-muted mt-0.5">{sub}</p>}
       </div>
     </div>
