@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { Bell } from 'lucide-react'
 import BotaoCobranca from '../components/BotaoCobranca.jsx'
 import EstadoVazio from '../components/EstadoVazio.jsx'
-import { formatarMoeda, formatarData, diasAteVencimento } from '../utils/formatadores.js'
+import { formatarMoeda, formatarData, diasAteVencimento, statusParcela } from '../utils/formatadores.js'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
 
 export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobranca, mostrarToast }) {
@@ -11,12 +11,15 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
     const lista = []
     vendas.forEach(venda => {
       venda.parcelas.forEach(parcela => {
-        if (parcela.pago || diasAteVencimento(parcela.vencimento) > 0) return
+        if (parcela.pago || diasAteVencimento(parcela.vencimento) > 7) return
         const cliente = clientes.find(c => c.id === venda.clienteId)
         if (cliente) lista.push({ cliente, parcela, venda })
       })
     })
-    return lista.sort((a, b) => a.cliente.nome.localeCompare(b.cliente.nome))
+    return lista.sort((a, b) =>
+      diasAteVencimento(a.parcela.vencimento) - diasAteVencimento(b.parcela.vencimento) ||
+      a.cliente.nome.localeCompare(b.cliente.nome)
+    )
   }, [vendas, clientes])
 
   return (
@@ -39,12 +42,14 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
         <>
           <div className="bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3">
             <p className="text-sm text-orange-800 font-medium">
-              <strong>{cobrancas.length}</strong> {cobrancas.length === 1 ? 'parcela pendente' : 'parcelas pendentes'} (hoje ou atrasada{cobrancas.length === 1 ? '' : 's'}).
+              <strong>{cobrancas.length}</strong> {cobrancas.length === 1 ? 'cobrança pendente' : 'cobranças pendentes'}: atrasadas, vencendo hoje ou nos próximos 7 dias.
             </p>
           </div>
 
           <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-3">
-            {cobrancas.map(({ cliente, parcela, venda }) => (
+            {cobrancas.map(({ cliente, parcela, venda }) => {
+              const st = statusParcela(parcela)
+              return (
               <motion.div
                 variants={fadeInUp}
                 key={`${venda.id}-${parcela.numero}`}
@@ -72,7 +77,12 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
                       <p className="text-xs text-ink-muted">Parcela {parcela.numero}</p>
                     </div>
                   </div>
-                  <p className="text-xs text-ink-muted mt-2 truncate">📦 {venda.itens}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${st.bg} ${st.texto}`}>
+                      {st.label}
+                    </span>
+                    <p className="text-xs text-ink-muted truncate">📦 {venda.itens}</p>
+                  </div>
                 </button>
 
                 <div className="flex gap-2">
@@ -97,7 +107,8 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
                   </button>
                 </div>
               </motion.div>
-            ))}
+              )
+            })}
           </motion.div>
         </>
       )}
