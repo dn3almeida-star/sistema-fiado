@@ -1,3 +1,31 @@
+# Progresso — Campo CPF em Clientes
+
+Plano: docs/superpowers/plans/2026-07-04-cpf-cliente.md (base 6d5b330)
+Spec: docs/superpowers/specs/2026-07-04-cpf-cliente-design.md
+Branch: feat/saas-multi-vendedor
+Pre-flight: scan limpo. Pré-requisito manual (usuário roda no Supabase antes do
+deploy): `ALTER TABLE clientes ADD COLUMN cpf text;` + constraint UNIQUE.
+
+## Tasks
+
+Task 1: complete (commit 348e80c, review clean). mascaraCPF + validarCPF puras em formatadores.js, cpf.test.js com 9 casos (formatação progressiva, ignora não-dígitos, corta em 11, vazio→válido, dígito verificador, comprimento errado, sequência repetida). 9/9 + suíte 91/91. Revisor (Sonnet) verificou o algoritmo à mão: 529.982.247-25 válido, os rejeitados genuinamente inválidos, regra %11==10→0 correta. Spec ✅, Quality ✅. Sem achados.
+Task 2: complete (commit 828afb8, review clean). useClientes.js: select inclui cpf; adicionarCliente/atualizarCliente normalizam cpf→dígitos-ou-null (nunca ''), checagem proativa de unicidade global lança Error{tipo:'cpf_duplicado', nome}, rede de segurança para 23505 do Postgres (nome:null) nos dois; atualizarCliente exclui o próprio id (.neq) e só checa se 'cpf' in patch. build + 91/91. Revisor confirmou: nenhum caminho grava '', estado otimista usa valor normalizado, gate 'cpf' in patchFinal correto. Spec ✅, Quality ✅. Sem achados.
+Task 3: complete (commit efb32f4, review clean). Clientes.jsx: import mascaraCPF/validarCPF, FORM_INICIAL.cpf, salvarCliente valida CPF não-vazio (setErro 'CPF inválido') e trata cpf_duplicado com setErro nome-aware, campo CPF entre Telefone e Endereço (inputMode numeric, mascaraCPF no onChange), busca com qDigits guardado por !== '' contra c.cpf. build + 91/91. Spec ✅, Quality ✅. Revisor levantou ⚠️ cross-task (formato do cpf gravado) — RESOLVIDO pelo controlador: Task 2 grava dígitos puros (cpfDigitos||null), select retorna dígitos, então busca digit-vs-digit está correta. Sem gap.
+Task 4: complete (commit 0fa7f1b, review clean). PerfilCliente.jsx: import mascaraCPF/validarCPF, abrirEdicao pré-preenche cpf mascarado, salvarEdicao valida (toast 'CPF inválido') e trata cpf_duplicado com toast nome-aware, input CPF entre Telefone e Endereço, pastilha de leitura com FileText+mascaraCPF só quando cliente.cpf, condição do wrapper alargada com || cliente.cpf. build + 91/91. Revisor confirmou guard da pastilha E wrapper alargado juntos (cliente só-CPF mostra pastilha), FileText reusado. Spec ✅, Quality ✅. Sem achados.
+Task 5: complete (commit 966c04b, review clean). gerarPDF.js: mascaraCPF adicionado ao import existente de formatadores.js, linha "CPF: mascaraCPF(cliente.cpf)" no cabeçalho do carnê guardada por if(cliente.cpf) — sem placeholder "CPF: -" quando ausente (assimetria intencional vs Telefone/Bairro), posição (110,50) abaixo de Bairro sem colisão. build + 91/91. Spec ✅, Quality ✅. Sem achados.
+
+## AS 5 tasks completas.
+
+## Revisão Final de Branch (Opus)
+Ready to merge: Yes. Sem críticos/importantes. Revisor rodou suíte (91/91) e build (limpo), traçou o fluxo end-to-end na fonte (não só no diff). Confirmou os 5 invariantes cross-task: (1) formato de armazenamento consistente — hook é o único ponto de normalização (dígitos-ou-null), pastilha/PDF exibem via mascaraCPF (idempotente sobre dígitos), busca compara qDigits vs c.cpf dígito-a-dígito, query de 11 dígitos completa funciona; (2) CPF vazio nunca vira '' no DB (empty/whitespace/não-dígito → null), UNIQUE seguro pra múltiplos sem-CPF; (3) unicidade coerente — check proativo nome-aware + rede 23505 genérica nos dois, update auto-exclui via .neq, ambos callers surfaceiam cpf_duplicado; (4) validação opcional consistente (validarCPF true no vazio); (5) sem regressão nos campos existentes. YAGNI ok (nada especulativo, fora-de-escopo não construído), test hygiene sólida.
+Minors aceitos como estão (não-bloqueantes): placeholder da busca ainda diz "nome ou bairro" (busca por CPF funciona mas não é anunciada — cosmético); nome do arquivo de teste cpf.test.js diverge do spec §Testes que citava formatadores.test.js (mas bate com o plano Task 1, que escolheu cpf.test.js); quirk pré-existente da pastilha (cliente só-bairro não mostra linha de pastilha) — inalterado por esta feature.
+
+## Deploy pendente. PRÉ-REQUISITO MANUAL antes do deploy: rodar no Supabase
+`ALTER TABLE clientes ADD COLUMN cpf text;` + `ALTER TABLE clientes ADD CONSTRAINT clientes_cpf_unique UNIQUE (cpf);`
+Sem isso, salvar cliente quebra em runtime (coluna inexistente).
+
+---
+
 # Progresso — Valor Editável ao Confirmar Pagamento
 
 Plano: docs/superpowers/plans/2026-07-03-pagamento-valor-editavel.md (base 0642c33)
