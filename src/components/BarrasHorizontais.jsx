@@ -1,6 +1,6 @@
 import { formatarMoeda } from '../utils/formatadores.js'
 
-export default function BarrasHorizontais({ itens, cor = '#154e30' }) {
+export default function BarrasHorizontais({ itens, cor = 'rgb(var(--brand-bright))' }) {
   const max = Math.max(...itens.map(i => i.valor), 1)
   return (
     <div className="space-y-2.5">

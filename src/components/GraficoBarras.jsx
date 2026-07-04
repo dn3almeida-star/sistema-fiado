@@ -1,6 +1,6 @@
 import { formatarCompacto } from '../utils/formatadores.js'
 
-export default function GraficoBarras({ dados, cor = '#154e30', destaqueIndex = null }) {
+export default function GraficoBarras({ dados, cor = 'rgb(var(--brand-bright))', destaqueIndex = null }) {
   const max = Math.max(...dados.map(d => d.valor), 1)
   return (
     <div className="flex items-end justify-between gap-2 h-40">
