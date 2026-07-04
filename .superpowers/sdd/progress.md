@@ -62,7 +62,10 @@ Ready to merge: Yes. Sem críticas/importantes. Verificou a garantia mais críti
 Minors aceitos como estão: botão X sem type="button" (sem form ao redor, inofensivo); desselecionar fecha o popup e limpa o filtro (comportamento do próprio contrato de toggle, não um bug); rotuloPeriodo sem validação de formato malformado; reset-effect não reativo a virada real de ano/mês com popup aberto (edge case extremo).
 **Checklist de QA manual pro humano:** round-trip abrir→escolher→rótulo atualiza (nos 3 modos); pílula deslizando ao trocar aba (sem corte abrupto); dias circulares + anel de hoje (distinto do selecionado); trava no ano atual na aba Ano; Dia/Mês navegam pro passado normalmente; memória de 5min mantém posição em reabertura rápida SEM sair do modo Período; memória reseta depois de 5+ min (ou fast-forward no DevTools); fechar sem selecionar nunca muda o filtro/lista já aplicados.
 
-## Deploy pendente.
+## Deploy feito (2026-07-03, junto com a feature de valor editável).
+Commits desta feature (90c0ea7, ed761c3) são ancestrais do estado publicado
+em produção no deploy Vercel `--prod` de 2026-07-03. Já no ar em
+https://sistema-fiado.vercel.app.
 
 ---
 
