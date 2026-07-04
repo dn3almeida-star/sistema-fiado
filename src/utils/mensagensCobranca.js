@@ -22,9 +22,6 @@ export function gerarMensagemCobranca(parcela, cliente, venda) {
   } else {
     mensagem = `Prezado(a) ${cliente.nome}, informamos que vence em ${dataVencimento} uma parcela de ${valor}.`
   }
-  if (venda?.numero) {
-    mensagem += ` (Pedido #${venda.numero})`
-  }
   mensagem += ' Podemos regularizar o pagamento?'
   return { mensagem, tipo: 'cobranca', titulo: 'Cobrar' }
 }

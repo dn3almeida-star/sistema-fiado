@@ -45,12 +45,6 @@ describe('gerarMensagemCobranca', () => {
     expect(r.mensagem).toContain('vence em')
   })
 
-  it('cobranca: inclui referência do pedido quando a venda tem numero', () => {
-    const parcela = { numero: 1, valor: 150, vencimento: diasAPartirDeHoje(0), pago: false, pagoEm: null }
-    const r = gerarMensagemCobranca(parcela, cliente, venda)
-    expect(r.mensagem).toContain('001')
-  })
-
   it('cobranca: sem venda, funciona e não menciona pedido', () => {
     const parcela = { numero: 1, valor: 100, vencimento: diasAPartirDeHoje(0), pago: false, pagoEm: null }
     const r = gerarMensagemCobranca(parcela, cliente, null)
