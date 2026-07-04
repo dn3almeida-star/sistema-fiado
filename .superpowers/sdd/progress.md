@@ -20,9 +20,11 @@ Task 5: complete (commit 966c04b, review clean). gerarPDF.js: mascaraCPF adicion
 Ready to merge: Yes. Sem críticos/importantes. Revisor rodou suíte (91/91) e build (limpo), traçou o fluxo end-to-end na fonte (não só no diff). Confirmou os 5 invariantes cross-task: (1) formato de armazenamento consistente — hook é o único ponto de normalização (dígitos-ou-null), pastilha/PDF exibem via mascaraCPF (idempotente sobre dígitos), busca compara qDigits vs c.cpf dígito-a-dígito, query de 11 dígitos completa funciona; (2) CPF vazio nunca vira '' no DB (empty/whitespace/não-dígito → null), UNIQUE seguro pra múltiplos sem-CPF; (3) unicidade coerente — check proativo nome-aware + rede 23505 genérica nos dois, update auto-exclui via .neq, ambos callers surfaceiam cpf_duplicado; (4) validação opcional consistente (validarCPF true no vazio); (5) sem regressão nos campos existentes. YAGNI ok (nada especulativo, fora-de-escopo não construído), test hygiene sólida.
 Minors aceitos como estão (não-bloqueantes): placeholder da busca ainda diz "nome ou bairro" (busca por CPF funciona mas não é anunciada — cosmético); nome do arquivo de teste cpf.test.js diverge do spec §Testes que citava formatadores.test.js (mas bate com o plano Task 1, que escolheu cpf.test.js); quirk pré-existente da pastilha (cliente só-bairro não mostra linha de pastilha) — inalterado por esta feature.
 
-## Deploy pendente. PRÉ-REQUISITO MANUAL antes do deploy: rodar no Supabase
-`ALTER TABLE clientes ADD COLUMN cpf text;` + `ALTER TABLE clientes ADD CONSTRAINT clientes_cpf_unique UNIQUE (cpf);`
-Sem isso, salvar cliente quebra em runtime (coluna inexistente).
+## Deploy feito (2026-07-04).
+Usuário confirmou ter rodado o SQL no Supabase (ADD COLUMN cpf + constraint
+UNIQUE clientes_cpf_unique). Deploy Vercel --prod: dpl_BEA7SgdHGbTErjTRpGt3Z7joFgbG,
+ready, target production (sistema-fiado-x8mmd9iml-daniel621.vercel.app →
+sistema-fiado.vercel.app). 91/91 testes + build verdes antes do deploy.
 
 ---
 
