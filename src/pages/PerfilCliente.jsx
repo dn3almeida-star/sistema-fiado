@@ -5,7 +5,7 @@ import ModalConfirmarPagamento from '../components/ModalConfirmarPagamento.jsx'
 import BotaoCobranca from '../components/BotaoCobranca.jsx'
 import SeloPago from '../components/SeloPago.jsx'
 import Timeline from '../components/Timeline.jsx'
-import { formatarMoeda, formatarData, statusParcela, formatarTelefone, mascaraTelefone } from '../utils/formatadores.js'
+import { formatarMoeda, formatarData, statusParcela, formatarTelefone, mascaraTelefone, mascaraCPF, validarCPF } from '../utils/formatadores.js'
 import { ehVendaAvista } from '../utils/vendaAvista.js'
 import { gerarCarnetPDF } from '../utils/gerarPDF.js'
 
@@ -26,6 +26,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
     setForm({
       nome: cliente.nome,
       telefone: mascaraTelefone(cliente.telefone ?? ''),
+      cpf: mascaraCPF(cliente.cpf ?? ''),
       endereco: cliente.endereco ?? '',
       bairro: cliente.bairro ?? '',
       observacoes: cliente.observacoes ?? '',
@@ -40,11 +41,16 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
 
   async function salvarEdicao() {
     if (!form.nome.trim()) return
+    if (form.cpf.trim() && !validarCPF(form.cpf)) {
+      mostrarToast('CPF inválido', 'error')
+      return
+    }
     setSalvando(true)
     try {
       await atualizarCliente(clienteId, {
         nome: form.nome.trim(),
         telefone: form.telefone.trim(),
+        cpf: form.cpf.trim(),
         endereco: form.endereco.trim(),
         bairro: form.bairro.trim(),
         observacoes: form.observacoes.trim(),
@@ -52,8 +58,12 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
       setEditando(false)
       setForm(null)
       mostrarToast('✓ Cliente atualizado')
-    } catch {
-      mostrarToast('Erro ao salvar alterações.', 'error')
+    } catch (e) {
+      if (e && e.tipo === 'cpf_duplicado') {
+        mostrarToast(e.nome ? `CPF já cadastrado para ${e.nome}` : 'Este CPF já está cadastrado', 'error')
+      } else {
+        mostrarToast('Erro ao salvar alterações.', 'error')
+      }
     } finally {
       setSalvando(false)
     }
@@ -162,6 +172,14 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
             />
             <input
               type="text"
+              inputMode="numeric"
+              value={form.cpf}
+              onChange={e => setForm(f => ({ ...f, cpf: mascaraCPF(e.target.value) }))}
+              placeholder="CPF (000.000.000-00)"
+              className="w-full bg-white/15 text-white placeholder-white/50 px-4 py-3 rounded-xl text-base outline-none focus:bg-white/25 transition-colors"
+            />
+            <input
+              type="text"
               value={form.endereco}
               onChange={e => setForm(f => ({ ...f, endereco: e.target.value }))}
               placeholder="Endereço"
@@ -194,7 +212,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
               </div>
             </div>
 
-            {(cliente.telefone || cliente.endereco) && (
+            {(cliente.telefone || cliente.endereco || cliente.cpf) && (
               <div className="mt-4 flex flex-wrap gap-2">
                 {cliente.telefone && (
                   <a
@@ -215,6 +233,12 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                   <span className="flex items-center gap-1.5 bg-white/10 text-white/80 px-3 py-2 rounded-xl text-sm">
                     <MapPin size={14} />
                     {cliente.bairro}
+                  </span>
+                )}
+                {cliente.cpf && (
+                  <span className="flex items-center gap-1.5 bg-white/10 text-white/80 px-3 py-2 rounded-xl text-sm">
+                    <FileText size={14} />
+                    {mascaraCPF(cliente.cpf)}
                   </span>
                 )}
               </div>
