@@ -1,13 +1,13 @@
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Search, Plus, ChevronRight, Users, X } from 'lucide-react'
-import { mascaraTelefone, hoje } from '../utils/formatadores.js'
+import { mascaraTelefone, mascaraCPF, validarCPF, hoje } from '../utils/formatadores.js'
 import { resumoCliente } from '../utils/resumoCliente.js'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
 import EstadoVazio from '../components/EstadoVazio.jsx'
 import FiltroSituacao from '../components/FiltroSituacao.jsx'
 
-const FORM_INICIAL = { nome: '', telefone: '', endereco: '', bairro: '', observacoes: '' }
+const FORM_INICIAL = { nome: '', telefone: '', cpf: '', endereco: '', bairro: '', observacoes: '' }
 
 export default function Clientes({ clientes, vendas, adicionarCliente, navegar, mostrarToast }) {
   const [busca, setBusca] = useState('')
@@ -19,6 +19,7 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
   const { lista, contagens } = useMemo(() => {
     const hojeISO = hoje()
     const q = busca.toLowerCase()
+    const qDigits = busca.replace(/\D/g, '')
     const comResumo = clientes.map(c => ({ cliente: c, ...resumoCliente(vendas, c.id, hojeISO) }))
 
     const contagens = {
@@ -35,7 +36,8 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
         return (
           c.nome.toLowerCase().includes(q) ||
           (c.bairro || '').toLowerCase().includes(q) ||
-          (c.endereco || '').toLowerCase().includes(q)
+          (c.endereco || '').toLowerCase().includes(q) ||
+          (qDigits !== '' && (c.cpf || '').includes(qDigits))
         )
       })
       .sort((a, b) => b.saldo - a.saldo || a.cliente.nome.localeCompare(b.cliente.nome))
@@ -48,14 +50,22 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
       setErro('Nome é obrigatório')
       return
     }
+    if (form.cpf.trim() && !validarCPF(form.cpf)) {
+      setErro('CPF inválido')
+      return
+    }
     try {
       await adicionarCliente({ ...form, nome: form.nome.trim() })
       setForm(FORM_INICIAL)
       setMostrarForm(false)
       setErro('')
       mostrarToast('✓ Cliente salvo')
-    } catch {
-      mostrarToast('Erro ao salvar cliente. Tente de novo.', 'error')
+    } catch (e) {
+      if (e && e.tipo === 'cpf_duplicado') {
+        setErro(e.nome ? `CPF já cadastrado para ${e.nome}` : 'Este CPF já está cadastrado')
+      } else {
+        mostrarToast('Erro ao salvar cliente. Tente de novo.', 'error')
+      }
     }
   }
 
@@ -120,6 +130,18 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
                 value={form.telefone}
                 onChange={e => setForm(f => ({ ...f, telefone: mascaraTelefone(e.target.value) }))}
                 placeholder="(00)00000-0000"
+                className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">CPF</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={form.cpf}
+                onChange={e => setForm(f => ({ ...f, cpf: mascaraCPF(e.target.value) }))}
+                placeholder="000.000.000-00"
                 className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </label>
