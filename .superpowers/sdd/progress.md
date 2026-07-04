@@ -1,3 +1,34 @@
+# Progresso — Profissionalização (bugs + polish + a11y)
+
+Plano: docs/superpowers/plans/2026-07-04-profissionalizacao.md (base 839d70a)
+Branch: feat/saas-multi-vendedor
+Fase 0 (RLS): CONCLUÍDA — auditoria confirmou RLS correto no Supabase
+(clientes/vendas com relrowsecurity=true, policies *_all_own cmd ALL,
+qual `user_id = auth.uid()`, coluna user_id existe). S1 e S2 resolvidos, sem
+migração. Isolamento por loja é imposto pelo banco.
+Pre-flight do plano: scan limpo.
+
+## Tasks
+
+Task 1: complete (commit 67bff9a, review clean). calcularParcelas.js: helper dataVencimento monta 'YYYY-MM-DD' local (sem toISOString) e fixa o dia ao último dia do mês-alvo (dia 31 → Fev 28), normaliza índice de mês p/ virar o ano. calcularParcelas.test.js novo com 6 casos. 6/6 + suíte 97/97. Revisor (Sonnet) rodou a suíte e verificou a aritmética à mão (dia 31→Fev28, virada de ano, arredondamento, saldo<=0). Spec ✅, Quality ✅. Sem achados.
+Task 2: complete (commits ed3bec6 + fix 2d60c07, review clean). cobrancaSelo.js: rotuloUltimaCobranca(ultimaCobrancaEm, agoraISO) → null / 'Cobrado hoje'/'Cobrado ontem'/'Cobrado há Nd', comparando por dia de calendário local. 4 casos de teste. Revisor achou Important: teste não fixava TZ (convenção do projeto — quebrava em fuso à frente do BR); reproduziu a falha. Fix (2d60c07): add `process.env.TZ='America/Sao_Paulo'` como 1ª linha, igual statusVenda/filtroVendas/vendaAvista. Re-review: Spec ✅, Quality ✅. Suíte 101/101.
+Task 3: complete (commit ccaefa1, review clean). Relatorio.jsx (2) + Donut.jsx (2): verdes hardcoded (#154e30/#16a34a) → rgb(var(--brand-bright)) (token de tema, verde único, legível no dark). Laranja #c97c1a ("A receber") intocado. build + 101/101. Spec ✅, Quality ✅. MINOR (não-bloqueante, fora de escopo): defaults `cor='#154e30'` em GraficoBarras/BarrasHorizontais são código morto (consumidores sempre passam cor) — deixado como está.
+Task 4: complete (commit defc530, review clean). mensagensCobranca.js: removido o bloco morto `if(venda?.numero)` (Pedido #N nunca dispara — SELECT de vendas não traz numero); param venda mantido na assinatura. Teste do numero sintético removido, demais mantidos. 7 no arquivo + suíte 100/100. Spec ✅, Quality ✅. Sem achados (revisor notou que o teste "sem venda" ficou levemente redundante, mas não incorreto — fora de escopo).
+Task 5: complete (commit 23ba57d, review clean). PerfilCliente.jsx: confirmarExcluirCliente virou async com try/catch (navega+toast só em sucesso; erro → toast, modal fica aberto p/ retry, igual confirmarRemoverVenda). Modal "Excluir Cliente" com mensagem condicional avisando totalDevido via formatarMoeda quando >0. Outros 2 modais intocados. build + 100/100. Spec ✅, Quality ✅. Sem achados.
+Task 6: complete (commit 5807d8d, review clean). CobrancasHoje.jsx (selo rotuloUltimaCobranca + Parcela x/y), Dashboard.jsx (Parcela x/y), NovaVenda.jsx (busca por CPF com guarda qDigits!==''). build + 100/100. REVISÃO FEITA PELO CONTROLADOR (Opus): subagente de review bateu no limite de sessão da API (reset 12:40 -03:00). Verifiquei à mão: escopos de `venda` corretos nos dois cartões, badge só quando selo truthy, guarda de busca correta. Exatamente 3 mudanças. Spec ✅, Quality ✅. Sem achados.
+Task 7: complete (commit e9fe07a). IMPLEMENTADA DIRETO PELO CONTROLADOR (subagentes bloqueados pelo limite de API). ModalConfirmar.jsx + BotaoCobranca.jsx: useEffect de Escape fecha o modal (em ModalConfirmar o hook fica ANTES do `if(!aberto) return null` p/ respeitar regra de hooks), role="dialog"/aria-modal nos dois. build + 100/100. Self-review: diff = exatamente o plano. Revisão final da branch pendente.
+
+## AS 7 tasks completas.
+
+## Revisão Final de Branch (Opus)
+Ready to merge: Yes. Zero achados. Subagente Opus verificou os 7 invariantes end-to-end: (1) useEffect antes do early return em ModalConfirmar (hooks OK); (2) listeners de Escape com cleanup e deps corretos; (3) venda.parcelas.length em escopo nos 2 cartões; (4) selo integra o helper task-2, badge só quando não-null; (5) guarda qDigits!=='' na busca CPF; (6) calcularParcelas sem toISOString, clamp de dia correto, assinatura inalterada (NovaVenda preview intacto); (7) sem scope creep — 8 commits tocam só os arquivos previstos. Fora-de-escopo respeitado (sem automação, sem troca de fonte). Testes novos com TZ fixado. build + 100/100.
+
+## Deploy feito (2026-07-04).
+Produção em https://sistema-fiado.vercel.app (Vercel --prod, aliased). 100/100
+testes + build verdes antes do deploy. As 7 tasks no ar.
+
+---
+
 # Progresso — Campo CPF em Clientes
 
 Plano: docs/superpowers/plans/2026-07-04-cpf-cliente.md (base 6d5b330)
