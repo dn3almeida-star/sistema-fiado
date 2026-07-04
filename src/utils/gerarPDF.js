@@ -1,4 +1,4 @@
-import { formatarData, formatarMoeda } from './formatadores.js'
+import { formatarData, formatarMoeda, mascaraCPF } from './formatadores.js'
 import { corPdfStatusParcela } from './corPdfStatus.js'
 
 const MARGEM = 10
@@ -53,6 +53,9 @@ export async function gerarCarnetPDF(cliente, venda, loja = {}) {
   doc.text(`Cliente: ${cliente.nome}`, margem, 44)
   doc.text(`Telefone: ${cliente.telefone || '-'}`, margem, 50)
   doc.text(`Bairro: ${cliente.bairro || '-'}`, 110, 44)
+  if (cliente.cpf) {
+    doc.text(`CPF: ${mascaraCPF(cliente.cpf)}`, 110, 50)
+  }
 
   // Dados da venda
   doc.setFont('helvetica', 'bold')
