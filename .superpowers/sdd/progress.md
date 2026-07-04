@@ -12,7 +12,28 @@ Este bloco no topo é o que vale pra sessão atual.
 
 ## Tasks
 
-(nenhuma ainda — iniciando Task 1)
+Task 1: complete (commits b48d1fe + ee3622c, review clean). `aplicarPagamentoParcela` implementada exatamente conforme o brief, 9/9 testes passando. Revisor achou bug real de fuso horário em `somarUmMes` (usava `.toISOString()`, rolava a data 1 dia pra trás em fusos à frente do UTC — mandado pelo próprio plano, copiado do padrão já existente em `calcularParcelas.js`); usuário optou por corrigir agora, só neste arquivo novo (sem tocar `calcularParcelas.js`). Fix dispatch inicial (5210ccf) acidentalmente arrastou arquivos não relacionados soltos no working dir desde antes da sessão (.agents/skills/improve, dependência sharp, skills-lock.json) — reviewer pegou pelo diffstat. Corrigido via `git reset --soft` + recommit seletivo: fix isolado (ee3622c, só pagamentoParcela.js) + docs separado (f4e1974, só progress.md); arquivos não relacionados devolvidos ao estado solto de antes. Re-revisão final: Spec ✅, Quality ✅, escopo confirmado limpo (2 arquivos, 179 inserções).
+Task 2: complete (commit adb9d3c, review clean). useVendas.marcarParcelaPaga integrado com aplicarPagamentoParcela; retrocompatibilidade confirmada (sem 3º argumento → diferença=0 → comportamento idêntico ao anterior); branch de valor_total só ativa quando parcelaExtraCriada; erro propaga igual às outras funções do hook. Build verde, 82/82 testes. Spec ✅, Quality ✅. Minor: arredondamento duplicado inline em vez de reusar helper de pagamentoParcela.js (fora de escopo, exigiria exportar de outro arquivo de outra task).
+Task 3: complete (commit 0f64633, review clean). ModalConfirmarPagamento.jsx criado, dedicado (ModalConfirmar.jsx genérico intocado), usa parcela.numeroParcela (não numero), validação de valor vazio/zero/negativo/não-numérico desabilita Confirmar, haptic() no confirmar, visual consistente com o modal genérico. Build verde, 82/82 testes. Spec ✅, Quality ✅. Minor: texto informativo do valor combinado sem font-mono (herdado do brief verbatim, inconsistência já existente em outras partes do app, não é regressão desta task).
+Task 4: complete (commit 75ab022, review clean). PerfilCliente.jsx: import de ModalConfirmarPagamento adicionado (ModalConfirmar mantido, ainda usado por remover-venda/excluir-cliente); confirmarMarcarPago(valorPago) encaminha pra marcarParcelaPaga; modal de pagamento trocado, os outros dois usos de ModalConfirmar confirmados intocados (revisor leu o arquivo ao vivo, não só o diff). Build verde, 82/82 testes. Spec ✅, Quality ✅. Sem achados.
+
+## AS 4 tasks completas.
+
+## Revisão Final de Branch
+
+Ready to merge: Yes. Sem críticos/importantes. Subagente de revisão final (Opus)
+foi interrompido por limite de sessão da API (resetava 22:40 -03:00) antes de
+terminar — a revisão final foi feita diretamente pelo controlador (eu), lendo
+o pacote de diff completo (0642c33..75ab022, 6 commits, 293 inserções/12
+remoções) com o mesmo rigor do template. Confirmado: retrocompatibilidade
+(`valorPago ?? parcelaAtual.valor` → diferenca=0 sem 3º argumento), itens fora
+de escopo genuinamente ausentes (sem reabertura parcial, sem reversão no
+desfazer, sem crédito no excedente da última parcela), somarUmMes usa a maior
+data (não o maior número) pra achar a "última parcela", higiene de git limpa
+nos 6 commits. Minor: `??` em vez de checagem explícita de `> 0` no hook
+(teórico, sem chamador atual que exponha o risco).
+
+## Deploy pendente.
 
 ---
 
