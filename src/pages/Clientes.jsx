@@ -88,7 +88,7 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
         <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted" />
         <input
           type="text"
-          placeholder="Buscar por nome ou bairro..."
+          placeholder="Buscar por nome, bairro ou CPF..."
           value={busca}
           onChange={e => setBusca(e.target.value)}
           className="w-full pl-10 pr-4 py-3 border border-border rounded-2xl text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm"
