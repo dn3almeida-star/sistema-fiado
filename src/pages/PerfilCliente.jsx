@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArrowLeft, Phone, MapPin, Home, FileText, ChevronDown, ChevronUp, CheckCircle, Circle, FileDown, Trash2, Plus, Pencil, Check, X } from 'lucide-react'
 import ModalConfirmar from '../components/ModalConfirmar.jsx'
+import ModalConfirmarPagamento from '../components/ModalConfirmarPagamento.jsx'
 import BotaoCobranca from '../components/BotaoCobranca.jsx'
 import SeloPago from '../components/SeloPago.jsx'
 import Timeline from '../components/Timeline.jsx'
@@ -71,10 +72,10 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
     setVendasAbertas(prev => ({ ...prev, [id]: !prev[id] }))
   }
 
-  async function confirmarMarcarPago() {
+  async function confirmarMarcarPago(valorPago) {
     if (!modalPago) return
     try {
-      await marcarParcelaPaga(modalPago.vendaId, modalPago.numeroParcela)
+      await marcarParcelaPaga(modalPago.vendaId, modalPago.numeroParcela, valorPago)
       setModalPago(null)
       mostrarToast('✓ Parcela marcada como paga')
     } catch {
@@ -427,13 +428,11 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
         )}
       </div>
 
-      <ModalConfirmar
+      <ModalConfirmarPagamento
         aberto={!!modalPago}
-        titulo="Confirmar Pagamento"
-        mensagem={modalPago ? `Marcar parcela ${modalPago.numeroParcela} de ${formatarMoeda(modalPago.valor)} como paga?` : ''}
+        parcela={modalPago}
         onConfirmar={confirmarMarcarPago}
         onCancelar={() => setModalPago(null)}
-        corConfirmar="success"
       />
 
       <ModalConfirmar
