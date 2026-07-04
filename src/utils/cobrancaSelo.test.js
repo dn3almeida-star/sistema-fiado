@@ -1,3 +1,5 @@
+process.env.TZ = 'America/Sao_Paulo'
+
 import { describe, it, expect } from 'vitest'
 import { rotuloUltimaCobranca } from './cobrancaSelo.js'
 
