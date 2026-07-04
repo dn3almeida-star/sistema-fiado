@@ -24,7 +24,12 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
 
   const clientesFiltrados = clientes.filter(c => {
     const q = buscaCliente.toLowerCase()
-    return c.nome.toLowerCase().includes(q) || (c.bairro || '').toLowerCase().includes(q)
+    const qDigits = buscaCliente.replace(/\D/g, '')
+    return (
+      c.nome.toLowerCase().includes(q) ||
+      (c.bairro || '').toLowerCase().includes(q) ||
+      (qDigits !== '' && (c.cpf || '').includes(qDigits))
+    )
   })
 
   const parcelasPreview = useMemo(() => {

@@ -5,9 +5,11 @@ import BotaoCobranca from '../components/BotaoCobranca.jsx'
 import EstadoVazio from '../components/EstadoVazio.jsx'
 import { formatarMoeda, formatarData, diasAteVencimento, statusParcela } from '../utils/formatadores.js'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
+import { rotuloUltimaCobranca } from '../utils/cobrancaSelo.js'
 
 function CartaoCobranca({ cliente, parcela, venda, navegar, registrarCobranca, mostrarToast }) {
   const st = statusParcela(parcela)
+  const selo = rotuloUltimaCobranca(parcela.ultimaCobrancaEm, new Date().toISOString())
   return (
     <motion.div
       variants={fadeInUp}
@@ -32,13 +34,18 @@ function CartaoCobranca({ cliente, parcela, venda, navegar, registrarCobranca, m
                 {parcela.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </span>
             </div>
-            <p className="text-xs text-ink-muted">Parcela {parcela.numero}</p>
+            <p className="text-xs text-ink-muted">Parcela {parcela.numero}/{venda.parcelas.length}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 mt-2">
           <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-semibold uppercase tracking-wide flex-shrink-0 ${st.bg} ${st.texto}`}>
             {st.label}
           </span>
+          {selo && (
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-md font-medium bg-surface-2 text-ink-muted flex-shrink-0">
+              {selo}
+            </span>
+          )}
           <p className="text-xs text-ink-muted truncate">📦 {venda.itens}</p>
         </div>
       </button>

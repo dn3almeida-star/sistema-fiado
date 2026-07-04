@@ -130,7 +130,7 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
                     </div>
                     <div>
                       <p className="font-medium text-ink">{cliente.nome}</p>
-                      <p className="text-xs font-mono text-ink-muted mt-0.5">Parcela {parcela.numero} — {formatarData(parcela.vencimento)}</p>
+                      <p className="text-xs font-mono text-ink-muted mt-0.5">Parcela {parcela.numero}/{venda.parcelas.length} — {formatarData(parcela.vencimento)}</p>
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0 font-mono">
