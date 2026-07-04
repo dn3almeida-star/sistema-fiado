@@ -21,6 +21,7 @@ const VendasTab = lazy(() => import('./components/VendasTab.jsx'))
 const Login = lazy(() => import('./pages/Login.jsx'))
 const PerfilLoja = lazy(() => import('./pages/PerfilLoja.jsx'))
 const RedefinirSenha = lazy(() => import('./pages/RedefinirSenha.jsx'))
+const ModoCobranca = lazy(() => import('./pages/ModoCobranca.jsx'))
 
 export default function App() {
   const [paginaAtiva, setPaginaAtiva] = useState('dashboard')
@@ -114,6 +115,7 @@ export default function App() {
                   <VendasTab {...props} clientePreSelecionado={vendaParaCliente} />
                 )}
                 {paginaAtiva === 'cobrancas' && <CobrancasHoje {...props} />}
+                {paginaAtiva === 'modo-cobranca' && <ModoCobranca {...props} />}
                 {paginaAtiva === 'relatorio' && <Relatorio {...props} />}
                 {paginaAtiva === 'perfil-loja' && <PerfilLoja {...props} />}
               </motion.div>

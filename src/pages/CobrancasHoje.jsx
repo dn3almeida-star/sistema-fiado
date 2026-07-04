@@ -1,11 +1,12 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Bell } from 'lucide-react'
+import { Bell, Send } from 'lucide-react'
 import BotaoCobranca from '../components/BotaoCobranca.jsx'
 import EstadoVazio from '../components/EstadoVazio.jsx'
-import { formatarMoeda, formatarData, diasAteVencimento, statusParcela } from '../utils/formatadores.js'
+import { formatarMoeda, formatarData, diasAteVencimento, statusParcela, hoje } from '../utils/formatadores.js'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
 import { rotuloUltimaCobranca } from '../utils/cobrancaSelo.js'
+import { construirFilaCobranca } from '../utils/filaCobranca.js'
 
 function CartaoCobranca({ cliente, parcela, venda, navegar, registrarCobranca, mostrarToast }) {
   const st = statusParcela(parcela)
@@ -100,6 +101,11 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
     [cobrancas]
   )
 
+  const filaHoje = useMemo(
+    () => construirFilaCobranca(vendas, clientes, hoje(), new Date().toISOString()),
+    [vendas, clientes]
+  )
+
   return (
     <div className="p-4 space-y-4 pb-6">
       {/* Header */}
@@ -123,6 +129,15 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
               <strong className="font-mono">{cobrancas.length}</strong> {cobrancas.length === 1 ? 'parcela em aberto' : 'parcelas em aberto'}, da mais urgente para a mais distante.
             </p>
           </div>
+
+          {filaHoje.length > 0 && (
+            <button
+              onClick={() => navegar('modo-cobranca')}
+              className="w-full flex items-center justify-center gap-2 bg-primary text-white py-3 rounded-2xl font-semibold active:bg-primary-light transition-colors shadow-sm"
+            >
+              <Send size={18} /> Iniciar cobrança do dia ({filaHoje.length})
+            </button>
+          )}
 
           {vencidas.length > 0 && (
             <div>
