@@ -1,3 +1,21 @@
+# Progresso — Valor Editável ao Confirmar Pagamento
+
+Plano: docs/superpowers/plans/2026-07-03-pagamento-valor-editavel.md (base 0642c33)
+Spec: docs/superpowers/specs/2026-07-03-pagamento-valor-editavel-design.md
+Branch: feat/saas-multi-vendedor
+Pre-flight: scan limpo. Auto-revisão do plano já corrigiu inconsistência de tipo
+(parcela.numero → parcela.numeroParcela, pra bater com o shape real de modalPago
+em PerfilCliente.jsx) antes de qualquer dispatch.
+
+**Nota:** este projeto já tem um ledger de features anteriores abaixo (mescladas).
+Este bloco no topo é o que vale pra sessão atual.
+
+## Tasks
+
+(nenhuma ainda — iniciando Task 1)
+
+---
+
 # Progresso — Calendário como Popup + Polimento Visual
 
 Plano: docs/superpowers/plans/2026-07-02-calendario-popup.md (base aab2fae)
