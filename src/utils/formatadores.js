@@ -65,3 +65,29 @@ export function formatarCompacto(valor) {
   }
   return Math.round(n).toLocaleString('pt-BR')
 }
+
+export function mascaraCPF(valor) {
+  const d = (valor || '').replace(/\D/g, '').slice(0, 11)
+  if (d.length <= 3) return d
+  if (d.length <= 6) return `${d.slice(0, 3)}.${d.slice(3)}`
+  if (d.length <= 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`
+  return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`
+}
+
+export function validarCPF(cpf) {
+  const d = (cpf || '').replace(/\D/g, '')
+  if (d.length === 0) return true // campo opcional
+  if (d.length !== 11) return false
+  if (/^(\d)\1{10}$/.test(d)) return false // todos os dígitos iguais
+  let soma = 0
+  for (let i = 0; i < 9; i++) soma += parseInt(d[i], 10) * (10 - i)
+  let dv1 = (soma * 10) % 11
+  if (dv1 === 10) dv1 = 0
+  if (dv1 !== parseInt(d[9], 10)) return false
+  soma = 0
+  for (let i = 0; i < 10; i++) soma += parseInt(d[i], 10) * (11 - i)
+  let dv2 = (soma * 10) % 11
+  if (dv2 === 10) dv2 = 0
+  if (dv2 !== parseInt(d[10], 10)) return false
+  return true
+}
