@@ -33,7 +33,10 @@ data (não o maior número) pra achar a "última parcela", higiene de git limpa
 nos 6 commits. Minor: `??` em vez de checagem explícita de `> 0` no hook
 (teórico, sem chamador atual que exponha o risco).
 
-## Deploy pendente.
+## Deploy feito (2026-07-03).
+Produção em https://sistema-fiado.vercel.app (deploy Vercel `--prod`,
+readyState READY, dpl_2gbLBb7RSbohfAFKf67sE7BuCZZz). 82/82 testes verdes
+antes do deploy. Feature "valor editável ao confirmar pagamento" no ar.
 
 ---
 
