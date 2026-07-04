@@ -4,7 +4,11 @@ function arredondar(n) {
 
 function somarUmMes(vencimentoISO) {
   const [ano, mes, dia] = vencimentoISO.split('-').map(Number)
-  return new Date(ano, mes - 1 + 1, dia).toISOString().slice(0, 10)
+  const d = new Date(ano, mes - 1 + 1, dia)
+  const anoNovo = d.getFullYear()
+  const mesNovo = String(d.getMonth() + 1).padStart(2, '0')
+  const diaNovo = String(d.getDate()).padStart(2, '0')
+  return `${anoNovo}-${mesNovo}-${diaNovo}`
 }
 
 export function aplicarPagamentoParcela(parcelas, numeroParcela, valorPago, agoraISO) {
