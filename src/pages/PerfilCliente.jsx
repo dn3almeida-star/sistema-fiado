@@ -104,11 +104,15 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
     }
   }
 
-  function confirmarExcluirCliente() {
+  async function confirmarExcluirCliente() {
     const nome = cliente.nome
-    removerCliente(clienteId)
-    navegar('clientes')
-    mostrarToast(`${nome} foi excluído`, 'info')
+    try {
+      await removerCliente(clienteId)
+      navegar('clientes')
+      mostrarToast(`${nome} foi excluído`, 'info')
+    } catch {
+      mostrarToast('Erro ao excluir o cliente.', 'error')
+    }
   }
 
   return (
@@ -471,7 +475,11 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
       <ModalConfirmar
         aberto={modalExcluirCliente}
         titulo="Excluir Cliente"
-        mensagem={`Tem certeza que deseja excluir "${cliente.nome}"? Todo o histórico de vendas e parcelas será removido permanentemente.`}
+        mensagem={
+          totalDevido > 0
+            ? `${cliente.nome} tem ${formatarMoeda(totalDevido)} em aberto. Excluir apaga permanentemente este cliente e todo o histórico de vendas e parcelas — inclusive essa dívida.`
+            : `Tem certeza que deseja excluir "${cliente.nome}"? Todo o histórico de vendas e parcelas será removido permanentemente.`
+        }
         onConfirmar={confirmarExcluirCliente}
         onCancelar={() => setModalExcluirCliente(false)}
         corConfirmar="danger"
