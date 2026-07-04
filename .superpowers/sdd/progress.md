@@ -1,3 +1,19 @@
+# Progresso — Automação: Plano A (Modo Cobrança)
+
+Spec: docs/superpowers/specs/2026-07-04-automacao-cobranca-design.md
+Plano A: docs/superpowers/plans/2026-07-04-modo-cobranca.md (base b8a9710)
+Brainstorming decidiu: híbrido (app organiza + user envia; sem envio automático em massa).
+Plano B (lembrete diário Supabase+CallMeBot) fica pra depois.
+
+Task 1: complete (commit 3cc42bf, review clean). filaCobranca.js: construirFilaCobranca(vendas, clientes, hojeISO, agoraISO) → ItemFila[] {cliente, parcela, venda, diasAtraso, jaCobradoHoje}. Filtra não-pagas + venc<=hoje + cliente com telefone; ordena já-cobrado-hoje pro fim, mais atrasada, desempate ultimaCobrancaEm mais antigo (nunca=0), nome. 5 testes (TZ fixado). Revisor (Sonnet) rodou a suíte e checou o comparador sinal-a-sinal. Spec ✅, Quality ✅. Suíte 105/105.
+Task 2: complete (commit 4d01309, review clean). ModoCobranca.jsx (tela guiada: snapshot da fila via useState lazy, progresso i/N, mensagem editável, Enviar=registra→window.open wa.me→avança/erro não avança, Pular avança, fim "cobrou X de N"), App.jsx (rota lazy 'modo-cobranca'), CobrancasHoje.jsx (botão "Iniciar cobrança do dia (N)" reusando construirFilaCobranca). build + 105/105. BottomNav intocado. Spec ✅, Quality ✅. ⚠️ só validação manual do window.open no mobile (mesmo padrão do BotaoCobranca já em prod).
+
+## Plano A: AS 2 tasks completas.
+Revisão final (Opus): Ready to merge YES, limpo. 7 invariantes verificados (fila↔tela, envio pós-sucesso, fim sem crash, snapshot, rota, sem regressão, datas sem bug de fuso). 3 minors cosméticos, sem ação. build + 105/105.
+Deploy do Plano A: PENDENTE (decisão do usuário — sozinho ou junto com Plano B).
+
+---
+
 # Progresso — Profissionalização (bugs + polish + a11y)
 
 Plano: docs/superpowers/plans/2026-07-04-profissionalizacao.md (base 839d70a)
