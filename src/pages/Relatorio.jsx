@@ -97,7 +97,7 @@ export default function Relatorio({ clientes, vendas }) {
           {/* Recebido por mês */}
           <div className="bg-surface rounded-2xl shadow-sm p-4">
             <h2 className="text-[11px] font-mono font-semibold text-ink-muted uppercase tracking-widest mb-3">Recebido por mês</h2>
-            <GraficoBarras dados={metricas.recebidoPorMes} cor="#154e30" destaqueIndex={5} />
+            <GraficoBarras dados={metricas.recebidoPorMes} cor="rgb(var(--brand-bright))" destaqueIndex={5} />
           </div>
 
           {/* A receber por mês */}
@@ -112,7 +112,7 @@ export default function Relatorio({ clientes, vendas }) {
             {metricas.topDevedores.length > 0 ? (
               <BarrasHorizontais
                 itens={metricas.topDevedores.map(d => ({ label: d.cliente.nome, valor: d.saldo }))}
-                cor="#154e30"
+                cor="rgb(var(--brand-bright))"
               />
             ) : (
               <p className="text-sm text-ink-muted">Nenhum cliente devendo no momento.</p>

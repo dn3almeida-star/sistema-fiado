@@ -12,13 +12,13 @@ export default function Donut({ pago, aberto }) {
       <svg width="110" height="110" viewBox="0 0 110 110" className="flex-shrink-0 -rotate-90">
         <circle cx="55" cy="55" r={r} fill="none" stroke="rgb(var(--surface-2))" strokeWidth="12" />
         <circle
-          cx="55" cy="55" r={r} fill="none" stroke="#16a34a" strokeWidth="12" strokeLinecap="round"
+          cx="55" cy="55" r={r} fill="none" stroke="rgb(var(--brand-bright))" strokeWidth="12" strokeLinecap="round"
           strokeDasharray={`${dash} ${circ - dash}`}
         />
       </svg>
       <div className="flex-1 space-y-1.5 text-sm">
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: '#16a34a' }} />
+          <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgb(var(--brand-bright))' }} />
           <span className="text-ink-muted">Pago</span>
           <span className="font-mono font-semibold text-ink ml-auto tabular-nums">{formatarMoeda(pago)}</span>
         </div>
