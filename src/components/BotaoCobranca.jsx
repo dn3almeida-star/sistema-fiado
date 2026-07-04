@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { MessageCircle, X } from 'lucide-react'
 import { gerarMensagemCobranca, linkWhatsApp } from '../utils/mensagensCobranca.js'
 
@@ -7,6 +7,13 @@ export default function BotaoCobranca({ parcela, cliente, venda, onRegistrar }) 
   const [mensagem, setMensagem] = useState('')
   const [titulo, setTitulo] = useState('')
   const [enviando, setEnviando] = useState(false)
+
+  useEffect(() => {
+    if (!aberto) return
+    function onKey(e) { if (e.key === 'Escape') setAberto(false) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [aberto])
 
   const semTelefone = !cliente?.telefone
 
@@ -50,7 +57,7 @@ export default function BotaoCobranca({ parcela, cliente, venda, onRegistrar }) 
 
       {aberto && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-          <div className="bg-surface rounded-2xl shadow-sm p-4 max-w-md w-full space-y-3">
+          <div className="bg-surface rounded-2xl shadow-sm p-4 max-w-md w-full space-y-3" role="dialog" aria-modal="true">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-ink">{titulo}</h3>
               <button onClick={() => setAberto(false)} className="text-ink-muted hover:text-ink p-1">
