@@ -1,3 +1,21 @@
+# Progresso — Automação: Plano B (Lembrete Diário no WhatsApp)
+
+Spec: docs/superpowers/specs/2026-07-04-automacao-cobranca-design.md
+Plano B: docs/superpowers/plans/2026-07-04-lembrete-diario.md (base b8a9710)
+
+## Tasks
+
+Task 1: complete (commit 74d94d1). resumoDia.ts: funções puras resumoDia (conta atrasadas/vencendo hoje, soma total, top 3 urgentes), montarMensagem (formata texto do WhatsApp), dataSaoPaulo (resolve dia no fuso America/Sao_Paulo). resumoDia.test.js com casos de contagem, limite/desempate do top 3, parcelas pagas/futuras ignoradas, cliente sem telefone incluído (lembrete é pro lojista), venda de cliente inexistente ignorada, fila vazia. Suíte verde.
+Task 2: complete (commit ea65b51). index.ts (casca Deno): lê secrets (OWNER_USER_ID, CALLMEBOT_PHONE, CALLMEBOT_APIKEY), consulta vendas/clientes do dono via service role, chama resumoDia/montarMensagem, dispara CallMeBot; fila vazia não envia nada, erro de query/CallMeBot loga e retorna 200. Migração 20260704_lembrete_cron.sql: habilita pg_cron/pg_net, agenda `0 11 * * *` (08:00 America/Sao_Paulo), reagendamento seguro via unschedule condicional.
+Task 3: complete (deploy guiado, feito junto com o usuário em 2026-07-04/05). Destinatário do lembrete: WhatsApp do pai do usuário (não o dono da conta de login — app é multi-vendedor, cada loja tem seus próprios dados). CallMeBot ativado a partir do número do pai (número do bot mudou do que estava no plano — CallMeBot roda numa rotação de números por causa de bans do WhatsApp; número atual funcional: +34 621 07 32 45). OWNER_USER_ID resolvido via SQL Editor pro email joseiram02@hotmail.com (conta separada do pai no sistema). Node.js precisou ser instalado do zero na máquina (winget install OpenJS.NodeJS.LTS) e a execution policy do PowerShell precisou ser liberada (Set-ExecutionPolicy -Scope CurrentUser RemoteSigned) pra rodar `npx`. Supabase CLI: login, link (PROJECT_REF sactjyyildfmycndujoz), secrets set (os 3), functions deploy lembrete-diario — deploy ok. Teste manual via curl: fila vazia inicialmente (nada vencido de verdade na conta do pai); criado cliente/venda de teste na conta dele com parcela vencendo hoje → curl retornou `{"ok":true,"enviado":true}` → mensagem confirmada recebida no WhatsApp do pai (screenshot). Cron agendado via SQL Editor com a URL da function e a nova **publishable key** (sb_publishable_..., substitui a anon key legada no dashboard atual do Supabase) como Bearer token; confirmado via `select jobname, schedule, active from cron.job` → `lembrete-diario | 0 11 * * * | true`.
+
+## AS 3 tasks completas. Plano B no ar (cron ativo, 08:00 America/Sao_Paulo).
+
+**Pendente (usuário):** apagar o cliente/venda de teste ("Daniel teste") cadastrado na conta do pai pra validar a entrega — não é dado real.
+**Verificação final ainda não feita:** conferir `cron.job_run_details` depois da primeira execução real (~08:00 do dia seguinte) pra confirmar `status = 'succeeded'` end-to-end sem intervenção manual.
+
+---
+
 # Progresso — Automação: Plano A (Modo Cobrança)
 
 Spec: docs/superpowers/specs/2026-07-04-automacao-cobranca-design.md
