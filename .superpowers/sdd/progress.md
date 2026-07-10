@@ -1,3 +1,52 @@
+# Progresso — Revisão de Segurança + Fix #1 (auth do cron na Edge Function)
+
+Revisão de segurança do app inteiro (pedido do usuário), feita com Opus + MCP
+do Supabase (leitura ao vivo do projeto sactjyyildfmycndujoz).
+
+## Veredito da auditoria
+Nenhuma vulnerabilidade crítica de isolamento. O essencial (RLS multi-loja) está
+correto: políticas `ALL` com `user_id = auth.uid()` em qual E with_check nas
+tabelas `clientes`/`vendas`; `profiles` com `id = auth.uid()`; colunas `user_id`
+com default `auth.uid()` (por isso o insert do front não precisa setar user_id).
+Sem segredos hardcoded no front, sem service_role no cliente (só na edge
+function), sem `dangerouslySetInnerHTML`/XSS, PDF gerado sem `.html()`.
+
+Achados (todos baixos/hardening): [1] edge function sem auth — corrigido abaixo;
+[2] bucket `logos` público permite listagem/enumeração (advisor); [3] jspdf→
+dompurify com CVEs de XSS não exploráveis hoje (não usa `.html()`); [4] UNIQUE
+global no CPF (oráculo de existência cross-loja); [5] leaked-password protection
+off; [6] pg_net no schema public.
+
+## Fix #1 — autenticação do cron na Edge Function lembrete-diario
+Problema: o cron chamava a função só com a publishable key (pública, no bundle) +
+verify_jwt=true não barra isso → qualquer um com a URL disparava o lembrete
+(spam no WhatsApp do dono + consumo da cota CallMeBot). Não vazava dados.
+
+Solução (segredo compartilhado, sem eu ver o valor e sem hardcode no repo público):
+- Migração `20260710_lembrete_auth_secret.sql` (aplicada ao vivo via MCP
+  apply_migration): tabela `public.app_config` (RLS on, sem políticas, revoke de
+  anon/authenticated → inacessível via API) com segredo aleatório gerado no banco
+  (2x uuid). Cron reagendado enviando `x-cron-secret` lido do app_config em tempo
+  de execução (nunca materializado no texto do job).
+- Função `index.ts` (deploy v2 via MCP, verify_jwt mantido true): lê o segredo do
+  app_config com o service role client (bypassa RLS) e compara com o header
+  recebido; 401 `nao_autorizado` se faltar/errar. Ordem de deploy sem downtime:
+  migração → cron passa a mandar o header (função antiga ignora) → deploy da nova.
+- Deploy da função foi bloqueado 1x pelo classifier de auto mode (deploy em prod);
+  usuário autorizou explicitamente e reexecutou.
+
+Verificação real (não suposição): TESTE 401 via curl com a publishable key mas
+SEM segredo → `{"ok":false,"erro":"nao_autorizado"}` HTTP 401; com segredo errado
+→ 401. TESTE legítimo via `net.http_post` (lendo o segredo do app_config, como o
+cron) → HTTP 200 `{"ok":true,"enviado":true}` (confirmou que NÃO quebrou o
+lembrete). Efeito colateral do teste positivo: como havia atraso na conta, uma
+mensagem real de lembrete foi enviada ao WhatsApp do pai fora do horário.
+
+Pendências da auditoria (não feitas ainda): #2 bucket logos, #3 upgrade jspdf,
+#4 CPF, #5/#6 hardening. Aguardando o usuário priorizar.
+
+---
+
 # Progresso — Fix: perda de tela/rascunho ao reabrir o app
 
 Sem spec/plano formal — bugfix direto via debugging sistemático (skill
