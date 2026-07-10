@@ -42,8 +42,31 @@ cron) → HTTP 200 `{"ok":true,"enviado":true}` (confirmou que NÃO quebrou o
 lembrete). Efeito colateral do teste positivo: como havia atraso na conta, uma
 mensagem real de lembrete foi enviada ao WhatsApp do pai fora do horário.
 
-Pendências da auditoria (não feitas ainda): #2 bucket logos, #3 upgrade jspdf,
-#4 CPF, #5/#6 hardening. Aguardando o usuário priorizar.
+## Fixes #2, #3, #4 — via subagentes paralelos (worktree isolado, Sonnet)
+Usuário pediu "faça todos, delegue subagentes pra cada um". 3 subagentes em
+paralelo; controlador integrou os resultados.
+
+- **#3 jspdf (feito + deploy):** jspdf 2.5.2→4.2.1 (dompurify transitivo 2.5.9→
+  3.4.11, fora da faixa vulnerável). gerarPDF.js não precisou de mudança (API
+  idêntica; subagente rodou sanity de PDF em runtime). npm audit 2→0 vulns,
+  131/131 testes, build limpo. Commit cherry-picked (86a11aa) + push. Deploy
+  Production 5be13cd confirmado (gh: success).
+- **#2 bucket logos (feito ao vivo):** subagente confirmou bucket público (URL
+  serve o objeto sem depender da SELECT policy) e aplicou via apply_migration
+  `drop policy "logos_public_read" on storage.objects`. Verificado empiricamente:
+  antes listagem anônima enumerava o ID da loja; depois retorna []; URL da logo
+  segue 200. Migration versionada (20260710_logos_sem_listagem.sql), cherry-pick
+  5be13cd + push. Advisor não aponta mais o bucket.
+- **#4 CPF (preparado, NÃO aplicado):** subagente confirmou constraint global
+  `clientes_cpf_unique` UNIQUE(cpf); read-only nos dados → nenhum CPF em >1 loja
+  (migrar p/ unique(user_id,cpf) é estritamente mais permissivo, seguro); código
+  já compatível (checagem proativa é RLS-scoped por loja). Migration preparada
+  (drop clientes_cpf_unique + add unique(user_id,cpf)) — conteúdo capturado pelo
+  controlador; NÃO commitada no repo nem aplicada. **Aguarda decisão do usuário**
+  (é mudança de comportamento: passa a permitir o mesmo CPF em lojas diferentes).
+
+Pendências: #4 (aplicar após decisão do usuário); #5 leaked-password (toggle no
+painel Auth — usuário); #6 pg_net no schema public (hardening baixo, não feito).
 
 ---
 
