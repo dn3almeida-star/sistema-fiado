@@ -67,8 +67,20 @@ paralelo; controlador integrou os resultados.
   (user_id, cpf)`; a global sumiu. Passa a permitir o mesmo CPF em lojas
   diferentes e fecha o oráculo de existência cross-loja.
 
-Pendências: #5 leaked-password (toggle no painel Auth — só o usuário consegue,
-não é code/DDL); #6 pg_net no schema public (hardening baixo, não feito).
+- **#5 leaked-password protection: NÃO aplicável no plano Free.** Usuário
+  navegou até Authentication → Attack Protection → Email provider → "Prevent use
+  of leaked passwords" e ao salvar recebeu: "Configuring leaked password
+  protection via HaveIBeenPwned.org is available on Pro Plans and up." O projeto
+  está no plano Free (org dn3almeida-star FREE). Decisão: hardening de baixa
+  prioridade, não justifica upgrade pago. Deixado de fora conscientemente.
+
+Pendência restante (hardening baixo, não feito): #6 pg_net no schema public.
+
+## Auditoria de segurança FECHADA (2026-07-10)
+Resolvidos e no ar: #1 (auth cron edge function), #2 (bucket logos sem listagem),
+#3 (jspdf 4.2.1, 0 CVEs), #4 (CPF unique por-loja). #5 bloqueado por plano Free
+(justificado). Base sólida confirmada: RLS multi-loja correto, sem segredos no
+front, sem XSS. Commits d1370cd → 557f86c na feat/saas-multi-vendedor.
 
 ---
 
