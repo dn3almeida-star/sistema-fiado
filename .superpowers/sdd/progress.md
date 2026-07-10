@@ -1,3 +1,68 @@
+# Progresso — Fix: perda de tela/rascunho ao reabrir o app
+
+Sem spec/plano formal — bugfix direto via debugging sistemático (skill
+`superpowers:systematic-debugging`), reportado pelo usuário em conversa.
+
+## Bug reportado
+Ao cadastrar cliente/venda, se o usuário saísse do app (PWA) e voltasse, a
+tela já tinha saído do cadastro. Causa raiz: PWA é encerrado pelo SO em
+segundo plano; ao reabrir, o React remonta do zero e `paginaAtiva` (só
+`useState`, sem persistência) volta pro `'dashboard'` padrão.
+
+## Tentativa 1 (commit local, não publicada): sessionStorage
+Criado `navegacao.js` com `sessionStorage` pra lembrar a página atual.
+Testes unitários verdes, mas **usuário reportou que não funcionou** — dois
+problemas achados na virada: (1) o fix nunca foi commitado/publicado (só
+rodei testes da função pura, nunca exerci o app de verdade — erro meu de
+alegar "verificado" sem checar deploy); (2) `sessionStorage` é apagado
+quando o SO mata o processo do PWA em segundo plano — exatamente o cenário
+do bug. Não servia.
+
+## Tentativa 2 (commits 7ac2d05 + 2fe40d9): localStorage com prazo
+- `armazenamentoTemporario.js`: empacota/desempacota com carimbo de tempo,
+  TTL padrão 30min (`empacotarComPrazo`/`desempacotarComPrazo` puras +
+  wrappers `salvar/obter/limparComPrazo` via `localStorage`, que sobrevive
+  ao SO encerrar o PWA). 9 testes (round-trip real com localStorage mockado
+  + `Date.now` mockado pra expiração).
+- `navegacao.js` migrado de sessionStorage pra este mecanismo.
+- `rascunho.js`: chaves de rascunho de cliente/venda + `deveUsarRascunhoVenda`
+  (pura) — decide se restaura o rascunho de venda dado um cliente
+  pré-selecionado diferente do rascunho salvo. 4 testes.
+- `Clientes.jsx`/`NovaVenda.jsx`: restauram rascunho na abertura (lazy
+  `useState`), salvam a cada mudança (`useEffect`), limpam ao salvar com
+  sucesso ou cancelar.
+- `useAuth.jsx`: limpa navegação + os dois rascunhos no evento `SIGNED_OUT`
+  (isolamento multi-loja — evita um lojista herdar rascunho de outro no
+  mesmo aparelho compartilhado).
+- App.jsx: leitura do storage movida pra inicializador lazy do useState
+  (evitava re-leitura a cada render).
+
+131/131 testes, build limpo. Commit `7ac2d05` (fix) + `2fe40d9` (empty
+commit pra acionar o primeiro deploy pós-integração).
+
+## Deploy — descoberta importante
+Repositório **não tinha integração Vercel↔GitHub** (deploys anteriores
+eram todos via `vercel --prod` manual no terminal de alguém). Sem essa
+integração e sem Vercel CLI/token neste ambiente, eu não tinha como
+publicar. Guiei o usuário a conectar Git em vercel.com → Project Settings
+→ Git → Connect (aponta pro repo `dn3almeida-star/sistema-fiado`).
+**A partir de agora, todo push pra `feat/saas-multi-vendedor` publica
+sozinho** — não depende mais de terminal/CLI local.
+
+Verificação real (não suposição): `gh api .../deployments` confirmou
+deploy `Production` pro commit `2fe40d9`; `gh api .../commits/.../status`
+retornou `success`; `curl` no domínio de produção retornou 200 com bundle
+novo. **Usuário confirmou no celular: funcionou.**
+
+## Lição registrada
+Não declarar "corrigido"/"verificado" sem (1) confirmar que o commit foi
+de fato publicado (não só testado localmente) e (2) validar o mecanismo
+de storage escolhido contra o cenário real de falha (sessionStorage vs.
+localStorage fazem diferença crítica quando o gatilho é o SO matando o
+processo, não um simples refresh de página).
+
+---
+
 # Progresso — Automação: Plano B (Lembrete Diário no WhatsApp)
 
 Spec: docs/superpowers/specs/2026-07-04-automacao-cobranca-design.md
