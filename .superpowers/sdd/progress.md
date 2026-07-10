@@ -57,16 +57,18 @@ paralelo; controlador integrou os resultados.
   antes listagem anônima enumerava o ID da loja; depois retorna []; URL da logo
   segue 200. Migration versionada (20260710_logos_sem_listagem.sql), cherry-pick
   5be13cd + push. Advisor não aponta mais o bucket.
-- **#4 CPF (preparado, NÃO aplicado):** subagente confirmou constraint global
+- **#4 CPF (APLICADO):** subagente confirmou constraint global
   `clientes_cpf_unique` UNIQUE(cpf); read-only nos dados → nenhum CPF em >1 loja
   (migrar p/ unique(user_id,cpf) é estritamente mais permissivo, seguro); código
-  já compatível (checagem proativa é RLS-scoped por loja). Migration preparada
-  (drop clientes_cpf_unique + add unique(user_id,cpf)) — conteúdo capturado pelo
-  controlador; NÃO commitada no repo nem aplicada. **Aguarda decisão do usuário**
-  (é mudança de comportamento: passa a permitir o mesmo CPF em lojas diferentes).
+  já compatível (checagem proativa é RLS-scoped por loja). Usuário aprovou
+  explicitamente (apply bloqueado 1x pelo classifier → confirmação → aplicado).
+  Migration `20260710_cpf_unique_por_loja.sql` aplicada via MCP apply_migration.
+  Verificado: `pg_constraint` mostra só `clientes_cpf_unique_por_loja UNIQUE
+  (user_id, cpf)`; a global sumiu. Passa a permitir o mesmo CPF em lojas
+  diferentes e fecha o oráculo de existência cross-loja.
 
-Pendências: #4 (aplicar após decisão do usuário); #5 leaked-password (toggle no
-painel Auth — usuário); #6 pg_net no schema public (hardening baixo, não feito).
+Pendências: #5 leaked-password (toggle no painel Auth — só o usuário consegue,
+não é code/DDL); #6 pg_net no schema public (hardening baixo, não feito).
 
 ---
 
