@@ -1,20 +1,29 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Search, Plus, ChevronRight, Users, X } from 'lucide-react'
 import { mascaraTelefone, mascaraCPF, validarCPF, hoje } from '../utils/formatadores.js'
 import { resumoCliente } from '../utils/resumoCliente.js'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
+import { obterComPrazo, salvarComPrazo, limparComPrazo } from '../utils/armazenamentoTemporario.js'
+import { CHAVE_RASCUNHO_CLIENTE } from '../utils/rascunho.js'
 import EstadoVazio from '../components/EstadoVazio.jsx'
 import FiltroSituacao from '../components/FiltroSituacao.jsx'
 
 const FORM_INICIAL = { nome: '', telefone: '', cpf: '', endereco: '', bairro: '', observacoes: '' }
 
 export default function Clientes({ clientes, vendas, adicionarCliente, navegar, mostrarToast }) {
+  const [rascunhoInicial] = useState(() => obterComPrazo(CHAVE_RASCUNHO_CLIENTE))
   const [busca, setBusca] = useState('')
   const [filtro, setFiltro] = useState('todos')
-  const [mostrarForm, setMostrarForm] = useState(false)
-  const [form, setForm] = useState(FORM_INICIAL)
+  const [mostrarForm, setMostrarForm] = useState(rascunhoInicial?.mostrarForm ?? false)
+  const [form, setForm] = useState(rascunhoInicial?.form ?? FORM_INICIAL)
   const [erro, setErro] = useState('')
+
+  // Salva o rascunho enquanto o formulário está aberto; limpa quando fecha.
+  useEffect(() => {
+    if (mostrarForm) salvarComPrazo(CHAVE_RASCUNHO_CLIENTE, { mostrarForm, form })
+    else limparComPrazo(CHAVE_RASCUNHO_CLIENTE)
+  }, [mostrarForm, form])
 
   const { lista, contagens } = useMemo(() => {
     const hojeISO = hoje()

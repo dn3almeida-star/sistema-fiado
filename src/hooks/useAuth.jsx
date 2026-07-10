@@ -1,5 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase.js'
+import { limparNavegacaoSalva } from '../utils/navegacao.js'
+import { limparComPrazo } from '../utils/armazenamentoTemporario.js'
+import { CHAVE_RASCUNHO_CLIENTE, CHAVE_RASCUNHO_VENDA } from '../utils/rascunho.js'
 
 const AuthContext = createContext(null)
 
@@ -17,6 +20,11 @@ export function AuthProvider({ children }) {
       setSession(novaSessao)
       if (evt === 'PASSWORD_RECOVERY') setRecuperandoSenha(true)
       else if (evt === 'SIGNED_IN' || evt === 'SIGNED_OUT') setRecuperandoSenha(false)
+      if (evt === 'SIGNED_OUT') {
+        limparNavegacaoSalva()
+        limparComPrazo(CHAVE_RASCUNHO_CLIENTE)
+        limparComPrazo(CHAVE_RASCUNHO_VENDA)
+      }
     })
     return () => sub.subscription.unsubscribe()
   }, [])

@@ -1,24 +1,38 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { ArrowLeft, Search, Check } from 'lucide-react'
 import { calcularParcelas } from '../utils/calcularParcelas.js'
 import { criarParcelaAvista } from '../utils/vendaAvista.js'
 import { formatarMoeda, formatarData, hoje } from '../utils/formatadores.js'
 import { haptic } from '../utils/haptic.js'
+import { obterComPrazo, salvarComPrazo, limparComPrazo } from '../utils/armazenamentoTemporario.js'
+import { CHAVE_RASCUNHO_VENDA, deveUsarRascunhoVenda } from '../utils/rascunho.js'
+
+const FORM_VENDA_INICIAL = () => ({
+  itens: '',
+  valorTotal: '',
+  entrada: '',
+  numeroParcelas: '1',
+  dataPrimeiraParcela: hoje(),
+})
 
 export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecionado, navegar, toggle }) {
-  const [etapa, setEtapa] = useState(clientePreSelecionado ? 2 : 1)
-  const [clienteId, setClienteId] = useState(clientePreSelecionado || '')
-  const [buscaCliente, setBuscaCliente] = useState('')
-  const [modo, setModo] = useState('fiado') // 'fiado' | 'avista'
-  const [form, setForm] = useState({
-    itens: '',
-    valorTotal: '',
-    entrada: '',
-    numeroParcelas: '1',
-    dataPrimeiraParcela: hoje(),
+  const [rascunhoInicial] = useState(() => {
+    const salvo = obterComPrazo(CHAVE_RASCUNHO_VENDA)
+    return deveUsarRascunhoVenda(salvo, clientePreSelecionado) ? salvo : null
   })
+  const [etapa, setEtapa] = useState(rascunhoInicial?.etapa ?? (clientePreSelecionado ? 2 : 1))
+  const [clienteId, setClienteId] = useState(rascunhoInicial?.clienteId ?? (clientePreSelecionado || ''))
+  const [buscaCliente, setBuscaCliente] = useState('')
+  const [modo, setModo] = useState(rascunhoInicial?.modo ?? 'fiado') // 'fiado' | 'avista'
+  const [form, setForm] = useState(rascunhoInicial?.form ?? FORM_VENDA_INICIAL)
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState(false)
+
+  // Mantém o rascunho da venda em andamento enquanto o formulário não foi
+  // concluído nem cancelado.
+  useEffect(() => {
+    if (!sucesso) salvarComPrazo(CHAVE_RASCUNHO_VENDA, { etapa, clienteId, modo, form })
+  }, [etapa, clienteId, modo, form, sucesso])
 
   const clienteSelecionado = clientes.find(c => c.id === clienteId)
 
@@ -81,6 +95,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
             parcelas: parcelasPreview,
           }
       await adicionarVenda(dados)
+      limparComPrazo(CHAVE_RASCUNHO_VENDA)
       haptic()
       setSucesso(true)
       setTimeout(() => navegar('perfil', { clienteId }), 1200)
@@ -106,7 +121,7 @@ export default function NovaVenda({ clientes, adicionarVenda, clientePreSelecion
       {/* Header */}
       <div className="bg-primary text-white px-4 pt-4 pb-5">
         <button
-          onClick={() => navegar('dashboard')}
+          onClick={() => { limparComPrazo(CHAVE_RASCUNHO_VENDA); navegar('dashboard') }}
           className="flex items-center gap-2 text-white/70 mb-3 min-h-touch transition-colors hover:text-white"
         >
           <ArrowLeft size={20} />

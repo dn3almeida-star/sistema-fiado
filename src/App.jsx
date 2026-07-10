@@ -11,6 +11,7 @@ import { useProfile } from './hooks/useProfile.js'
 import { perfilCompleto } from './utils/perfil.js'
 import { SkeletonDashboard } from './components/Skeleton.jsx'
 import { iniciarChecagemDeAtualizacao } from './utils/checarAtualizacao.js'
+import { obterNavegacaoSalva, salvarNavegacao } from './utils/navegacao.js'
 
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'))
 const Clientes = lazy(() => import('./pages/Clientes.jsx'))
@@ -24,9 +25,10 @@ const RedefinirSenha = lazy(() => import('./pages/RedefinirSenha.jsx'))
 const ModoCobranca = lazy(() => import('./pages/ModoCobranca.jsx'))
 
 export default function App() {
-  const [paginaAtiva, setPaginaAtiva] = useState('dashboard')
-  const [clienteAtivoId, setClienteAtivoId] = useState(null)
-  const [vendaParaCliente, setVendaParaCliente] = useState(null)
+  const [navegacaoSalva] = useState(obterNavegacaoSalva)
+  const [paginaAtiva, setPaginaAtiva] = useState(navegacaoSalva?.paginaAtiva ?? 'dashboard')
+  const [clienteAtivoId, setClienteAtivoId] = useState(navegacaoSalva?.clienteAtivoId ?? null)
+  const [vendaParaCliente, setVendaParaCliente] = useState(navegacaoSalva?.vendaParaCliente ?? null)
 
   const [toast, setToast] = useState(null)
   const [toastKey, setToastKey] = useState(0)
@@ -36,6 +38,10 @@ export default function App() {
   useEffect(() => {
     return iniciarChecagemDeAtualizacao(() => setNovaVersaoDisponivel(true))
   }, [])
+
+  useEffect(() => {
+    salvarNavegacao({ paginaAtiva, clienteAtivoId, vendaParaCliente })
+  }, [paginaAtiva, clienteAtivoId, vendaParaCliente])
 
   const { session, usuario, carregando: carregandoAuth, recuperandoSenha } = useAuth()
   const clientesHook = useClientes(usuario)
