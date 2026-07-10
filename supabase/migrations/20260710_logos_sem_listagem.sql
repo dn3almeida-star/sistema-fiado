@@ -1,0 +1,25 @@
+-- Segurança: impede a listagem/enumeração do bucket público "logos".
+--
+-- O bucket `logos` é público (storage.buckets.public = true), então o acesso a
+-- um objeto individual pela URL pública (getPublicUrl, usada em
+-- src/hooks/useProfile.js pra exibir a logo da loja) NÃO depende de política de
+-- SELECT em storage.objects — buckets públicos bypassam o controle de acesso
+-- para servir/baixar o arquivo (doc oficial: "When a bucket is designated as
+-- 'Public,' it effectively bypasses access controls for both retrieving and
+-- serving files"). A política de SELECT só é necessária pra permitir LISTAR o
+-- conteúdo do bucket via API — e é exatamente essa listagem que a
+-- `logos_public_read` deixava aberta pra `public` (`qual: bucket_id = 'logos'`),
+-- permitindo que qualquer um, autenticado ou não, enumerasse os arquivos e, com
+-- isso, os IDs (auth.uid()) de todas as lojas — os arquivos vivem em pastas
+-- `{auth.uid()}/logo.<ext>`.
+--
+-- As políticas de INSERT/UPDATE/DELETE (`logos_owner_*`, restritas a
+-- `foldername(name)[1] = auth.uid()`) já estavam corretas e não mudam aqui.
+--
+-- Verificado antes/depois de aplicar (produção, projeto sactjyyildfmycndujoz):
+--   - GET da URL pública de um logo existente: 200 antes e 200 depois (exibição
+--     preservada).
+--   - POST /storage/v1/object/list/logos com a publishable key (anon): antes
+--     retornava os nomes das pastas (= user_id de cada loja); depois retorna [].
+
+drop policy if exists "logos_public_read" on storage.objects;
