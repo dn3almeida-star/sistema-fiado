@@ -32,7 +32,10 @@ const ModoCobranca = lazy(() => import('./pages/ModoCobranca.jsx'))
 
 export default function App() {
   const [navegacaoSalva] = useState(obterNavegacaoSalva)
-  const [paginaAtiva, setPaginaAtiva] = useState(navegacaoSalva?.paginaAtiva ?? 'dashboard')
+  // /cobrancas é o deep link do push (quando o toque na notificação abre o app).
+  const [paginaAtiva, setPaginaAtiva] = useState(
+    window.location.pathname === '/cobrancas' ? 'cobrancas' : (navegacaoSalva?.paginaAtiva ?? 'dashboard')
+  )
   // Tela do fluxo deslogado: /cadastro (link da landing) abre direto no cadastro.
   const [telaAuth, setTelaAuth] = useState(() =>
     window.location.pathname === '/cadastro' ? 'cadastro' : 'login')
@@ -48,6 +51,18 @@ export default function App() {
 
   useEffect(() => {
     return iniciarChecagemDeAtualizacao(() => setNovaVersaoDisponivel(true))
+  }, [])
+
+  // Toque na notificação com o app já aberto: o service worker manda navegar.
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return
+    function onMsg(e) {
+      if (e.data?.tipo === 'navegar' && String(e.data.url).includes('cobrancas')) {
+        setPaginaAtiva('cobrancas')
+      }
+    }
+    navigator.serviceWorker.addEventListener('message', onMsg)
+    return () => navigator.serviceWorker.removeEventListener('message', onMsg)
   }, [])
 
   useEffect(() => {

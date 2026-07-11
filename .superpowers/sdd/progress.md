@@ -1,3 +1,46 @@
+# Progresso — Notificação push (PWA) — o lembrete que escala (2026-07-11)
+
+Substituto que escala do lembrete diário: hoje o CallMeBot só atende o dono
+(pai); o push do PWA avisa qualquer lojista no celular ("N cobranças hoje").
+Spec em docs/superpowers/specs/2026-07-11-push-notificacao-design.md. Opus + TDD.
+**NÃO deployado** (falta gerar chaves VAPID + deploy — ver pendências).
+
+- **Função pura `push-diario/resumoPush.ts` (TDD +3, suíte 166/166 em 27 arq.):**
+  `montarNotificacaoPush(vendas, clientes, hojeISO) → {titulo, corpo, qtd, total}
+  | null`. Espelha a regra de atraso (não paga, vencimento<=hoje, cliente existe);
+  null quando não há cobrança. Isolada da lógica do lembrete (não mexi no que
+  funciona).
+- **Migração `20260711_push_subscriptions.sql`:** tabela `push_subscriptions`
+  (user_id, endpoint unique, p256dh, auth). RLS: dono gerencia as suas; cron
+  (service role) lê todas.
+- **`public/sw.js`:** handlers `push` (showNotification com titulo/corpo/icon) e
+  `notificationclick` (foca aba existente + postMessage navegar, ou openWindow
+  /cobrancas). CACHE_NAME bump v3→v4.
+- **Front:** `usePush.js` (suporte/permissão/inscrito; `ativar` pede permissão →
+  PushManager.subscribe(VAPID pública de VITE_VAPID_PUBLIC_KEY) → salva em
+  push_subscriptions; `desativar` remove); `CardAvisosPush.jsx` (opt-in no
+  PerfilLoja, trata não-suportado/negado/iOS); App entende deep link `/cobrancas`
+  e ouve mensagem do SW pra navegar pra aba Cobranças.
+- **Edge Function `push-diario/`:** `npm:web-push@3.6.7`; autentica pelo mesmo
+  x-cron-secret (app_config); percorre inscrições agrupadas por usuário, monta
+  resumo por lojista (service role), envia Web Push com VAPID privada; remove
+  inscrição morta (404/410). Reusa `_shared/datas.ts` (dataSaoPaulo).
+- **Migração `20260711_push_cron.sql`:** agenda `push-diario` às 11:00 UTC
+  (=08:00 BRT), reusando o segredo do lembrete no header x-cron-secret.
+
+## Pendências (bloqueiam o deploy)
+1. **Gerar par de chaves VAPID** (ex: `npx web-push generate-vapid-keys`).
+   Pública → env `VITE_VAPID_PUBLIC_KEY` (Vercel); privada + `VAPID_PUBLIC_KEY`
+   + `VAPID_SUBJECT` (mailto) → secrets do Supabase.
+2. **Deploy:** aplicar as 2 migrações; `supabase functions deploy push-diario`;
+   preencher <PROJECT_REF>/<PUBLISHABLE_KEY> no cron e rodar; deploy do front
+   (SW v4 + env VAPID).
+3. **Testar:** ativar avisos no app (permissão) → inscrição salva; disparar a
+   função manualmente → notificação chega; toque abre /cobrancas.
+4. iOS: push em PWA só com app na tela inicial (documentado no card).
+
+---
+
 # Progresso — Pagamento da assinatura via Pix (Mercado Pago) (2026-07-11)
 
 Liga o botão "Assinar" do paywall a um pagamento Pix real via Mercado Pago (Pix
