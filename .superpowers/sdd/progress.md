@@ -1,3 +1,31 @@
+# Progresso — Deploy do front em produção (Vercel) (2026-07-11)
+
+Primeiro deploy manual do front pra produção via runbook da skill (testes →
+build → `vercel --prod`). Objetivo: colocar landing + cadastro self-service no
+ar de verdade (até então o código existia mas não estava publicado).
+
+- **Pré-deploy:** `npm test` = 145/145 em 23 arquivos; `npm run build` limpo (só
+  aviso cosmético de chunk >500kB — jspdf/html2canvas do PDF, não bloqueia).
+- **Vercel:** CLI não estava instalado/logado nesta máquina. `npx vercel login`
+  (OAuth device flow, usuário autenticou no navegador) → conta `dn3almeida-star`,
+  team `daniel621`. `vercel link --project sistema-fiado` (canônico do runbook).
+  Env vars `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` já estavam no projeto
+  (Production, criadas há 11d) — build remoto injetou.
+- **Deploy:** `npx vercel --prod --yes`. Build remoto (iad1), 2330 módulos, ok.
+  Aliased → **https://sistema-fiado.vercel.app**. Verificado: `/` → 200,
+  `/cadastro` → 200 (rewrite SPA do vercel.json funcionando; sem ele daria 404),
+  title "Crediário Digital".
+- **⚠️ Pendência — projeto duplicado na Vercel:** a conta tem DOIS projetos,
+  `sistema-fiado` (canônico, o que deployamos) e `sistema-fiado-bnju`
+  (`sistema-fiado-bnju.vercel.app`), ambos atualizados ~5h antes. Provável
+  integração git antiga criando duplicata. Decidir qual manter e apagar o outro
+  pra não confundir domínio/deploys. Não bloqueia nada agora.
+- **Config de produto pendente (fora do terminal):** desligar confirmação de
+  email no painel Supabase (Auth → Sign In/Providers → Email) — usuário optou por
+  desligar pra reduzir atrito no lançamento. Verificar se foi feito.
+
+---
+
 # Progresso — Cadastro self-service + teste grátis de 30 dias (2026-07-11)
 
 Primeira feature do funil de GTM (gtm-sistema-fiado.md): visitante cria a
