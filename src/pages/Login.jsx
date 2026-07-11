@@ -3,7 +3,7 @@ import { LogIn, Mail, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { supabase } from '../lib/supabase.js'
 
-export default function Login() {
+export default function Login({ aoCriarConta }) {
   const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
@@ -137,6 +137,16 @@ export default function Login() {
               className="text-sm text-ink-muted hover:text-primary transition-colors disabled:opacity-50"
             >
               {enviandoReset ? 'Enviando…' : 'Esqueci minha senha'}
+            </button>
+          </div>
+
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={aoCriarConta}
+              className="text-sm text-ink-muted hover:text-primary transition-colors"
+            >
+              Não tem conta? <span className="font-semibold text-primary">Criar conta grátis</span>
             </button>
           </div>
         </form>

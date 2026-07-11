@@ -1,3 +1,46 @@
+# Progresso — Cadastro self-service + teste grátis de 30 dias (2026-07-11)
+
+Primeira feature do funil de GTM (gtm-sistema-fiado.md): visitante cria a
+própria conta pela interface e entra num teste de 30 dias. Antes, contas eram
+criadas na mão no Supabase. Spec/plano em docs/superpowers/{specs,plans}/
+2026-07-11-cadastro*. Executado pelo Fable 5 a partir de spec do Opus
+(cadastro-spec.md na raiz). Commit pendente (usuário ainda não pediu).
+
+- **Funções puras** `src/utils/cadastro.js` (TDD, 14 testes novos):
+  `validarCadastro` (erros por campo em PT-BR) e `calcularFimTeste(hojeISO,
+  dias=30)` (aritmética de calendário local, sem toISOString). Suíte total:
+  145/145 em 23 arquivos.
+- **Migração `20260711_cadastro_trial.sql` (APLICADA em prod via MCP, com
+  autorização explícita):** profiles += `plano text not null default 'teste'`,
+  `teste_termina_em date`; trigger security definer `on_auth_user_created` em
+  auth.users cria o profile com nome_loja dos metadados do signUp + fim do
+  teste (data SP + 30). `on conflict do nothing` (idempotente, não toca contas
+  existentes). Verificado por SQL: 2 colunas, 1 trigger, 3 profiles antigos com
+  default. Racional do trigger: funciona com confirmação de email ligada OU
+  desligada (sem sessão o cliente não passaria na RLS pra inserir o próprio
+  profile).
+- **useAuth.jsx** ganhou `cadastrar(email, senha, nomeLoja)`: signUp com
+  `options.data.nome_loja` nos metadados; mapeia erros pra
+  PT-BR; detecta email repetido inclusive no caso silencioso do Supabase
+  (user com `identities: []` quando a confirmação está ligada); retorna
+  `{ precisaConfirmarEmail }`.
+- **UI:** `src/pages/Cadastro.jsx` (lazy), visual espelhado no Login (mesmos
+  tokens/classes; erros por campo; tela "Confirme seu email"; mostra a data de
+  fim do teste via calcularFimTeste). Login ganhou link "Criar conta grátis"
+  (prop `aoCriarConta`). App.jsx: estado `telaAuth` no fluxo deslogado, com
+  deep link `window.location.pathname === '/cadastro'` (destino do "Começar
+  grátis" da landing). `vercel.json` novo com rewrite SPA (antes /cadastro
+  daria 404 no Vercel).
+- **Fora do escopo (specs futuras):** enforcement de paywall (20 clientes no
+  grátis, travas pós-teste), pagamento Pix, push. `perfilCompleto` só exige
+  nome_loja → quem se cadastra cai direto no dashboard.
+- **Config pendente no painel do Supabase (decisão de produto):** desligar a
+  confirmação obrigatória de email (Auth → Sign In/Providers → Email) pra
+  reduzir atrito; o código funciona nos dois modos.
+- Deploy do front NÃO feito ainda (aguardando pedido do usuário).
+
+---
+
 # Progresso — Revisão de Segurança + Fix #1 (auth do cron na Edge Function)
 
 Revisão de segurança do app inteiro (pedido do usuário), feita com Opus + MCP

@@ -37,6 +37,34 @@ export function AuthProvider({ children }) {
     if (error) throw error
   }
 
+  // Cria a conta do lojista. O profile (com nome da loja, plano 'teste' e fim
+  // do teste) nasce no banco, via trigger em auth.users — por isso o nome da
+  // loja vai nos metadados do signUp, e funciona igual com a confirmação de
+  // email ligada ou desligada.
+  async function cadastrar(email, senha, nomeLoja) {
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password: senha,
+      options: { data: { nome_loja: nomeLoja.trim() } },
+    })
+    if (error) {
+      const msg = (error.message || '').toLowerCase()
+      if (msg.includes('already registered') || msg.includes('already been registered')) {
+        throw new Error('Esse email já tem conta. Tente entrar.')
+      }
+      if (msg.includes('rate') || msg.includes('429')) {
+        throw new Error('Muitas tentativas em pouco tempo. Aguarde alguns minutos.')
+      }
+      throw new Error('Não foi possível criar a conta. Tente novamente.')
+    }
+    // Com confirmação de email LIGADA, o Supabase não retorna erro para email
+    // repetido: devolve um usuário "fantasma" com identities vazio.
+    if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      throw new Error('Esse email já tem conta. Tente entrar.')
+    }
+    return { precisaConfirmarEmail: !data?.session }
+  }
+
   async function logout() {
     await supabase.auth.signOut()
   }
@@ -54,6 +82,7 @@ export function AuthProvider({ children }) {
     carregando,
     recuperandoSenha,
     login,
+    cadastrar,
     logout,
     updatePassword,
   }

@@ -20,6 +20,7 @@ const CobrancasHoje = lazy(() => import('./pages/CobrancasHoje.jsx'))
 const Relatorio = lazy(() => import('./pages/Relatorio.jsx'))
 const VendasTab = lazy(() => import('./components/VendasTab.jsx'))
 const Login = lazy(() => import('./pages/Login.jsx'))
+const Cadastro = lazy(() => import('./pages/Cadastro.jsx'))
 const PerfilLoja = lazy(() => import('./pages/PerfilLoja.jsx'))
 const RedefinirSenha = lazy(() => import('./pages/RedefinirSenha.jsx'))
 const ModoCobranca = lazy(() => import('./pages/ModoCobranca.jsx'))
@@ -27,6 +28,9 @@ const ModoCobranca = lazy(() => import('./pages/ModoCobranca.jsx'))
 export default function App() {
   const [navegacaoSalva] = useState(obterNavegacaoSalva)
   const [paginaAtiva, setPaginaAtiva] = useState(navegacaoSalva?.paginaAtiva ?? 'dashboard')
+  // Tela do fluxo deslogado: /cadastro (link da landing) abre direto no cadastro.
+  const [telaAuth, setTelaAuth] = useState(() =>
+    window.location.pathname === '/cadastro' ? 'cadastro' : 'login')
   const [clienteAtivoId, setClienteAtivoId] = useState(navegacaoSalva?.clienteAtivoId ?? null)
   const [vendaParaCliente, setVendaParaCliente] = useState(navegacaoSalva?.vendaParaCliente ?? null)
 
@@ -73,7 +77,15 @@ export default function App() {
 
   if (carregandoAuth) return <Splash />
   if (recuperandoSenha) return <Suspense fallback={<Splash />}><RedefinirSenha /></Suspense>
-  if (!session) return <Suspense fallback={<Splash />}><Login /></Suspense>
+  if (!session) {
+    return (
+      <Suspense fallback={<Splash />}>
+        {telaAuth === 'cadastro'
+          ? <Cadastro aoIrParaLogin={() => setTelaAuth('login')} />
+          : <Login aoCriarConta={() => setTelaAuth('cadastro')} />}
+      </Suspense>
+    )
+  }
   if (profileHook.carregandoProfile) return <Splash />
   if (!perfilCompleto(profileHook.profile)) {
     return (
