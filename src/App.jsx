@@ -11,7 +11,9 @@ import { useProfile } from './hooks/useProfile.js'
 import { perfilCompleto } from './utils/perfil.js'
 import { statusPlano } from './utils/planos.js'
 import { hoje } from './utils/formatadores.js'
+import { useAssinatura } from './hooks/useAssinatura.js'
 import ModalUpgrade from './components/ModalUpgrade.jsx'
+import TelaPagamentoPix from './components/TelaPagamentoPix.jsx'
 import { SkeletonDashboard } from './components/Skeleton.jsx'
 import { iniciarChecagemDeAtualizacao } from './utils/checarAtualizacao.js'
 import { obterNavegacaoSalva, salvarNavegacao } from './utils/navegacao.js'
@@ -42,6 +44,7 @@ export default function App() {
   const toastTimer = useRef(null)
   const [novaVersaoDisponivel, setNovaVersaoDisponivel] = useState(false)
   const [upgradeAberto, setUpgradeAberto] = useState(false)
+  const [pagamentoAberto, setPagamentoAberto] = useState(false)
 
   useEffect(() => {
     return iniciarChecagemDeAtualizacao(() => setNovaVersaoDisponivel(true))
@@ -55,6 +58,7 @@ export default function App() {
   const clientesHook = useClientes(usuario)
   const vendasHook = useVendas(usuario)
   const profileHook = useProfile(usuario)
+  const assinatura = useAssinatura(profileHook.recarregarProfile)
 
   function navegar(pagina, params = {}) {
     if (params.clienteId !== undefined) setClienteAtivoId(params.clienteId)
@@ -157,11 +161,20 @@ export default function App() {
         aberto={upgradeAberto}
         onFechar={() => setUpgradeAberto(false)}
         onAssinar={() => {
-          // TODO: substituir pelo checkout do gateway de pagamento (spec própria).
           setUpgradeAberto(false)
-          mostrarToast('Pagamento chegando em breve 🙂')
+          setPagamentoAberto(true)
+          assinatura.iniciar()
         }}
       />
+
+      {pagamentoAberto && (
+        <TelaPagamentoPix
+          status={assinatura.status}
+          pagamento={assinatura.pagamento}
+          onTentarNovamente={assinatura.iniciar}
+          onFechar={() => { setPagamentoAberto(false); assinatura.resetar() }}
+        />
+      )}
     </div>
   )
 }

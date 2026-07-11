@@ -1,3 +1,50 @@
+# Progresso — Pagamento da assinatura via Pix (Mercado Pago) (2026-07-11)
+
+Liga o botão "Assinar" do paywall a um pagamento Pix real via Mercado Pago (Pix
+avulso, 30 dias por pagamento; recorrência automática = spec futura). Decisão do
+usuário: gateway em vez de expor Pix pessoal; taxa Pix 0,99% confirmada ao vivo.
+Spec em docs/superpowers/specs/2026-07-11-pagamento-pix-design.md. Opus + TDD.
+**NÃO deployado** (aguarda o usuário criar a conta Mercado Pago — ver pendências).
+
+- **Função pura `planos.js` (ajuste, TDD +3, suíte 163/163 em 26 arq.):**
+  `statusPlano` agora entende `planoExpiraEm`. `pago` + (expira null OU
+  hoje≤expira) → pago (permanente p/ pai/fundador, com validade p/ pagantes);
+  `pago` + hoje>expira → grátis (expirou). Novo campo `diasRestantesPago`.
+- **Migração `20260711_pagamento_pix.sql` (escrita, NÃO aplicada ainda):**
+  `profiles += plano_expira_em date` (null=permanente); tabela `pagamentos`
+  (PK = payment_id do MP → webhook idempotente; RLS: dono lê os seus, ninguém
+  escreve via API — só service role).
+- **`useProfile.js`** traz `planoExpiraEm:plano_expira_em`; expõe `recarregarProfile`.
+- **Edge Function `criar-pagamento-pix/`:** `pagamentoPix.ts` (puro, TDD:
+  `montarCorpoPagamento` com external_reference=user_id) + `index.ts` (CORS;
+  autentica pelo JWT — não confia em id do corpo; `POST /v1/payments` no MP com
+  X-Idempotency-Key; devolve qr_code/qr_code_base64/payment_id).
+- **Edge Function `webhook-mercadopago/`:** recebe notificação, **reconsulta o
+  pagamento no MP pelo id** (fonte da verdade, não confia no corpo); se approved
+  e ainda não processado (idempotência via tabela) → upsert pagamentos + `update
+  profiles set plano='pago', plano_expira_em = SP+30`. verify_jwt=false (MP não
+  manda JWT). Precisa deploy com `--no-verify-jwt`.
+- **`_shared/datas.ts`** (padrão _shared do Supabase): `dataSaoPaulo` +
+  `calcularExpiracao` (TDD), usados pelo webhook.
+- **Front:** `useAssinatura.js` (invoke da function → poll na tabela pagamentos
+  a cada 4s até approved → recarrega profile → paywall libera); `TelaPagamentoPix
+  .jsx` (QR + copia-e-cola + status aguardando/aprovado/erro); `ModalUpgrade`
+  "Assinar" abre a tela; `BannerPlano` avisa quando a assinatura vence em ≤7 dias
+  ("Renovar").
+
+## Pendências (bloqueiam o deploy — a fazer no dia do go-live)
+1. **Usuário criar conta no Mercado Pago** e pegar o **Access Token** (produção;
+   sandbox p/ testar). Análogo à ativação do CallMeBot — passo guiado.
+2. **Secrets no Supabase:** `MP_ACCESS_TOKEN` e `SUPABASE_ANON_KEY` (a
+   criar-pagamento-pix usa a anon pra getUser).
+3. **Deploy:** aplicar migração; `supabase functions deploy criar-pagamento-pix`
+   e `webhook-mercadopago --no-verify-jwt`; configurar a notification_url no
+   painel do MP (ou já vai no corpo do pagamento); deploy do front.
+4. **Testar em sandbox** ponta-a-ponta antes de ligar em produção.
+5. Só então `git push` (canônico é git-connected → deploy do front automático).
+
+---
+
 # Progresso — Paywall / enforcement do plano (Grátis × Pago) (2026-07-11)
 
 Enforcement do modelo de preço (gtm §3): Grátis "Caderno" (≤20 clientes, sem

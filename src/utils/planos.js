@@ -22,13 +22,22 @@ const ENTITLEMENTS_GRATIS = {
   limiteClientes: LIMITE_CLIENTES_GRATIS,
 }
 
-// Estado efetivo do plano + permissões + dias restantes do teste (quando em teste).
+// Estado efetivo do plano + permissões + dias restantes (do teste ou da
+// assinatura paga). `planoExpiraEm` nulo = pago permanente (pai/fundador);
+// com data = assinatura Pix avulsa que vence em 30 dias.
 export function statusPlano(profile, hojeISO) {
   const plano = profile?.plano
   const termina = profile?.testeTerminaEm
+  const expiraPago = profile?.planoExpiraEm
 
-  if (plano === 'pago') {
-    return { estado: 'pago', diasRestantesTeste: null, entitlements: ENTITLEMENTS_PAGO }
+  // Pago vale enquanto não tiver validade (permanente) ou hoje <= validade.
+  if (plano === 'pago' && (!expiraPago || hojeISO <= expiraPago)) {
+    return {
+      estado: 'pago',
+      diasRestantesTeste: null,
+      diasRestantesPago: expiraPago ? diasEntre(hojeISO, expiraPago) : null,
+      entitlements: ENTITLEMENTS_PAGO,
+    }
   }
 
   // Teste vale até o fim do dia de teste_termina_em (comparação inclusiva).
@@ -36,12 +45,13 @@ export function statusPlano(profile, hojeISO) {
     return {
       estado: 'teste',
       diasRestantesTeste: diasEntre(hojeISO, termina),
+      diasRestantesPago: null,
       entitlements: ENTITLEMENTS_PAGO,
     }
   }
 
-  // Grátis explícito, teste expirado, ou qualquer valor desconhecido → grátis travado.
-  return { estado: 'gratis', diasRestantesTeste: null, entitlements: ENTITLEMENTS_GRATIS }
+  // Grátis, teste expirado, pago expirado, ou valor desconhecido → grátis travado.
+  return { estado: 'gratis', diasRestantesTeste: null, diasRestantesPago: null, entitlements: ENTITLEMENTS_GRATIS }
 }
 
 // Pode cadastrar mais um cliente? Ilimitado sempre pode; senão respeita o limite.

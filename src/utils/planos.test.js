@@ -5,10 +5,11 @@ import { statusPlano, podeAdicionarCliente, LIMITE_CLIENTES_GRATIS } from './pla
 const HOJE = '2026-07-11'
 
 describe('statusPlano', () => {
-  it('plano pago: tudo liberado, clientes ilimitados, sem contagem de teste', () => {
+  it('plano pago permanente (sem expira): tudo liberado, sem contagem de teste nem de validade', () => {
     const s = statusPlano({ plano: 'pago', testeTerminaEm: '2026-01-01' }, HOJE)
     expect(s.estado).toBe('pago')
     expect(s.diasRestantesTeste).toBe(null)
+    expect(s.diasRestantesPago).toBe(null)
     expect(s.entitlements).toEqual({
       cobranca: true, pdf: true, relatorio: true,
       clientesIlimitados: true, limiteClientes: null,
@@ -54,6 +55,27 @@ describe('statusPlano', () => {
     expect(statusPlano(null, HOJE).estado).toBe('gratis')
     expect(statusPlano({}, HOJE).estado).toBe('gratis')
     expect(statusPlano({ plano: 'xpto' }, HOJE).entitlements.cobranca).toBe(false)
+  })
+
+  it('pago com validade vigente: liberado, com dias restantes da assinatura', () => {
+    const s = statusPlano({ plano: 'pago', planoExpiraEm: '2026-08-10' }, HOJE)
+    expect(s.estado).toBe('pago')
+    expect(s.diasRestantesPago).toBe(30)
+    expect(s.entitlements.cobranca).toBe(true)
+  })
+
+  it('pago no último dia de validade (hoje === expira) ainda é pago, 0 dias', () => {
+    const s = statusPlano({ plano: 'pago', planoExpiraEm: HOJE }, HOJE)
+    expect(s.estado).toBe('pago')
+    expect(s.diasRestantesPago).toBe(0)
+  })
+
+  it('pago expirado (validade no passado) volta a grátis travado', () => {
+    const s = statusPlano({ plano: 'pago', planoExpiraEm: '2026-07-10' }, HOJE)
+    expect(s.estado).toBe('gratis')
+    expect(s.diasRestantesPago).toBe(null)
+    expect(s.entitlements.cobranca).toBe(false)
+    expect(s.entitlements.limiteClientes).toBe(20)
   })
 })
 

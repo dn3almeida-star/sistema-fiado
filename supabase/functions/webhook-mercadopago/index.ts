@@ -1,0 +1,75 @@
+import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { dataSaoPaulo, calcularExpiracao } from '../_shared/datas.ts'
+
+// Webhook do Mercado Pago. MP não manda JWT (verify_jwt=false); a segurança vem
+// de reconsultar o pagamento na API do MP pelo id (não confiamos no corpo).
+Deno.serve(async (req) => {
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  const mpToken = Deno.env.get('MP_ACCESS_TOKEN')!
+  const supabase = createClient(supabaseUrl, serviceKey)
+
+  // O id do pagamento vem no corpo (data.id) ou na query (?data.id= / ?id=).
+  const url = new URL(req.url)
+  let tipo = url.searchParams.get('type') ?? url.searchParams.get('topic') ?? ''
+  let id = url.searchParams.get('data.id') ?? url.searchParams.get('id') ?? ''
+  try {
+    const body = await req.json()
+    tipo = body?.type ?? body?.topic ?? tipo
+    id = String(body?.data?.id ?? body?.id ?? id)
+  } catch { /* corpo pode vir vazio; usa a query */ }
+
+  // Só nos interessa notificação de pagamento.
+  if (tipo && tipo !== 'payment') return ok()
+  if (!id) return ok()
+
+  // Reconsulta o pagamento no MP — fonte da verdade.
+  let pag: any
+  try {
+    const r = await fetch(`https://api.mercadopago.com/v1/payments/${id}`, {
+      headers: { 'Authorization': `Bearer ${mpToken}` },
+    })
+    if (!r.ok) { console.error('MP consulta falhou', r.status); return ok() }
+    pag = await r.json()
+  } catch (err) {
+    console.error('Erro ao consultar MP:', err)
+    return ok()
+  }
+
+  const userId = pag?.external_reference
+  const status = pag?.status
+  const valor = pag?.transaction_amount
+  if (!userId) return ok()
+
+  // Idempotência: se já registramos este pagamento como aprovado, não reprocessa
+  // (evita estender a validade a cada reentrega do webhook).
+  const { data: existente } = await supabase
+    .from('pagamentos').select('status').eq('id', String(id)).maybeSingle()
+  if (existente?.status === 'approved') return ok()
+
+  await supabase.from('pagamentos').upsert({
+    id: String(id), user_id: userId, valor: valor ?? 0, status: status ?? 'unknown',
+  })
+
+  if (status === 'approved') {
+    const expira = calcularExpiracao(dataSaoPaulo(new Date()))
+    const { error } = await supabase
+      .from('profiles')
+      .update({ plano: 'pago', plano_expira_em: expira })
+      .eq('id', userId)
+    if (error) { console.error('Erro ao liberar plano:', error); return json({ ok: false }, 500) }
+    console.log(`Plano liberado para ${userId} até ${expira}`)
+  }
+
+  return ok()
+})
+
+function ok(): Response {
+  return json({ ok: true }, 200)
+}
+
+function json(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status, headers: { 'Content-Type': 'application/json' },
+  })
+}
