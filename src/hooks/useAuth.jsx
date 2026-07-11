@@ -41,11 +41,13 @@ export function AuthProvider({ children }) {
   // do teste) nasce no banco, via trigger em auth.users — por isso o nome da
   // loja vai nos metadados do signUp, e funciona igual com a confirmação de
   // email ligada ou desligada.
-  async function cadastrar(email, senha, nomeLoja) {
+  async function cadastrar(email, senha, nomeLoja, indicadoPor) {
+    const dadosMeta = { nome_loja: nomeLoja.trim() }
+    if (indicadoPor) dadosMeta.indicado_por = indicadoPor
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password: senha,
-      options: { data: { nome_loja: nomeLoja.trim() } },
+      options: { data: dadosMeta },
     })
     if (error) {
       const msg = (error.message || '').toLowerCase()

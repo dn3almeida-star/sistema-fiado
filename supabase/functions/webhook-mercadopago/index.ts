@@ -52,17 +52,47 @@ Deno.serve(async (req) => {
   })
 
   if (status === 'approved') {
-    const expira = calcularExpiracao(dataSaoPaulo(new Date()))
+    const hojeISO = dataSaoPaulo(new Date())
+    const expira = calcularExpiracao(hojeISO)
     const { error } = await supabase
       .from('profiles')
       .update({ plano: 'pago', plano_expira_em: expira })
       .eq('id', userId)
     if (error) { console.error('Erro ao liberar plano:', error); return json({ ok: false }, 500) }
     console.log(`Plano liberado para ${userId} até ${expira}`)
+
+    await creditarIndicador(supabase, userId, hojeISO)
   }
 
   return ok()
 })
+
+// Recompensa da indicação (gtm §4): quando o indicado paga pela 1ª vez, o
+// indicador ganha +30 dias. Nunca rebaixa quem é pago permanente (expira null).
+// Idempotente: marca indicacao_creditada no indicado pra creditar uma só vez.
+async function creditarIndicador(supabase: any, indicadoId: string, hojeISO: string) {
+  const { data: indicado } = await supabase
+    .from('profiles').select('indicado_por, indicacao_creditada').eq('id', indicadoId).maybeSingle()
+  const indicadorId = indicado?.indicado_por
+  if (!indicadorId || indicado?.indicacao_creditada) return
+
+  const { data: indicador } = await supabase
+    .from('profiles').select('plano, plano_expira_em').eq('id', indicadorId).maybeSingle()
+  if (!indicador) return
+
+  // Pago permanente não precisa da recompensa; só fecha a indicação.
+  const permanente = indicador.plano === 'pago' && !indicador.plano_expira_em
+  if (!permanente) {
+    const base = indicador.plano_expira_em && indicador.plano_expira_em > hojeISO
+      ? indicador.plano_expira_em : hojeISO
+    const novoExpira = calcularExpiracao(base)
+    await supabase.from('profiles')
+      .update({ plano: 'pago', plano_expira_em: novoExpira }).eq('id', indicadorId)
+    console.log(`Indicador ${indicadorId} recompensado até ${novoExpira}`)
+  }
+  await supabase.from('profiles')
+    .update({ indicacao_creditada: true }).eq('id', indicadoId)
+}
 
 function ok(): Response {
   return json({ ok: true }, 200)

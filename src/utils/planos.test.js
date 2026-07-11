@@ -1,6 +1,6 @@
 process.env.TZ = 'America/Sao_Paulo'
 import { describe, it, expect } from 'vitest'
-import { statusPlano, podeAdicionarCliente, LIMITE_CLIENTES_GRATIS } from './planos.js'
+import { statusPlano, podeAdicionarCliente, deveMostrarNudgeTeste, LIMITE_CLIENTES_GRATIS } from './planos.js'
 
 const HOJE = '2026-07-11'
 
@@ -95,5 +95,24 @@ describe('podeAdicionarCliente', () => {
 
   it('LIMITE_CLIENTES_GRATIS é 20', () => {
     expect(LIMITE_CLIENTES_GRATIS).toBe(20)
+  })
+})
+
+describe('deveMostrarNudgeTeste', () => {
+  it('teste com ≤5 dias e não mostrado hoje: mostra', () => {
+    const s = statusPlano({ plano: 'teste', testeTerminaEm: '2026-07-14' }, '2026-07-11') // 3 dias
+    expect(deveMostrarNudgeTeste(s, false)).toBe(true)
+  })
+  it('já mostrado hoje: não mostra', () => {
+    const s = statusPlano({ plano: 'teste', testeTerminaEm: '2026-07-14' }, '2026-07-11')
+    expect(deveMostrarNudgeTeste(s, true)).toBe(false)
+  })
+  it('teste com mais de 5 dias: não mostra', () => {
+    const s = statusPlano({ plano: 'teste', testeTerminaEm: '2026-07-30' }, '2026-07-11') // 19 dias
+    expect(deveMostrarNudgeTeste(s, false)).toBe(false)
+  })
+  it('pago ou grátis: não mostra', () => {
+    expect(deveMostrarNudgeTeste(statusPlano({ plano: 'pago' }, '2026-07-11'), false)).toBe(false)
+    expect(deveMostrarNudgeTeste(statusPlano({ plano: 'gratis' }, '2026-07-11'), false)).toBe(false)
   })
 })

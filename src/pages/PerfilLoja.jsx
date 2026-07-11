@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ArrowLeft, Store, Upload } from 'lucide-react'
 import { mascaraTelefone } from '../utils/formatadores.js'
 import CardAvisosPush from '../components/CardAvisosPush.jsx'
+import CardIndicacao from '../components/CardIndicacao.jsx'
 
 export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrarToast, modoInicial = false, onConcluir, navegar }) {
   const [nomeLoja, setNomeLoja] = useState(profile?.nome_loja ?? '')
@@ -123,6 +124,7 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
         </button>
 
         {!modoInicial && <CardAvisosPush />}
+        {!modoInicial && <CardIndicacao />}
       </div>
     </div>
   )

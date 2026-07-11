@@ -60,6 +60,13 @@ export function podeAdicionarCliente(status, qtdAtual) {
   return qtdAtual < status.entitlements.limiteClientes
 }
 
+// Deve empurrar o upgrade no fim do teste? (gtm §5.3) — está em teste, faltam
+// ≤5 dias, e ainda não mostramos hoje. jaMostrouHoje vem do localStorage.
+export function deveMostrarNudgeTeste(status, jaMostrouHoje) {
+  if (jaMostrouHoje) return false
+  return status.estado === 'teste' && status.diasRestantesTeste != null && status.diasRestantesTeste <= 5
+}
+
 function diasEntre(aISO, bISO) {
   const a = new Date(aISO + 'T00:00:00')
   const b = new Date(bISO + 'T00:00:00')

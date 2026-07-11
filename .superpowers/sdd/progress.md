@@ -1,3 +1,30 @@
+# Progresso — GTM: indicação + nudge de fim de teste (itens 3 e 4) (2026-07-11)
+
+Duas features de crescimento. Spec docs/superpowers/specs/2026-07-11-crescimento-design.md.
+Opus + TDD. **NÃO deployado** (vai junto; item 3 usa o webhook de pagamento).
+
+## Item 3 — Programa de indicação
+- **Migração `20260711_indicacao.sql`:** `profiles += indicado_por uuid,
+  indicacao_creditada boolean default false`; trigger passa a gravar
+  `indicado_por` dos metadados do signUp (cast uuid seguro; ignora auto-indicação).
+- **`linkIndicacao(origin, userId)` pura (TDD).** `useAuth.cadastrar` ganhou 4º
+  arg `indicadoPor` (metadata). App lê `?ref=` da URL e passa pro `Cadastro`.
+- **Webhook `webhook-mercadopago`:** ao aprovar o pagamento do indicado (1ª vez,
+  `indicacao_creditada=false`), credita o indicador com +30d — `max(hoje, expira
+  atual)+30`, **sem rebaixar pago permanente** (expira null) — e marca creditada.
+- **`CardIndicacao.jsx`** no PerfilLoja: link + copiar + compartilhar (navigator.share).
+
+## Item 4 — Nudge de fim de teste (in-app)
+- **`deveMostrarNudgeTeste(status, jaMostrouHoje)` pura (TDD):** teste com
+  diasRestantesTeste ≤5 e não mostrado hoje.
+- **App:** useEffect ao carregar o profile abre o `ModalUpgrade` 1x/dia
+  (localStorage `nudge_teste_<hoje>`) — já mostra o valor recuperado. Versão
+  outbound (push/email) fica pra depois.
+
+Suíte 189/189 em 31 arq. GTM código restante: só item 5 (métricas).
+
+---
+
 # Progresso — GTM: valor recuperado como gancho de conversão (2026-07-11)
 
 Item 2 das melhorias de GTM (§5.3 "o app se paga"): mostrar quanto o lojista já

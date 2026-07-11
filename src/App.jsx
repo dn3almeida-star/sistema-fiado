@@ -9,7 +9,7 @@ import { useAuth } from './hooks/useAuth.jsx'
 import Splash from './components/Splash.jsx'
 import { useProfile } from './hooks/useProfile.js'
 import { perfilCompleto } from './utils/perfil.js'
-import { statusPlano } from './utils/planos.js'
+import { statusPlano, deveMostrarNudgeTeste } from './utils/planos.js'
 import { totalRecebido } from './utils/recuperado.js'
 import { hoje } from './utils/formatadores.js'
 import { useAssinatura } from './hooks/useAssinatura.js'
@@ -40,6 +40,8 @@ export default function App() {
   // Tela do fluxo deslogado: /cadastro (link da landing) abre direto no cadastro.
   const [telaAuth, setTelaAuth] = useState(() =>
     window.location.pathname === '/cadastro' ? 'cadastro' : 'login')
+  // ?ref=<userId> do link de indicação — quem indicou este novo cadastro.
+  const [indicadoPor] = useState(() => new URLSearchParams(window.location.search).get('ref') || null)
   const [clienteAtivoId, setClienteAtivoId] = useState(navegacaoSalva?.clienteAtivoId ?? null)
   const [vendaParaCliente, setVendaParaCliente] = useState(navegacaoSalva?.vendaParaCliente ?? null)
 
@@ -76,6 +78,16 @@ export default function App() {
   const profileHook = useProfile(usuario)
   const assinatura = useAssinatura(profileHook.recarregarProfile)
 
+  // Nudge de fim de teste (gtm §5.3): faltando ≤5 dias, abre o upgrade 1x/dia.
+  useEffect(() => {
+    const s = statusPlano(profileHook.profile, hoje())
+    const chave = 'nudge_teste_' + hoje()
+    if (deveMostrarNudgeTeste(s, localStorage.getItem(chave) === '1')) {
+      setUpgradeAberto(true)
+      localStorage.setItem(chave, '1')
+    }
+  }, [profileHook.profile])
+
   function navegar(pagina, params = {}) {
     if (params.clienteId !== undefined) setClienteAtivoId(params.clienteId)
     if (params.clientePreSelecionado !== undefined) setVendaParaCliente(params.clientePreSelecionado)
@@ -110,7 +122,7 @@ export default function App() {
     return (
       <Suspense fallback={<Splash />}>
         {telaAuth === 'cadastro'
-          ? <Cadastro aoIrParaLogin={() => setTelaAuth('login')} />
+          ? <Cadastro aoIrParaLogin={() => setTelaAuth('login')} indicadoPor={indicadoPor} />
           : <Login aoCriarConta={() => setTelaAuth('cadastro')} />}
       </Suspense>
     )

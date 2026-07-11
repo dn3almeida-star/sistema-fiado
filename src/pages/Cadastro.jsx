@@ -12,7 +12,7 @@ function formatarDataBR(iso) {
   return `${dia}/${mes}/${ano}`
 }
 
-export default function Cadastro({ aoIrParaLogin }) {
+export default function Cadastro({ aoIrParaLogin, indicadoPor }) {
   const { cadastrar } = useAuth()
   const [nomeLoja, setNomeLoja] = useState('')
   const [email, setEmail] = useState('')
@@ -34,7 +34,7 @@ export default function Cadastro({ aoIrParaLogin }) {
     if (!valido) return
     setEnviando(true)
     try {
-      const { precisaConfirmarEmail } = await cadastrar(email, senha, nomeLoja)
+      const { precisaConfirmarEmail } = await cadastrar(email, senha, nomeLoja, indicadoPor)
       if (precisaConfirmarEmail) setAguardandoEmail(true)
       // Com sessão criada, o App troca sozinho para o app logado.
     } catch (err) {
