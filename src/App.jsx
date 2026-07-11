@@ -9,6 +9,9 @@ import { useAuth } from './hooks/useAuth.jsx'
 import Splash from './components/Splash.jsx'
 import { useProfile } from './hooks/useProfile.js'
 import { perfilCompleto } from './utils/perfil.js'
+import { statusPlano } from './utils/planos.js'
+import { hoje } from './utils/formatadores.js'
+import ModalUpgrade from './components/ModalUpgrade.jsx'
 import { SkeletonDashboard } from './components/Skeleton.jsx'
 import { iniciarChecagemDeAtualizacao } from './utils/checarAtualizacao.js'
 import { obterNavegacaoSalva, salvarNavegacao } from './utils/navegacao.js'
@@ -38,6 +41,7 @@ export default function App() {
   const [toastKey, setToastKey] = useState(0)
   const toastTimer = useRef(null)
   const [novaVersaoDisponivel, setNovaVersaoDisponivel] = useState(false)
+  const [upgradeAberto, setUpgradeAberto] = useState(false)
 
   useEffect(() => {
     return iniciarChecagemDeAtualizacao(() => setNovaVersaoDisponivel(true))
@@ -65,12 +69,17 @@ export default function App() {
     toastTimer.current = setTimeout(() => setToast(null), 3000)
   }
 
+  const planoStatus = statusPlano(profileHook.profile, hoje())
+  const abrirUpgrade = () => setUpgradeAberto(true)
+
   const props = {
     navegar,
     mostrarToast,
     profile: profileHook.profile,
     salvarProfile: profileHook.salvarProfile,
     enviarLogo: profileHook.enviarLogo,
+    planoStatus,
+    abrirUpgrade,
     ...clientesHook,
     ...vendasHook,
   }
@@ -143,6 +152,16 @@ export default function App() {
       </main>
 
       <BottomNav paginaAtiva={paginaAtiva} onNavegar={navegar} />
+
+      <ModalUpgrade
+        aberto={upgradeAberto}
+        onFechar={() => setUpgradeAberto(false)}
+        onAssinar={() => {
+          // TODO: substituir pelo checkout do gateway de pagamento (spec própria).
+          setUpgradeAberto(false)
+          mostrarToast('Pagamento chegando em breve 🙂')
+        }}
+      />
     </div>
   )
 }

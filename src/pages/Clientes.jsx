@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Search, Plus, ChevronRight, Users, X } from 'lucide-react'
 import { mascaraTelefone, mascaraCPF, validarCPF, hoje } from '../utils/formatadores.js'
+import { podeAdicionarCliente } from '../utils/planos.js'
 import { resumoCliente } from '../utils/resumoCliente.js'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
 import { obterComPrazo, salvarComPrazo, limparComPrazo } from '../utils/armazenamentoTemporario.js'
@@ -11,7 +12,14 @@ import FiltroSituacao from '../components/FiltroSituacao.jsx'
 
 const FORM_INICIAL = { nome: '', telefone: '', cpf: '', endereco: '', bairro: '', observacoes: '' }
 
-export default function Clientes({ clientes, vendas, adicionarCliente, navegar, mostrarToast }) {
+export default function Clientes({ clientes, vendas, adicionarCliente, navegar, mostrarToast, planoStatus, abrirUpgrade }) {
+  const podeAdicionar = podeAdicionarCliente(planoStatus, clientes.length)
+  const limiteClientes = planoStatus?.entitlements?.limiteClientes
+
+  function tentarNovo() {
+    if (!podeAdicionar) { abrirUpgrade?.(); return }
+    setMostrarForm(true); setErro('')
+  }
   const [rascunhoInicial] = useState(() => obterComPrazo(CHAVE_RASCUNHO_CLIENTE))
   const [busca, setBusca] = useState('')
   const [filtro, setFiltro] = useState('todos')
@@ -55,6 +63,7 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
   }, [clientes, vendas, busca, filtro])
 
   async function salvarCliente() {
+    if (!podeAdicionar) { abrirUpgrade?.(); return }
     if (!form.nome.trim()) {
       setErro('Nome é obrigatório')
       return
@@ -82,9 +91,16 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
     <div className="p-4 space-y-3 pb-6">
       {/* Header */}
       <div className="flex items-center justify-between pt-3 pb-1">
-        <h1 className="text-2xl font-display font-semibold text-ink">Clientes</h1>
+        <div>
+          <h1 className="text-2xl font-display font-semibold text-ink">Clientes</h1>
+          {limiteClientes != null && (
+            <p className={`text-xs font-mono mt-0.5 ${podeAdicionar ? 'text-ink-muted' : 'text-danger'}`}>
+              {clientes.length}/{limiteClientes} no plano Grátis
+            </p>
+          )}
+        </div>
         <button
-          onClick={() => { setMostrarForm(true); setErro('') }}
+          onClick={tentarNovo}
           className="flex items-center gap-1.5 bg-primary text-white px-4 py-2 rounded-xl font-semibold text-sm active:bg-primary-light transition-colors min-h-touch shadow-sm"
         >
           <Plus size={18} />
@@ -220,7 +236,7 @@ export default function Clientes({ clientes, vendas, adicionarCliente, navegar, 
             icone={Users}
             titulo="Nenhum cliente ainda"
             descricao="Cadastre o primeiro cliente para começar"
-            acao={{ label: 'Cadastrar primeiro cliente', onClick: () => { setMostrarForm(true); setErro('') } }}
+            acao={{ label: 'Cadastrar primeiro cliente', onClick: tentarNovo }}
           />
         )
       ) : (

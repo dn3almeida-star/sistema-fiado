@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, SkipForward, MessageCircle, PartyPopper } from 'lucide-react'
+import { ArrowLeft, SkipForward, MessageCircle, PartyPopper, Lock } from 'lucide-react'
 import { construirFilaCobranca } from '../utils/filaCobranca.js'
 import { gerarMensagemCobranca, linkWhatsApp } from '../utils/mensagensCobranca.js'
 import { statusParcela, hoje } from '../utils/formatadores.js'
@@ -14,7 +14,7 @@ function BotaoVoltar({ navegar }) {
   )
 }
 
-export default function ModoCobranca({ clientes, vendas, navegar, registrarCobranca, mostrarToast }) {
+export default function ModoCobranca({ clientes, vendas, navegar, registrarCobranca, mostrarToast, planoStatus, abrirUpgrade }) {
   const [fila] = useState(() => construirFilaCobranca(vendas, clientes, hoje(), new Date().toISOString()))
   const [indice, setIndice] = useState(0)
   const [enviados, setEnviados] = useState(0)
@@ -24,6 +24,28 @@ export default function ModoCobranca({ clientes, vendas, navegar, registrarCobra
   )
 
   const item = fila[indice]
+
+  // Blindagem: cobrança em lote é do plano pago (o botão de entrada já é gateado).
+  if (!planoStatus?.entitlements?.cobranca) {
+    return (
+      <div className="p-4 pb-6">
+        <BotaoVoltar navegar={navegar} />
+        <div className="text-center py-16">
+          <Lock size={40} className="mx-auto mb-3 text-primary opacity-70" />
+          <p className="font-semibold text-ink">Cobrança é do plano pago</p>
+          <p className="text-sm text-ink-muted mt-1 max-w-xs mx-auto">
+            Assine o Caderno + Cobrador pra enviar cobranças no WhatsApp em 1 toque.
+          </p>
+          <button
+            onClick={abrirUpgrade}
+            className="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-semibold active:bg-primary-light transition-colors"
+          >
+            Assinar
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   function avancar(proximo) {
     if (proximo < fila.length) {

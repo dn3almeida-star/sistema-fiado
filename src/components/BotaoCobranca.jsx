@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { MessageCircle, X } from 'lucide-react'
 import { gerarMensagemCobranca, linkWhatsApp } from '../utils/mensagensCobranca.js'
 
-export default function BotaoCobranca({ parcela, cliente, venda, onRegistrar }) {
+export default function BotaoCobranca({ parcela, cliente, venda, onRegistrar, bloqueado = false, onUpgrade }) {
   const [aberto, setAberto] = useState(false)
   const [mensagem, setMensagem] = useState('')
   const [titulo, setTitulo] = useState('')
@@ -18,6 +18,8 @@ export default function BotaoCobranca({ parcela, cliente, venda, onRegistrar }) 
   const semTelefone = !cliente?.telefone
 
   function abrir() {
+    // Cobrança 1-toque é do plano pago; no grátis o clique leva ao upgrade.
+    if (bloqueado) { onUpgrade?.(); return }
     if (semTelefone) return
     const g = gerarMensagemCobranca(parcela, cliente, venda)
     setMensagem(g.mensagem)
@@ -43,10 +45,10 @@ export default function BotaoCobranca({ parcela, cliente, venda, onRegistrar }) 
     <>
       <button
         onClick={abrir}
-        disabled={semTelefone}
-        title={semTelefone ? 'Número do cliente não cadastrado' : 'Enviar via WhatsApp'}
+        disabled={semTelefone && !bloqueado}
+        title={bloqueado ? 'Recurso do plano pago — toque para assinar' : semTelefone ? 'Número do cliente não cadastrado' : 'Enviar via WhatsApp'}
         className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
-          semTelefone
+          semTelefone && !bloqueado
             ? 'opacity-50 cursor-not-allowed text-ink-muted'
             : 'bg-primary text-white active:bg-primary-light'
         }`}

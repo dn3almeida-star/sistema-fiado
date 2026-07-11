@@ -4,12 +4,13 @@ import { AlertCircle, Clock, CalendarCheck, BookOpen, LogOut, Sun, Moon } from '
 import CardResumo from '../components/CardResumo.jsx'
 import NumeroAnimado from '../components/NumeroAnimado.jsx'
 import EstadoVazio from '../components/EstadoVazio.jsx'
+import BannerPlano from '../components/BannerPlano.jsx'
 import { formatarData, hoje, diasAteVencimento } from '../utils/formatadores.js'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { useTheme } from '../hooks/useTheme.js'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
 
-export default function Dashboard({ clientes, vendas, navegar, profile }) {
+export default function Dashboard({ clientes, vendas, navegar, profile, planoStatus, abrirUpgrade }) {
   const { logout } = useAuth()
   const { theme, toggle } = useTheme()
   const stats = useMemo(() => {
@@ -39,6 +40,8 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
   }, [vendas, clientes])
 
   return (
+    <>
+      <BannerPlano planoStatus={planoStatus} onUpgrade={abrirUpgrade} />
     <div className="p-4 space-y-4 pb-6">
       {/* Header */}
       <div className="pt-3 pb-1 flex items-center justify-between">
@@ -150,5 +153,6 @@ export default function Dashboard({ clientes, vendas, navegar, profile }) {
         <EstadoVazio icone={CalendarCheck} titulo="Nenhuma cobrança para hoje" />
       )}
     </div>
+    </>
   )
 }

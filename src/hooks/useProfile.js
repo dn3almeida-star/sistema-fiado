@@ -13,7 +13,7 @@ export function useProfile(usuario) {
     }
     const { data } = await supabase
       .from('profiles')
-      .select('id, nome_loja, telefone, logo_url')
+      .select('id, nome_loja, telefone, logo_url, plano, testeTerminaEm:teste_termina_em')
       .eq('id', usuario.id)
       .maybeSingle()
     setProfile(data ?? null)
@@ -30,7 +30,7 @@ export function useProfile(usuario) {
     const { data, error } = await supabase
       .from('profiles')
       .upsert(payload)
-      .select('id, nome_loja, telefone, logo_url')
+      .select('id, nome_loja, telefone, logo_url, plano, testeTerminaEm:teste_termina_em')
       .single()
     if (error) throw error
     setProfile(data)

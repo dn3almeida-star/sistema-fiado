@@ -8,7 +8,7 @@ import { staggerContainer, fadeInUp } from '../utils/motion.js'
 import { rotuloUltimaCobranca } from '../utils/cobrancaSelo.js'
 import { construirFilaCobranca } from '../utils/filaCobranca.js'
 
-function CartaoCobranca({ cliente, parcela, venda, navegar, registrarCobranca, mostrarToast }) {
+function CartaoCobranca({ cliente, parcela, venda, navegar, registrarCobranca, mostrarToast, bloqueado, onUpgrade }) {
   const st = statusParcela(parcela)
   const selo = rotuloUltimaCobranca(parcela.ultimaCobrancaEm, new Date().toISOString())
   return (
@@ -56,6 +56,8 @@ function CartaoCobranca({ cliente, parcela, venda, navegar, registrarCobranca, m
           parcela={parcela}
           cliente={cliente}
           venda={venda}
+          bloqueado={bloqueado}
+          onUpgrade={onUpgrade}
           onRegistrar={async () => {
             try {
               await registrarCobranca(venda.id, parcela.numero)
@@ -76,7 +78,8 @@ function CartaoCobranca({ cliente, parcela, venda, navegar, registrarCobranca, m
   )
 }
 
-export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobranca, mostrarToast }) {
+export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobranca, mostrarToast, planoStatus, abrirUpgrade }) {
+  const bloqueado = !planoStatus?.entitlements?.cobranca
   const cobrancas = useMemo(() => {
     const lista = []
     vendas.forEach(venda => {
@@ -132,7 +135,7 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
 
           {filaHoje.length > 0 && (
             <button
-              onClick={() => navegar('modo-cobranca')}
+              onClick={() => (bloqueado ? abrirUpgrade() : navegar('modo-cobranca'))}
               className="w-full flex items-center justify-center gap-2 bg-primary text-white py-3 rounded-2xl font-semibold active:bg-primary-light transition-colors shadow-sm"
             >
               <Send size={18} /> Iniciar cobrança do dia ({filaHoje.length})
@@ -154,6 +157,8 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
                     navegar={navegar}
                     registrarCobranca={registrarCobranca}
                     mostrarToast={mostrarToast}
+                    bloqueado={bloqueado}
+                    onUpgrade={abrirUpgrade}
                   />
                 ))}
               </motion.div>
@@ -175,6 +180,8 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
                     navegar={navegar}
                     registrarCobranca={registrarCobranca}
                     mostrarToast={mostrarToast}
+                    bloqueado={bloqueado}
+                    onUpgrade={abrirUpgrade}
                   />
                 ))}
               </motion.div>

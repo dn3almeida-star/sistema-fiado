@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowLeft, Phone, MapPin, Home, FileText, ChevronDown, ChevronUp, CheckCircle, Circle, FileDown, Trash2, Plus, Pencil, Check, X } from 'lucide-react'
+import { ArrowLeft, Phone, MapPin, Home, FileText, ChevronDown, ChevronUp, CheckCircle, Circle, FileDown, Trash2, Plus, Pencil, Check, X, Lock } from 'lucide-react'
 import ModalConfirmar from '../components/ModalConfirmar.jsx'
 import ModalConfirmarPagamento from '../components/ModalConfirmarPagamento.jsx'
 import BotaoCobranca from '../components/BotaoCobranca.jsx'
@@ -9,7 +9,9 @@ import { formatarMoeda, formatarData, statusParcela, formatarTelefone, mascaraTe
 import { ehVendaAvista } from '../utils/vendaAvista.js'
 import { gerarCarnetPDF } from '../utils/gerarPDF.js'
 
-export default function PerfilCliente({ clienteId, clientes, vendas, marcarParcelaPaga, desmarcarParcelaPaga, registrarCobranca, removerVenda, removerCliente, atualizarCliente, navegar, mostrarToast, profile }) {
+export default function PerfilCliente({ clienteId, clientes, vendas, marcarParcelaPaga, desmarcarParcelaPaga, registrarCobranca, removerVenda, removerCliente, atualizarCliente, navegar, mostrarToast, profile, planoStatus, abrirUpgrade }) {
+  const bloqueado = !planoStatus?.entitlements?.cobranca
+  const podePdf = !!planoStatus?.entitlements?.pdf
   const [vendasAbertas, setVendasAbertas] = useState({})
   const [modalPago, setModalPago] = useState(null)
   const [modalRemover, setModalRemover] = useState(null)
@@ -413,6 +415,8 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                       parcela={p}
                                       cliente={cliente}
                                       venda={venda}
+                                      bloqueado={bloqueado}
+                                      onUpgrade={abrirUpgrade}
                                       onRegistrar={async () => {
                                         try {
                                           await registrarCobranca(venda.id, p.numero)
@@ -430,10 +434,10 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
 
                           <div className="flex gap-2 px-3 pb-3">
                             <button
-                              onClick={() => gerarCarnetPDF(cliente, venda, profile || {})}
+                              onClick={() => (podePdf ? gerarCarnetPDF(cliente, venda, profile || {}) : abrirUpgrade())}
                               className="flex-1 flex items-center justify-center gap-2 bg-primary-50 text-primary py-2.5 rounded-xl font-semibold text-sm active:bg-primary/10 transition-colors"
                             >
-                              <FileDown size={16} />
+                              {podePdf ? <FileDown size={16} /> : <Lock size={16} />}
                               Gerar Carnê PDF
                             </button>
                             <button

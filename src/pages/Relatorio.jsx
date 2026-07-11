@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { TrendingUp, TrendingDown, DollarSign, Users, BarChart2 } from 'lucide-react'
+import { TrendingUp, TrendingDown, DollarSign, Users, BarChart2, Lock } from 'lucide-react'
 import CardResumo from '../components/CardResumo.jsx'
 import EstadoVazio from '../components/EstadoVazio.jsx'
 import { formatarMoeda, mesAtual, diasAteVencimento, hoje } from '../utils/formatadores.js'
@@ -8,7 +8,7 @@ import GraficoBarras from '../components/GraficoBarras.jsx'
 import BarrasHorizontais from '../components/BarrasHorizontais.jsx'
 import Donut from '../components/Donut.jsx'
 
-export default function Relatorio({ clientes, vendas }) {
+export default function Relatorio({ clientes, vendas, planoStatus, abrirUpgrade }) {
   const stats = useMemo(() => {
     const mes = mesAtual()
     let totalReceber = 0
@@ -46,6 +46,31 @@ export default function Relatorio({ clientes, vendas }) {
   const metricas = useMemo(() => metricasRelatorio(vendas, clientes, hoje()), [vendas, clientes])
 
   const mesNome = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+
+  // Relatório do dia é do plano pago: no grátis mostra o estado bloqueado.
+  if (!planoStatus?.entitlements?.relatorio) {
+    return (
+      <div className="p-4 pb-6">
+        <div className="pt-3 pb-1">
+          <h1 className="text-2xl font-display font-semibold text-ink">Relatório</h1>
+        </div>
+        <div className="text-center py-16">
+          <Lock size={40} className="mx-auto mb-3 text-primary opacity-70" />
+          <p className="font-semibold text-ink">Relatório é do plano pago</p>
+          <p className="text-sm text-ink-muted mt-1 max-w-xs mx-auto">
+            Assine o Caderno + Cobrador pra ver quanto entrou, quem pagou e quem
+            está devendo.
+          </p>
+          <button
+            onClick={abrirUpgrade}
+            className="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-semibold active:bg-primary-light transition-colors"
+          >
+            Assinar
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-4 space-y-4 pb-6">

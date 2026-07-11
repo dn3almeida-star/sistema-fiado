@@ -1,3 +1,53 @@
+# Progresso — Paywall / enforcement do plano (Grátis × Pago) (2026-07-11)
+
+Enforcement do modelo de preço (gtm §3): Grátis "Caderno" (≤20 clientes, sem
+cobrança/PDF/relatório) × Pago "Caderno + Cobrador" R$19,90 (tudo, ilimitado);
+teste = 30 dias do pago → vira Grátis ao expirar. Spec/design em
+docs/superpowers/specs/2026-07-11-paywall-design.md. Feito com Opus + MCP Supabase.
+**NÃO commitado/deployado ainda** (aguarda gateway — ver abaixo).
+
+- **Função pura `src/utils/planos.js` (TDD, 9 testes; suíte 154/154 em 24 arq.):**
+  `statusPlano(profile, hojeISO) → {estado:'teste'|'gratis'|'pago',
+  diasRestantesTeste, entitlements:{cobranca,pdf,relatorio,clientesIlimitados,
+  limiteClientes}}` + `podeAdicionarCliente(status, qtd)` +
+  `LIMITE_CLIENTES_GRATIS=20`. Regras: pago→tudo; teste com `hoje<=termina`→tudo;
+  teste expirado/gratis/desconhecido/`termina=null`→grátis travado (limite 20).
+  Comparação de datas ISO por string; `diasEntre` no padrão filaCobranca.
+- **`useProfile.js`** passou a trazer `plano, testeTerminaEm:teste_termina_em`
+  nos SELECTs (recarregar + upsert). Antes nem vinha — nada era gateado.
+- **`App.jsx`** computa `planoStatus = statusPlano(profile, hoje())` e injeta em
+  `props` (+ `abrirUpgrade`). `ModalUpgrade` global.
+- **Gates de UI** (todos lendo `planoStatus.entitlements`, UI é casca):
+  - Cobrança: `BotaoCobranca` ganhou `bloqueado`/`onUpgrade` (clique→upgrade);
+    threaded em `PerfilCliente`, `CobrancasHoje` (+ botão "Iniciar cobrança do
+    dia"), e blindagem na página `ModoCobranca`.
+  - PDF: botão "Gerar Carnê PDF" no `PerfilCliente` → upgrade se `!pdf`.
+  - Relatório: `Relatorio.jsx` inteiro atrás de estado bloqueado se `!relatorio`.
+  - Cliente 21º: `Clientes.jsx` — botão "Novo" e `salvarCliente` gateados por
+    `podeAdicionarCliente`; contador "X/20 no plano Grátis".
+  - `BannerPlano.jsx` (novo) no topo do Dashboard: teste→contagem regressiva;
+    grátis→CTA assinar; pago→some.
+  - `ModalUpgrade.jsx` (novo): benefícios + preço; botão "Assinar" = placeholder
+    (`onAssinar`→toast). **Pix removido** (ver decisão do gateway).
+- **Banco (MCP, prod sactjyyildfmycndujoz):** conta do pai (`3093bd55…`,
+  Iram Utilidades) e do fundador (`c69e3937…`, dn3almeida) → `plano='pago'`.
+  Conta de teste "Mariana fiado" (`773a79d3…`, marisilvanet) **excluída** por
+  completo (vendas→clientes→profiles→auth.users, em transação; 0 restantes).
+  Estado final: 2 contas, ambas `pago` → ninguém trava quando for pro ar.
+  (Sem migração de schema: `plano` text já comporta 'gratis'/'pago'.)
+
+## Pendências (bloqueiam o "ir pro ar")
+- **Pagamento por GATEWAY, não Pix manual** (decisão do usuário — não quer expor
+  Pix pessoal). Precisa de spec própria: escolher provedor (Mercado Pago é o
+  natural no BR: Pix+cartão, checkout hospedado, sem expor chave), Edge Function
+  de criação de checkout + webhook que confirma pagamento e faz
+  `update profiles set plano='pago'`, e ligar o `onAssinar` do modal no checkout.
+- **Deploy = live:** o projeto canônico da Vercel é git-connected, então `git
+  push` publica na hora. Por isso o enforcement foi **commitado local, SEM push**
+  — só sobe junto com o gateway (senão o botão "Assinar" fica sem destino).
+
+---
+
 # Progresso — Deploy do front em produção (Vercel) (2026-07-11)
 
 Primeiro deploy manual do front pra produção via runbook da skill (testes →
