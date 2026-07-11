@@ -1,3 +1,31 @@
+# Progresso — Melhorias: onboarding de ativação + polimento (2026-07-11)
+
+Duas frentes de melhoria pedidas pelo usuário ("todas as melhorias"). Opus + TDD.
+**NÃO deployado** (vai junto no dia do deploy das outras features).
+
+## A) Onboarding de ativação
+Checklist "Primeiros passos" no Dashboard que guia o lojista novo até o momento
+"aha" do funil (gtm §5 = 1ª cobrança enviada).
+- **Função pura `src/utils/onboarding.js` (TDD +5, suíte 171/171 em 28 arq.):**
+  `passosOnboarding(clientes, vendas) → {cadastrouCliente, registrouFiado,
+  enviouCobranca, completo}`. enviouCobranca = alguma parcela com ultimaCobrancaEm.
+- **`CardOnboarding.jsx`:** 3 passos (cadastrar cliente → registrar fiado →
+  enviar 1ª cobrança); o próximo passo é destacado e leva à tela; X dispensa
+  (localStorage `onboarding_dispensado`). Some quando completo ou dispensado.
+- **Dashboard:** computa `passos` (useMemo) e mostra o card no topo do conteúdo.
+
+## B) Polimento
+- **Reduced-motion (a11y não-negociável):** o CSS já zerava transições/animações
+  CSS, mas o **framer-motion** (JS, em quase toda tela) não era coberto. Adicionado
+  `<MotionConfig reducedMotion="user">` na raiz (`main.jsx`) → o framer respeita
+  a preferência do sistema.
+- **Fonte Inter:** o hook de design marca como "muito usada", mas é a marca já
+  consolidada do projeto (tailwind.config) — mantida (identidade vence). Auditoria
+  visual profunda (impeccable audit completo, com screenshots) fica como
+  investimento próprio; exige montar PRODUCT.md/DESIGN.md antes.
+
+---
+
 # Progresso — Notificação push (PWA) — o lembrete que escala (2026-07-11)
 
 Substituto que escala do lembrete diário: hoje o CallMeBot só atende o dono

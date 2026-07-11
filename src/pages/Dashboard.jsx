@@ -1,10 +1,12 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { AlertCircle, Clock, CalendarCheck, BookOpen, LogOut, Sun, Moon } from 'lucide-react'
 import CardResumo from '../components/CardResumo.jsx'
 import NumeroAnimado from '../components/NumeroAnimado.jsx'
 import EstadoVazio from '../components/EstadoVazio.jsx'
 import BannerPlano from '../components/BannerPlano.jsx'
+import CardOnboarding from '../components/CardOnboarding.jsx'
+import { passosOnboarding } from '../utils/onboarding.js'
 import { formatarData, hoje, diasAteVencimento } from '../utils/formatadores.js'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { useTheme } from '../hooks/useTheme.js'
@@ -38,6 +40,16 @@ export default function Dashboard({ clientes, vendas, navegar, profile, planoSta
 
     return { totalReceber, vencemHoje, emAtraso, vencemSemana, vencimentosHoje }
   }, [vendas, clientes])
+
+  const passos = useMemo(() => passosOnboarding(clientes, vendas), [clientes, vendas])
+  const [onboardingDispensado, setOnboardingDispensado] = useState(
+    () => localStorage.getItem('onboarding_dispensado') === '1'
+  )
+  const mostrarOnboarding = !passos.completo && !onboardingDispensado
+  function dispensarOnboarding() {
+    localStorage.setItem('onboarding_dispensado', '1')
+    setOnboardingDispensado(true)
+  }
 
   return (
     <>
@@ -75,6 +87,10 @@ export default function Dashboard({ clientes, vendas, navegar, profile, planoSta
           </button>
         </div>
       </div>
+
+      {mostrarOnboarding && (
+        <CardOnboarding passos={passos} navegar={navegar} onDispensar={dispensarOnboarding} />
+      )}
 
       {/* Hero — Total a Receber */}
       <div className="bg-primary rounded-2xl p-5 shadow-sm">
