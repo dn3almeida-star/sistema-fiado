@@ -1,3 +1,20 @@
+# Progresso — GTM: valor recuperado como gancho de conversão (2026-07-11)
+
+Item 2 das melhorias de GTM (§5.3 "o app se paga"): mostrar quanto o lojista já
+recebeu de fiado com o app, no momento da conversão. Opus + TDD. **NÃO deployado.**
+
+- **Função pura `src/utils/recuperado.js` (TDD +5, suíte 182/182 em 30 arq.):**
+  `totalRecebido(vendas) → número` (soma das parcelas pagas, arredonda centavos,
+  tolera venda sem parcelas).
+- **App:** passa `valorRecebido={totalRecebido(vendas)}` pro `ModalUpgrade`.
+- **`ModalUpgrade`:** quando > 0, destaque verde no topo — "Você já recebeu R$ X
+  de fiado usando o app. Ele se paga." (ícone TrendingUp). É o argumento de
+  conversão mais forte do funil.
+
+## GTM — código ainda em aberto: 3 (indicação), 4 (msgs fim de teste), 5 (métricas).
+
+---
+
 # Progresso — GTM: prompt de instalação do PWA (2026-07-11)
 
 Melhoria de funil (gtm §5 "instala em 2 min, sem loja de app"): convite pra

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
-import { X, Check } from 'lucide-react'
+import { X, Check, TrendingUp } from 'lucide-react'
 import { PRECO_MENSAL_LABEL } from '../utils/planos.js'
+import { formatarMoeda } from '../utils/formatadores.js'
 
 const BENEFICIOS = [
   'Cobrança pronta pra enviar no WhatsApp em 1 toque',
@@ -12,7 +13,7 @@ const BENEFICIOS = [
 // Modal de upgrade reusado por todos os gates do paywall. O pagamento será feito
 // por gateway (checkout externo) — a integração entra em spec própria; por ora o
 // botão "Assinar" chama onAssinar (placeholder até o gateway estar ligado).
-export default function ModalUpgrade({ aberto, onFechar, onAssinar }) {
+export default function ModalUpgrade({ aberto, onFechar, onAssinar, valorRecebido = 0 }) {
   useEffect(() => {
     if (!aberto) return
     function onKey(e) { if (e.key === 'Escape') onFechar() }
@@ -43,6 +44,15 @@ export default function ModalUpgrade({ aberto, onFechar, onAssinar }) {
             <X size={20} />
           </button>
         </div>
+
+        {valorRecebido > 0 && (
+          <div className="rounded-xl bg-success/10 border border-success/20 p-3 flex items-center gap-3">
+            <TrendingUp size={22} className="text-success shrink-0" />
+            <p className="text-sm text-ink">
+              Você já recebeu <strong className="font-mono text-success">{formatarMoeda(valorRecebido)}</strong> de fiado usando o app. Ele se paga.
+            </p>
+          </div>
+        )}
 
         <ul className="space-y-2">
           {BENEFICIOS.map(b => (

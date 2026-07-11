@@ -10,6 +10,7 @@ import Splash from './components/Splash.jsx'
 import { useProfile } from './hooks/useProfile.js'
 import { perfilCompleto } from './utils/perfil.js'
 import { statusPlano } from './utils/planos.js'
+import { totalRecebido } from './utils/recuperado.js'
 import { hoje } from './utils/formatadores.js'
 import { useAssinatura } from './hooks/useAssinatura.js'
 import ModalUpgrade from './components/ModalUpgrade.jsx'
@@ -174,6 +175,7 @@ export default function App() {
 
       <ModalUpgrade
         aberto={upgradeAberto}
+        valorRecebido={totalRecebido(vendasHook.vendas)}
         onFechar={() => setUpgradeAberto(false)}
         onAssinar={() => {
           setUpgradeAberto(false)
