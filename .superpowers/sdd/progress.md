@@ -1,3 +1,28 @@
+# Progresso — GTM: prompt de instalação do PWA (2026-07-11)
+
+Melhoria de funil (gtm §5 "instala em 2 min, sem loja de app"): convite pra
+instalar o PWA na tela inicial. Também destrava o push no iPhone (iOS só entrega
+push em PWA instalado). Opus + TDD. **NÃO deployado** (vai no dia do deploy).
+
+- **Função pura `src/utils/instalacao.js` (TDD +6, suíte 177/177 em 29 arq.):**
+  `decidirInstalacao({instalado, dispensado, podeInstalar, ehIOS}) →
+  'android'|'ios'|null`. Prompt nativo tem prioridade; iOS cai em instruções.
+- **`useInstalacao.js`:** captura `beforeinstallprompt` (Android/Chrome) e guarda
+  pra disparar depois; detecta iOS (userAgent) e standalone (display-mode); trata
+  `appinstalled`; dispensar em localStorage `instalar_dispensado`.
+- **`BannerInstalar.jsx`:** Android → botão "Instalar" (dispara o prompt nativo);
+  iOS → passo a passo (Compartilhar → Adicionar à Tela de Início). Dispensável.
+- **Dashboard:** banner no topo do conteúdo, junto do de plano/onboarding.
+
+## GTM — melhorias de código ainda em aberto (não construídas)
+Levantadas ao cruzar o gtm com o produto; usuário escolheu só o item 1 (instalar):
+2. "Valor recuperado em R$" como gancho de conversão (§5.3). 3. Programa de
+indicação (§4 canal 3). 4. Mensagens de fim de teste automatizadas (§5.3).
+5. Instrumentação das 5 métricas (§9). Marketing/conteúdo (fora de código):
+guia PDF, vídeos, WhatsApp Business, grupos, depoimento.
+
+---
+
 # Progresso — Melhorias: onboarding de ativação + polimento (2026-07-11)
 
 Duas frentes de melhoria pedidas pelo usuário ("todas as melhorias"). Opus + TDD.

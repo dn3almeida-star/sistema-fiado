@@ -5,7 +5,9 @@ import CardResumo from '../components/CardResumo.jsx'
 import NumeroAnimado from '../components/NumeroAnimado.jsx'
 import EstadoVazio from '../components/EstadoVazio.jsx'
 import BannerPlano from '../components/BannerPlano.jsx'
+import BannerInstalar from '../components/BannerInstalar.jsx'
 import CardOnboarding from '../components/CardOnboarding.jsx'
+import { useInstalacao } from '../hooks/useInstalacao.js'
 import { passosOnboarding } from '../utils/onboarding.js'
 import { formatarData, hoje, diasAteVencimento } from '../utils/formatadores.js'
 import { useAuth } from '../hooks/useAuth.jsx'
@@ -50,6 +52,7 @@ export default function Dashboard({ clientes, vendas, navegar, profile, planoSta
     localStorage.setItem('onboarding_dispensado', '1')
     setOnboardingDispensado(true)
   }
+  const instalacao = useInstalacao()
 
   return (
     <>
@@ -87,6 +90,8 @@ export default function Dashboard({ clientes, vendas, navegar, profile, planoSta
           </button>
         </div>
       </div>
+
+      <BannerInstalar modo={instalacao.modo} onInstalar={instalacao.instalar} onDispensar={instalacao.dispensar} />
 
       {mostrarOnboarding && (
         <CardOnboarding passos={passos} navegar={navegar} onDispensar={dispensarOnboarding} />
