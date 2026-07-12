@@ -1,3 +1,48 @@
+# Progresso — Checkout Pix (Mercado Pago) deployado e testado (2026-07-12)
+
+Backend do pagamento (spec 2026-07-11-pagamento-pix) publicado em produção no
+projeto Supabase sactjyyildfmycndujoz. Sonnet, guiado passo a passo com o usuário
+na criação da conta/credenciais Mercado Pago.
+
+- **Migrações aplicadas (MCP):** `pagamento_pix` (profiles.plano_expira_em +
+  tabela `pagamentos`) e `indicacao` (profiles.indicado_por/indicacao_creditada +
+  trigger). Confirmado por SQL: colunas e tabela existem.
+- **Secret `MP_ACCESS_TOKEN`** configurado via Supabase CLI (`supabase secrets
+  set`, projeto linkado). Não existe MCP tool para secrets — só CLI/dashboard.
+- **Edge Functions publicadas (MCP `deploy_edge_function`):**
+  `criar-pagamento-pix` (verify_jwt=true) e `webhook-mercadopago`
+  (verify_jwt=false; import relativo `../_shared/datas.ts` incluído explicitamente
+  no payload de deploy).
+- **Teste ponta-a-ponta em sandbox:** criada conta descartável via signup direto
+  (confirmação de email já estava desligada — configuração pendente anterior foi
+  feita). Chamada real a `criar-pagamento-pix` com JWT dessa conta: retornou
+  payment_id, QR code e copia-e-cola do Mercado Pago (ambiente sandbox). O MP já
+  disparou o webhook na criação (mesmo pending) e confirmei a linha gravada em
+  `pagamentos` (id, user_id, valor 19.90, status pending) — prova que
+  auth→MP→webhook→banco funciona ponta a ponta.
+- **Limitação documentada:** Pix em sandbox do Mercado Pago **não tem simulação
+  de aprovação** (confirmado na doc oficial) — só é possível verificar o branch
+  "approved" (libera plano) com um Pix real. Conta de teste e pagamento de teste
+  foram **apagados** do banco depois (0 restantes).
+- **⚠️ Troca para credenciais de PRODUÇÃO:** usuário criou a aplicação no Mercado
+  Pago (ativou credenciais de produção com site https://sistema-fiado.vercel.app)
+  e pegou o Access Token `APP_USR-...`. Secret `MP_ACCESS_TOKEN` **já foi trocado
+  para o valor de produção** — qualquer novo Pix criado a partir de agora é
+  dinheiro real. Front ainda NÃO foi deployado (branch só local, ahead da
+  origin), então não há exposição pública do checkout ainda.
+
+## Pendente pra fechar o go-live
+1. Decidir: fazer 1 Pix real de R$19,90 como teste final de aceite (única forma
+   de provar o branch "approved"/liberação de plano com o Mercado Pago real), ou
+   pular pra confiar no code review + teste de criação já feito.
+2. Push do front (`git push`) — publica os ~9 commits locais de uma vez
+   (paywall, checkout, indicação, onboarding, instalar, valor recuperado,
+   nudge, métricas). Push (PWA) fica inerte até as chaves VAPID existirem, mas
+   não quebra nada.
+3. Chaves VAPID pro push, quando o usuário quiser ativar aquele fluxo.
+
+---
+
 # Progresso — GTM item 5: painel de métricas do fundador (2026-07-11)
 
 Instrumentação das 5 métricas do funil (gtm §9), nível A (interno, sobre o banco;
