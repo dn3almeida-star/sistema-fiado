@@ -1,3 +1,31 @@
+# Progresso — GO-LIVE: front no ar com paywall + checkout + tudo (2026-07-12)
+
+Push dos 9 commits locais → deploy automático na Vercel (projeto git-connected
+`sistema-fiado`). Deploy Ready. Rotas verificadas 200: /, /cadastro,
+/cadastro?ref=, /cobrancas. **O app está no ar** em https://sistema-fiado.vercel.app
+com: paywall (Grátis×Pago), checkout Pix (token de PRODUÇÃO ativo), indicação,
+onboarding, prompt de instalar, valor recuperado, nudge de fim de teste, métricas.
+
+- Segurança: nenhum token real commitado (só o prefixo `APP_USR-...` de exemplo
+  no ledger). Verificado por git grep dos hashes reais antes do push.
+- Estado seguro no go-live: só 2 contas (fundador + pai), ambas `pago` permanente
+  → ninguém é travado. O 1º cadastro real ganha trial 30d; ao expirar/estourar
+  limite, o "Assinar" gera Pix REAL (token de produção).
+
+## Ainda pendente (não bloqueia o que está no ar)
+- **Push (PWA) inerte:** o código está no ar, mas sem `VITE_VAPID_PUBLIC_KEY`
+  (Vercel) + secrets VAPID (Supabase) + deploy da função `push-diario` + cron, o
+  botão "Ativar avisos" no PerfilLoja falha silenciosamente. Configurar chaves
+  VAPID quando quiser ligar o push. (Migrações push_subscriptions/push_cron ainda
+  NÃO aplicadas; function push-diario NÃO deployada.)
+- Teste de aceite do "pagamento aprovado→libera plano" só com Pix real (sandbox
+  do MP não simula aprovação de Pix) — usuário optou por pular; validar no 1º
+  pagamento real.
+- Marketing/conteúdo (fora de código): guia PDF, vídeos, depoimento, WhatsApp
+  Business, grupos.
+
+---
+
 # Progresso — Checkout Pix (Mercado Pago) deployado e testado (2026-07-12)
 
 Backend do pagamento (spec 2026-07-11-pagamento-pix) publicado em produção no
