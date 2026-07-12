@@ -1,10 +1,13 @@
 import { useState } from 'react'
-import { ArrowLeft, Store, Upload } from 'lucide-react'
+import { ArrowLeft, Store, Upload, BarChart3, ChevronRight } from 'lucide-react'
 import { mascaraTelefone } from '../utils/formatadores.js'
+import { useAuth } from '../hooks/useAuth.jsx'
+import { ehFundador } from '../utils/admin.js'
 import CardAvisosPush from '../components/CardAvisosPush.jsx'
 import CardIndicacao from '../components/CardIndicacao.jsx'
 
 export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrarToast, modoInicial = false, onConcluir, navegar }) {
+  const { usuario } = useAuth()
   const [nomeLoja, setNomeLoja] = useState(profile?.nome_loja ?? '')
   const [telefone, setTelefone] = useState(profile?.telefone ?? '')
   const [logoUrl, setLogoUrl] = useState(profile?.logo_url ?? '')
@@ -125,6 +128,22 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
 
         {!modoInicial && <CardAvisosPush />}
         {!modoInicial && <CardIndicacao />}
+
+        {!modoInicial && ehFundador(usuario) && (
+          <button
+            onClick={() => navegar('metricas')}
+            className="w-full bg-surface rounded-2xl shadow-sm p-4 flex items-center gap-3 active:bg-surface-2 transition-colors"
+          >
+            <div className="w-11 h-11 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0">
+              <BarChart3 size={20} className="text-primary" />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-semibold text-ink">Métricas do funil</p>
+              <p className="text-xs text-ink-muted">Ativação, pagantes, indicações</p>
+            </div>
+            <ChevronRight size={18} className="text-ink-muted" />
+          </button>
+        )}
       </div>
     </div>
   )

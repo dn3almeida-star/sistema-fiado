@@ -30,6 +30,7 @@ const Cadastro = lazy(() => import('./pages/Cadastro.jsx'))
 const PerfilLoja = lazy(() => import('./pages/PerfilLoja.jsx'))
 const RedefinirSenha = lazy(() => import('./pages/RedefinirSenha.jsx'))
 const ModoCobranca = lazy(() => import('./pages/ModoCobranca.jsx'))
+const Metricas = lazy(() => import('./pages/Metricas.jsx'))
 
 export default function App() {
   const [navegacaoSalva] = useState(obterNavegacaoSalva)
@@ -177,6 +178,7 @@ export default function App() {
                 {paginaAtiva === 'modo-cobranca' && <ModoCobranca {...props} />}
                 {paginaAtiva === 'relatorio' && <Relatorio {...props} />}
                 {paginaAtiva === 'perfil-loja' && <PerfilLoja {...props} />}
+                {paginaAtiva === 'metricas' && <Metricas {...props} />}
               </motion.div>
             </AnimatePresence>
           </Suspense>

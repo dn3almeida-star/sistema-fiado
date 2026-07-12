@@ -1,3 +1,26 @@
+# Progresso — GTM item 5: painel de métricas do fundador (2026-07-11)
+
+Instrumentação das 5 métricas do funil (gtm §9), nível A (interno, sobre o banco;
+sem ferramenta externa). Spec docs/superpowers/specs/2026-07-11-metricas-design.md.
+Opus + TDD. **NÃO deployado.** Fecha o código de GTM (só falta marketing/conteúdo).
+
+- **Migração `20260711_metricas.sql`:** função `metricas_funil()` security definer
+  → json com cadastros, ativados (parcela com ultimaCobrancaEm), pagantes, emTeste,
+  gratis, indicacoes, indicacoesConvertidas. Trava dura por `auth.uid()` == id do
+  fundador (RLS impede ler dados alheios; a função agrega mas só responde pra ele).
+  grant execute só a authenticated.
+- **`taxasFunil` pura (TDD +3, suíte 192/192 em 32 arq.):** taxaAtivacao/
+  taxaPagantes (% sobre cadastros, sem div/0).
+- **`admin.js`** (`ID_FUNDADOR`/`ehFundador`), **`useMetricas.js`** (rpc),
+  **`Metricas.jsx`** (cards via CardResumo; alerta quando ativação <40% = sinal
+  do §9; nota das 2 contas semente + FIADO externo).
+- **App:** rota `metricas` (lazy). **PerfilLoja:** link só pra `ehFundador`.
+
+## GTM — código 100% coberto. Aberto só: marketing/conteúdo (guia PDF, vídeos,
+## depoimento, WhatsApp Business, grupos) e o deploy de tudo.
+
+---
+
 # Progresso — GTM: indicação + nudge de fim de teste (itens 3 e 4) (2026-07-11)
 
 Duas features de crescimento. Spec docs/superpowers/specs/2026-07-11-crescimento-design.md.
