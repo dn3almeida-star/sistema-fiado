@@ -1,3 +1,40 @@
+# Progresso — Push (PWA) totalmente ligado em produção (2026-07-12)
+
+Fechou a última pendência do go-live: notificação push configurada ponta-a-ponta.
+Sonnet, guiado (usuário confirmou explicitamente o redeploy de produção antes de
+executar — bloqueado 1x pelo classificador por falta de confirmação explícita,
+correto, refeito com autorização).
+
+- **Chaves VAPID geradas** (`npx web-push generate-vapid-keys`).
+- **Secrets no Supabase** (CLI): `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`,
+  `VAPID_SUBJECT=mailto:contato@crediariodigital.app`.
+- **Migração `push_subscriptions` aplicada** (MCP) — tabela + RLS (dono
+  gerencia as suas).
+- **Edge Function `push-diario` publicada** (MCP `deploy_edge_function`,
+  verify_jwt=false, com `resumoPush.ts` + `../_shared/datas.ts` inclusos).
+- **Cron `push-diario` agendado** (mesmo padrão do `lembrete-diario`: 11:00 UTC
+  = 08:00 BRT, reusa o segredo `lembrete_cron_secret` de `app_config`, mesma
+  publishable key). Confirmado por SQL: os 2 jobs (`lembrete-diario` id 2,
+  `push-diario` id 3) ativos.
+- **`VITE_VAPID_PUBLIC_KEY` configurada na Vercel** (production) via
+  `vercel env add`.
+- **Redeploy de produção** (`vercel --prod`, com confirmação explícita do
+  usuário) — pegou a env nova. Verificado: site 200, `sw.js` servindo
+  `CACHE_NAME v4` com o handler `push` presente.
+
+Push (PWA) está **100% funcional em produção** agora: qualquer lojista pode
+ativar "Avisos no celular" no Perfil da Loja e recebe o resumo diário de
+cobranças às 08h, mesmo sem CallMeBot.
+
+## Pendências restantes do projeto
+- Teste de aceite do primeiro push real (ativar em um device e confirmar o
+  recebimento — só se prova no primeiro cron real ou testando manualmente).
+- "Pagamento aprovado→libera plano" só validado com Pix real (ver entrada
+  anterior).
+- Marketing/conteúdo (fora de código).
+
+---
+
 # Progresso — GO-LIVE: front no ar com paywall + checkout + tudo (2026-07-12)
 
 Push dos 9 commits locais → deploy automático na Vercel (projeto git-connected
@@ -13,11 +50,8 @@ onboarding, prompt de instalar, valor recuperado, nudge de fim de teste, métric
   limite, o "Assinar" gera Pix REAL (token de produção).
 
 ## Ainda pendente (não bloqueia o que está no ar)
-- **Push (PWA) inerte:** o código está no ar, mas sem `VITE_VAPID_PUBLIC_KEY`
-  (Vercel) + secrets VAPID (Supabase) + deploy da função `push-diario` + cron, o
-  botão "Ativar avisos" no PerfilLoja falha silenciosamente. Configurar chaves
-  VAPID quando quiser ligar o push. (Migrações push_subscriptions/push_cron ainda
-  NÃO aplicadas; function push-diario NÃO deployada.)
+- ~~Push (PWA) inerte~~ — **resolvido**, ver entrada seguinte (push totalmente
+  configurado e ligado em produção no mesmo dia).
 - Teste de aceite do "pagamento aprovado→libera plano" só com Pix real (sandbox
   do MP não simula aprovação de Pix) — usuário optou por pular; validar no 1º
   pagamento real.
