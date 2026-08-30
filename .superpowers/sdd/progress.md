@@ -1,7 +1,16 @@
 # Progresso - Alterar vencimento de parcela (2026-08-30)
 
 Pedido do usuario a partir de um print: poder mudar a data de vencimento de
-uma parcela em aberto. Commit `6372caf`, 192/192 testes verdes, build limpo.
+uma parcela em aberto. Commits `6372caf` + `d40c995`, 192/192 testes verdes,
+build limpo. Deploy verificado no ar e confirmado pelo usuario no iPhone.
+
+- **Formato da data (`d40c995`):** o input date nativo formata pelo locale do
+  aparelho ("1 de ago. de 2026" no iOS) e isso NAO e estilizavel por CSS. A
+  saida foi manter o input (e o toque que ja funcionava) com o texto dele
+  `text-transparent` e desenhar o `formatarData` por cima num span com
+  `pointer-events-none`. Chip fixado em `w-[104px]` — sem isso ele esticava
+  meia linha por causa do texto longo do iOS. O calendario aberto continua no
+  idioma do sistema; so o campo fechado e nosso.
 
 - **`alterarVencimento(vendaId, numeroParcela, novoVencimento)`** no
   `useVendas.js`, no mesmo molde de `desmarcarParcelaPaga` (map + o
