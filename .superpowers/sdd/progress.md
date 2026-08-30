@@ -1,3 +1,196 @@
+# Progresso - Alterar vencimento de parcela (2026-08-30)
+
+Pedido do usuario a partir de um print: poder mudar a data de vencimento de
+uma parcela em aberto. Commit `6372caf`, 192/192 testes verdes, build limpo.
+
+- **`alterarVencimento(vendaId, numeroParcela, novoVencimento)`** no
+  `useVendas.js`, no mesmo molde de `desmarcarParcelaPaga` (map + o
+  `atualizarParcelas` que ja existia). Chega no `PerfilCliente` sozinho pelo
+  `...vendasHook` do App.jsx.
+- **UI: `<input type="date">` nativo** no lugar do texto da data, so na
+  parcela nao paga (paga continua texto). O campo `vencimento` ja e
+  'YYYY-MM-DD', exatamente o formato que o input le e devolve — zero
+  conversao de data, zero risco de fuso. Primeira tentativa foi um input
+  transparente sobreposto ao texto com `showPicker()`; nao era clicavel no
+  iPhone, trocado pelo input visivel.
+- **`color-scheme: light/dark`** no `index.css`. Sem isso o widget nativo de
+  data renderiza claro dentro do dark mode e fica ilegivel — pega todos os
+  inputs nativos do app, nao so esse.
+- **Sem util pura + teste novo**: e um map de uma linha, igual aos irmaos
+  `desmarcarParcelaPaga`/`registrarCobranca`, que tambem nao tem teste.
+- **Deploy:** o app e git-conectado no Vercel, entao o `git push` ja dispara.
+  O `npx vercel --prod` falhou com "Not authorized" — o CLI esta deslogado
+  (`vercel whoami` = "Logged out."); so importa pra landing, que e CLI manual.
+
+---
+
+# Progresso — Prompt de carrossel Instagram pra ChatGPT (2026-07-14)
+
+Quarto material de marketing. Sonnet. Usuário trouxe um template genérico
+("Instagram Carousel Generator") pra ser colado no ChatGPT (gera as imagens
+lá, fora deste projeto). Adaptei preenchendo tudo: marca, paleta, fonte e o
+conteúdo real dos 7 slides — nada fica em aberto pro ChatGPT perguntar.
+Entregável: `marketing/prompt-carrossel-instagram.md`.
+
+- **Paleta reaproveitada** dos outros materiais pra consistência total:
+  BRAND_PRIMARY #0f7a4d, BRAND_DARK #0b5c3a (já usados em todo PDF), LIGHT_BG
+  #F5F6F2 (= --ground da landing/guia), LIGHT_BORDER #E3E6E1 (= --line),
+  DARK_BG #161D18 (= --ink). Só BRAND_LIGHT (#4CAF7D) é novo, derivado.
+- **Fonte:** Lora (heading) + Nunito Sans (body) — pairing "warm/approachable"
+  do template, alinhado ao tom "confiável, popular, acolhedor" da
+  landing-page-spec.md §5.
+- **Logo:** emoji 📓 (mesmo usado em todos os PDFs) num badge verde, já que
+  não existe SVG de logo no repo.
+- **7 slides com copy final:** hero → problema (caderno/vergonha) → solução
+  (mensagem pronta, honestidade "você aperta enviar") → features → detalhes
+  (sem baixar da loja, 30 dias grátis) → como funciona (3 passos) → CTA.
+- Público ampliado e regra de honestidade mantidas em todo o texto.
+- Escopo do arquivo: só o prompt-texto pra colar no ChatGPT — nenhuma imagem
+  foi gerada por aqui, e não é esperado rodar Playwright neste projeto.
+
+**Fix (mesmo dia):** usuário esclareceu que vai colar isso como instrução
+PERMANENTE de um Projeto no ChatGPT (não uso único). Corrigido um problema
+real: os 7 slides estavam marcados como "use exactly this copy", o que faria
+todo pedido futuro repetir o mesmo carrossel genérico. Reestruturado: marca/
+paleta/fonte/regras continuam permanentes; os 7 slides agora são só o
+"carrossel de lançamento" (default se o usuário não especificar tema); pra
+qualquer outro pedido, a instrução manda o ChatGPT escrever conteúdo novo
+pro tema, seguindo as mesmas regras de marca/honestidade/público.
+
+**Update (mesmo dia):** usuário trouxe de novo o template — desta vez com a
+seção completa de exportação (Python + Playwright, 420px→1080×1350px PNG por
+slide), deixando claro que o entregável final tem que ser **imagem pronta
+pra baixar e postar**, não só o preview HTML. A seção de exportação já
+existia no arquivo (script, regras críticas), mas faltava o detalhe de
+robustez do template novo: explicação do "why this works" e a tabela de
+"common export mistakes to avoid" — ambos adicionados. Também: intro do
+arquivo agora deixa explícito que a saída são PNGs prontos (com fallback pra
+HTML manual se o Projeto do ChatGPT não tiver ambiente Playwright), e
+"Layout best practices" ganhou o aviso de imagens JPEG com extensão .png.
+Nenhuma mudança na identidade de marca/paleta/fonte — só reforço do pipeline
+de exportação.
+
+---
+
+# Progresso — Kit WhatsApp Business + bios das redes (2026-07-13)
+
+Terceiro material de marketing (fecha o combo inicial). Opus (usuário trocou
+de volta e pediu). Entregável: `marketing/kit-whatsapp-redes.md` — formato
+markdown de propósito (é pra copiar-e-colar nas configs, PDF atrapalharia).
+
+Conteúdo: (1) bios TikTok/Instagram/YouTube com limites de caractere + @ e
+link da landing; (2) WhatsApp Business — saudação automática, ausência, 9
+respostas rápidas (/link /guia /comofunciona /preco /instalar /tecnologia
+/caro /parcelar /indicacao), 5 etiquetas; (3) sequência de follow-up do funil
+(momentos 0→4, do "comenta FIADO" ao pagante + indicação). Tudo com o público
+ampliado e a regra de honestidade.
+
+Combo inicial de marketing agora completo: landing (no ar) + guia (PDF) +
+roteiros (PDF) + kit WhatsApp/bios (md + PDF). Próximo trabalho é do usuário:
+gravar/postar. Nada commitado no git ainda.
+
+**Update:** kit também gerado em PDF (`marketing/kit-whatsapp-redes.pdf`,
+~1 MB) a pedido — mas o .md continua sendo a fonte recomendada pra copiar-e-colar
+(PDF é só referência de leitura). Blocos de mensagem/bio estilizados (bubble
+WhatsApp + code mono). Layout verificado via Playwright.
+
+---
+
+# Progresso — 10 roteiros de vídeo (2026-07-12)
+
+Segundo material de conteúdo do marketing. Sonnet. Entregável:
+`marketing/roteiros-video.md` — os 10 ganchos do gtm §6 transformados em
+roteiros completos (fala + o que mostrar na tela + virada + CTA + dica de
+gravação), já com o público ampliado ("quem vive de vendas").
+
+- CTA único e consistente em todos: "Comenta FIADO que eu te mando o app pra
+  testar 30 dias grátis."
+- Honestidade mantida: nunca "envia sozinho"/"automático" — sempre "o app
+  escreve, você aperta enviar".
+- Roteiro 6 (depoimento do pai) e Roteiro 5 (a "mágica" da cobrança em lote)
+  marcados como os mais importantes pra prova social e demonstração central.
+- Cadência e ordem de gravação replicada do gtm §8 (semana 1: 1,2,5,7,9).
+
+Próximo material sugerido na fila: kit WhatsApp Business + bios das redes.
+
+**Update:** também salvo em PDF (`marketing/roteiros-video.pdf`, ~968 KB,
+mesma identidade visual do guia). Fonte: `marketing/roteiros-video.html`
+(convertido via Edge headless, mesmo processo do guia). Layout verificado via
+Playwright screenshot.
+
+---
+
+# Progresso — Público ampliado: "quem vive de vendas" (2026-07-12)
+
+Correção de posicionamento do fundador: o público-alvo não é só mercadinho,
+é **quem vive de vendas** (loja de roupa, sacoleira, autopeças, feirante,
+revendedora, salão, etc. — qualquer um que vende fiado). Opus.
+
+- **Guia** (`marketing/guia-fiado-sem-calote.*`): removido viés de mercado
+  ("Feito pra quem vive de vendas", "cobrar cara a cara", "Loja do Zé"). PDF
+  regerado.
+- **Landing** (`landing/src/App.jsx`): mesma revisão (herói selo, prova social
+  "não por gente de escritório", fecho da dor, exemplos). Rebuild + redeploy
+  CLI → https://crediario-digital.vercel.app (verificado no bundle: "vive de
+  vendas" presente, "mercadinho/mercearia" ausente).
+- **GTM doc** (`gtm-sistema-fiado.md`): persona renomeada de "Seu Marcos do
+  Mercadinho" → "Quem vive de vendas"; lista de ramos ampliada; header com nota
+  de revisão. Notas internas de gravação ("balcão de loja") mantidas.
+- Memória [[publico-alvo-vendas]] salva pra valer em todo material futuro.
+
+---
+
+# Progresso — Lead magnet "Guia do Fiado Sem Calote" (2026-07-12)
+
+Primeiro material de conteúdo do marketing (a "isca" do gtm §7). Opus.
+Entregável: `marketing/guia-fiado-sem-calote.pdf` (5 páginas, PT-BR de balcão).
+
+- **Fonte:** `marketing/guia-fiado-sem-calote.html` (self-contained, print A4,
+  identidade da marca: verde-esmeralda, serif nos títulos + sans no corpo).
+- **5 páginas:** capa · "A conta que ninguém faz" (fórmula p/ ele calcular o
+  custo do fiado esquecido) · "As 3 mensagens que funcionam" (copiar-e-colar,
+  balões de WhatsApp) · "A regra dos 7 dias" + checklist do fiado saudável ·
+  CTA c/ QR code da landing (`crediario-digital.vercel.app`) + WhatsApp.
+- **QR gerado** com `npx qrcode -t svg` e embutido inline no HTML.
+- **PDF gerado** via Edge headless (`msedge --headless --print-to-pdf`,
+  perfil isolado em user-data-dir temp — instância aberta do Edge bloqueava).
+  Regenerar: reabrir o HTML no Edge headless igual. Verificado visualmente
+  via Playwright (screenshot da capa + páginas) — layout, QR e cores ok.
+- **Honestidade:** nada de "envia sozinho"; sempre "o app escreve, você envia".
+- Design hook (impeccable) tratado: removido side-tab do callout, adicionado
+  par de fontes (Georgia display + sans corpo), em-dashes do corpo reduzidos.
+
+Próximo material sugerido na fila: os 10 roteiros de vídeo, ou o kit
+WhatsApp Business + bios das redes.
+
+---
+
+# Progresso — Landing page no ar (2026-07-12)
+
+Primeira peça de marketing publicada. Opus. A landing já estava 100% codada
+(pasta `landing/`, projeto Vite isolado do app) e com `src/config.js` preenchido
+com valores reais — só faltava publicar.
+
+- **WhatsApp confirmado** com o usuário: `5562993395736` (DDD 62/Goiás) — é o
+  contato de leads na landing.
+- **Link "Começar grátis"** → `https://sistema-fiado.vercel.app/cadastro`
+  (rota `/cadastro` confirmada existente em src/App.jsx, abre o cadastro deslogado).
+- **Build local ok** (vite, 164 kB JS / 52 kB gzip).
+- **Deploy via CLI** (`npx vercel`, projeto NOVO e separado `crediario-digital`,
+  scope `daniel621` — não mexe no `sistema-fiado` do app). `project add` +
+  `link --project crediario-digital` + `--prod --yes`.
+- **No ar:** https://crediario-digital.vercel.app (HTTP 200, título + bundle
+  com URL do app e WhatsApp corretos verificados via curl).
+- Deploy é **manual** (CLI, não conectado ao git). Redeploy: `cd landing &&
+  npx vercel --prod --yes`. `.vercel/` e `.env.local` (token OIDC) gitignored.
+- README da landing atualizado (removido aviso obsoleto de placeholder + URL no ar).
+
+**É a porta de entrada única do marketing** — todo canal (vídeo/bio/anúncio/guia)
+aponta pra cá; o botão dela leva ao app. Próximo material de marketing na fila:
+o "Guia do Fiado Sem Calote" (lead magnet PDF) apontando pra esta URL.
+
+---
+
 # Progresso — Push (PWA) totalmente ligado em produção (2026-07-12)
 
 Fechou a última pendência do go-live: notificação push configurada ponta-a-ponta.
