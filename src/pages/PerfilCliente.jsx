@@ -413,18 +413,26 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                     {p.pago ? (
                                       <span className="text-xs font-mono text-ink-muted">{formatarData(p.vencimento)}</span>
                                     ) : (
-                                      <input
-                                        type="date"
-                                        value={p.vencimento}
-                                        aria-label={`Vencimento da parcela ${p.numero}`}
-                                        onChange={e => {
-                                          if (!e.target.value) return
-                                          alterarVencimento(venda.id, p.numero, e.target.value)
-                                            .then(() => mostrarToast('✓ Vencimento alterado'))
-                                            .catch(() => mostrarToast('Erro ao alterar o vencimento.', 'error'))
-                                        }}
-                                        className="text-xs font-mono text-ink-muted bg-surface border border-border rounded-lg px-2 py-1.5 min-h-touch"
-                                      />
+                                      // O input date nativo formata a data pelo locale do aparelho
+                                      // ("1 de ago. de 2026" no iOS) e isso não é estilizável. Some
+                                      // com o texto dele e desenha o nosso por cima.
+                                      <div className="relative">
+                                        <input
+                                          type="date"
+                                          value={p.vencimento}
+                                          aria-label={`Vencimento da parcela ${p.numero}`}
+                                          onChange={e => {
+                                            if (!e.target.value) return
+                                            alterarVencimento(venda.id, p.numero, e.target.value)
+                                              .then(() => mostrarToast('✓ Vencimento alterado'))
+                                              .catch(() => mostrarToast('Erro ao alterar o vencimento.', 'error'))
+                                          }}
+                                          className="w-[104px] text-xs text-transparent bg-surface border border-border rounded-lg px-2 py-1.5 min-h-touch [&::-webkit-calendar-picker-indicator]:opacity-0"
+                                        />
+                                        <span className="absolute inset-0 flex items-center justify-center text-xs font-mono text-ink-muted pointer-events-none">
+                                          {formatarData(p.vencimento)}
+                                        </span>
+                                      </div>
                                     )}
                                     <BotaoCobranca
                                       parcela={p}
