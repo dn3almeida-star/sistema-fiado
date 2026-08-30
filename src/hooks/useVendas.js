@@ -93,6 +93,15 @@ export function useVendas(usuario) {
     await atualizarParcelas(vendaId, novas)
   }
 
+  async function alterarVencimento(vendaId, numeroParcela, novoVencimento) {
+    const venda = vendas.find(v => v.id === vendaId)
+    if (!venda) return
+    const novas = venda.parcelas.map(p =>
+      p.numero === numeroParcela ? { ...p, vencimento: novoVencimento } : p
+    )
+    await atualizarParcelas(vendaId, novas)
+  }
+
   async function registrarCobranca(vendaId, numeroParcela) {
     const venda = vendas.find(v => v.id === vendaId)
     if (!venda) return
@@ -116,6 +125,7 @@ export function useVendas(usuario) {
     adicionarVenda,
     marcarParcelaPaga,
     desmarcarParcelaPaga,
+    alterarVencimento,
     registrarCobranca,
     removerVenda,
   }

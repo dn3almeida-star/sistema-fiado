@@ -4,6 +4,7 @@
 
 @layer base {
   :root {
+    color-scheme: light;
     --ground: 243 244 241;      /* #F3F4F1 */
     --surface: 255 255 255;     /* #ffffff */
     --surface-2: 241 243 239;   /* #F1F3EF */
@@ -14,6 +15,7 @@
   }
 
   .dark {
+    color-scheme: dark;   /* widgets nativos (input date) legíveis no escuro */
     --ground: 11 15 13;         /* #0B0F0D — carbono-esverdeado */
     --surface: 18 24 21;        /* #121815 */
     --surface-2: 26 34 29;      /* #1A221D */

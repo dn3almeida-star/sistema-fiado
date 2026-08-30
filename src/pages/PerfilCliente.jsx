@@ -9,7 +9,7 @@ import { formatarMoeda, formatarData, statusParcela, formatarTelefone, mascaraTe
 import { ehVendaAvista } from '../utils/vendaAvista.js'
 import { gerarCarnetPDF } from '../utils/gerarPDF.js'
 
-export default function PerfilCliente({ clienteId, clientes, vendas, marcarParcelaPaga, desmarcarParcelaPaga, registrarCobranca, removerVenda, removerCliente, atualizarCliente, navegar, mostrarToast, profile, planoStatus, abrirUpgrade }) {
+export default function PerfilCliente({ clienteId, clientes, vendas, marcarParcelaPaga, desmarcarParcelaPaga, alterarVencimento, registrarCobranca, removerVenda, removerCliente, atualizarCliente, navegar, mostrarToast, profile, planoStatus, abrirUpgrade }) {
   const bloqueado = !planoStatus?.entitlements?.cobranca
   const podePdf = !!planoStatus?.entitlements?.pdf
   const [vendasAbertas, setVendasAbertas] = useState({})
@@ -410,7 +410,22 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                     </span>
                                   </div>
                                   <div className="flex items-center justify-between gap-2 pl-9">
-                                    <span className="text-xs font-mono text-ink-muted">{formatarData(p.vencimento)}</span>
+                                    {p.pago ? (
+                                      <span className="text-xs font-mono text-ink-muted">{formatarData(p.vencimento)}</span>
+                                    ) : (
+                                      <input
+                                        type="date"
+                                        value={p.vencimento}
+                                        aria-label={`Vencimento da parcela ${p.numero}`}
+                                        onChange={e => {
+                                          if (!e.target.value) return
+                                          alterarVencimento(venda.id, p.numero, e.target.value)
+                                            .then(() => mostrarToast('✓ Vencimento alterado'))
+                                            .catch(() => mostrarToast('Erro ao alterar o vencimento.', 'error'))
+                                        }}
+                                        className="text-xs font-mono text-ink-muted bg-surface border border-border rounded-lg px-2 py-1.5 min-h-touch"
+                                      />
+                                    )}
                                     <BotaoCobranca
                                       parcela={p}
                                       cliente={cliente}
