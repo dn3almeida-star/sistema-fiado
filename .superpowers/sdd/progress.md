@@ -1,3 +1,38 @@
+# Progresso - Aviso antes de recobrar (2026-09-02)
+
+Commit `0dcacb1`, 215/215 testes, build limpo.
+
+**Contexto: e a alternativa barata a automatizar a baixa do pagamento.** O
+usuario perguntou como o app poderia identificar o Pix e marcar a parcela
+sozinho. Investigado e **descartado por ora**: a conta PJ do lojista e Nubank,
+que nao oferece API Pix de recebimento com webhook (pedido em aberto no forum
+deles; nas discussoes do bacen/pix-api o status aparece indefinido). As
+solucoes de comunidade leem e-mail de aviso — nao confiaveis pra dinheiro.
+Alternativas exigiriam intermediario (Mercado Pago, ja integrado mas com taxa
+e dinheiro fora do banco dele) ou conta nova (Asaas: 100 recebimentos/mes
+gratis, depois R$ 1,99 — mas a isencao citada e pra chave/QR estatico, nao
+confirmado se cobre cobranca via API). Regra geral do mercado: **o Pix comum e
+gratis, a API de Cobranca — a que avisa — e a que cobra**.
+
+Decisao: **a dor nao e o tempo de marcar (30s), e cobrar quem ja pagou.** Esse
+risco da pra atacar sem banco nenhum, e foi o que se fez aqui. Reavaliar
+automacao depois de ~1 mes, com o dado real de se as clientes pagam por Pix
+(termometro: `total_recebido`, R$ 8.695 em 02/09/2026).
+
+- **`avisoRecobranca(parcela, agoraISO)`** em `cobrancaSelo.js` (nao virou
+  arquivo novo — e o mesmo assunto e o mesmo dado do `rotuloUltimaCobranca`).
+  Usa o `ultimaCobrancaEm` que ja era gravado; zero mudanca de schema.
+- **Janela de 7 dias:** cobrou ha 2 dias, provavelmente pagou e ele nao marcou;
+  cobrou ha um mes, e cobranca nova legitima e o aviso so atrapalharia.
+- **Alerta, nao bloqueia** — as vezes recobrar e o certo. Banner no topo do
+  modal do `BotaoCobranca`; o botao de enviar segue funcionando.
+- Parcela paga nao avisa: a mensagem naquele caso e recibo, nao cobranca.
+- **Fora de escopo:** botao "ja pagou, marcar agora" dentro do aviso —
+  marcar como paga abre o fluxo de confirmacao de valor (pagamento parcial),
+  o que triplicaria o diff. Acrescentar se ele reclamar de sair e voltar.
+
+---
+
 # Progresso - Pix Copia e Cola na cobranca (2026-09-02)
 
 Commit `812d2c0`, 208/208 testes, deploy verificado no ar e **codigo validado
