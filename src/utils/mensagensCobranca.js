@@ -37,6 +37,14 @@ export function gerarMensagemCobranca(parcela, cliente, venda, perfil) {
     valor: parcela.valor,
   })
 
+  // Sem esse aviso a cliente recebe uma parede de numeros sem contexto e nao
+  // sabe o que fazer com ela. So entra quando o codigo existe de fato.
+  if (codigoPix) {
+    mensagem += `
+
+Na próxima mensagem vai o código do Pix. É só segurar em cima dele, tocar em Copiar, e colar no seu banco na opção "Pix Copia e Cola" — o valor já vai preenchido.`
+  }
+
   return { mensagem, codigoPix, tipo: 'cobranca', titulo: 'Cobrar' }
 }
 

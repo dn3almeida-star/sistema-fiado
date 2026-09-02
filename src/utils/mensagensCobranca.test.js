@@ -79,6 +79,23 @@ describe('gerarMensagemCobranca', () => {
     expect(r.codigoPix).not.toContain(String.fromCharCode(10))
   })
 
+  it('cobranca com pix: avisa que o codigo vem na proxima mensagem e como usar', () => {
+    const parcela = { numero: 1, valor: 150, vencimento: diasAPartirDeHoje(-3), pago: false, pagoEm: null }
+    const perfil = { nome_loja: 'Iram Utilidades', chave_pix: '62999887766', cidade: 'Goiania' }
+    const r = gerarMensagemCobranca(parcela, cliente, venda, perfil)
+    expect(r.mensagem).toContain('próxima mensagem')
+    expect(r.mensagem).toContain('Copia e Cola')
+    // o aviso vem depois da cobranca, nao antes
+    expect(r.mensagem.indexOf('venceu em')).toBeLessThan(r.mensagem.indexOf('próxima mensagem'))
+  })
+
+  it('cobranca sem pix: nao promete mensagem que nunca vai chegar', () => {
+    const parcela = { numero: 1, valor: 150, vencimento: diasAPartirDeHoje(-3), pago: false, pagoEm: null }
+    const r = gerarMensagemCobranca(parcela, cliente, venda, { nome_loja: 'Iram Utilidades' })
+    expect(r.mensagem).not.toContain('próxima mensagem')
+    expect(r.mensagem).not.toContain('Pix')
+  })
+
   it('recebimento: parcela paga nao leva pix (e recibo, nao cobranca)', () => {
     const parcela = { numero: 1, valor: 150, vencimento: '2026-07-15', pago: true, pagoEm: '2026-07-10T12:00:00.000Z' }
     const perfil = { nome_loja: 'Iram Utilidades', chave_pix: '62999887766', cidade: 'Goiania' }
