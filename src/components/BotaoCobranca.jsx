@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { MessageCircle, X, AlertTriangle } from 'lucide-react'
+import { MessageCircle, X, AlertTriangle, Copy } from 'lucide-react'
 import { gerarMensagemCobranca, linkWhatsApp } from '../utils/mensagensCobranca.js'
 import { avisoRecobranca } from '../utils/cobrancaSelo.js'
 
@@ -10,7 +10,6 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
   const [enviando, setEnviando] = useState(false)
   const [aviso, setAviso] = useState(null)
   const [codigoPix, setCodigoPix] = useState(null)
-  const [pixEnviado, setPixEnviado] = useState(false)
 
   useEffect(() => {
     if (!aberto) return
@@ -30,7 +29,6 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
     setTitulo(g.titulo)
     setAviso(avisoRecobranca(parcela, new Date().toISOString()))
     setCodigoPix(g.codigoPix)
-    setPixEnviado(false)
     setAberto(true)
   }
 
@@ -45,10 +43,7 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
       setEnviando(false)
     }
     window.open(linkWhatsApp(cliente.telefone, mensagem), '_blank', 'noopener,noreferrer')
-    // Com Pix, o modal fica aberto no passo 2: o codigo precisa ir numa
-    // mensagem so dele pra cliente conseguir copiar limpo.
-    if (codigoPix) setPixEnviado(true)
-    else setAberto(false)
+    setAberto(false)
   }
 
   function enviarPix() {
@@ -82,33 +77,6 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
               </button>
             </div>
 
-            {pixEnviado ? (
-              <>
-                <div className="bg-primary-50 text-primary rounded-xl px-3 py-2.5">
-                  <p className="text-sm font-semibold">Falta o codigo Pix</p>
-                  <p className="text-xs mt-1 leading-relaxed">
-                    Ele vai numa mensagem separada — assim {cliente.nome.split(' ')[0]} consegue
-                    segurar e copiar so o codigo, sem o texto junto.
-                  </p>
-                </div>
-                <p className="font-mono text-[10px] text-ink-muted break-all bg-surface-2 rounded-xl p-3">
-                  {codigoPix}
-                </p>
-                <div className="flex gap-2 justify-end">
-                  <button onClick={() => setAberto(false)} className="px-4 py-2 text-sm font-semibold text-ink-muted hover:text-ink">
-                    Agora nao
-                  </button>
-                  <button
-                    onClick={enviarPix}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-white active:bg-primary-light"
-                  >
-                    <MessageCircle size={16} />
-                    Enviar o codigo Pix
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
             {aviso && (
               <div className="flex gap-2 items-start bg-accent/10 text-accent rounded-xl px-3 py-2.5" role="status">
                 <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
@@ -137,7 +105,20 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
                 Enviar via WhatsApp
               </button>
             </div>
-              </>
+
+            {/* O codigo Pix vai numa mensagem so dele: no WhatsApp, segurar
+                seleciona a mensagem inteira, entao junto do texto a cliente
+                copiaria "Prezado(a)..." e o banco recusa. Fica como botao
+                proprio em vez de um passo depois do envio — voltando do
+                WhatsApp o PWA recarrega e qualquer passo pendente se perderia. */}
+            {codigoPix && (
+              <button
+                onClick={enviarPix}
+                className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold border-2 border-primary text-primary active:bg-primary-50"
+              >
+                <Copy size={16} />
+                Enviar so o codigo Pix
+              </button>
             )}
           </div>
         </div>

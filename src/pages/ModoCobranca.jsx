@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, SkipForward, MessageCircle, PartyPopper, Lock } from 'lucide-react'
+import { ArrowLeft, SkipForward, MessageCircle, PartyPopper, Lock, Copy } from 'lucide-react'
 import { construirFilaCobranca } from '../utils/filaCobranca.js'
 import { gerarMensagemCobranca, linkWhatsApp } from '../utils/mensagensCobranca.js'
 import { statusParcela, hoje } from '../utils/formatadores.js'
@@ -19,7 +19,6 @@ export default function ModoCobranca({ clientes, vendas, navegar, registrarCobra
   const [indice, setIndice] = useState(0)
   const [enviados, setEnviados] = useState(0)
   const [enviando, setEnviando] = useState(false)
-  const [pixPendente, setPixPendente] = useState(null)
   const [mensagem, setMensagem] = useState(() =>
     fila[0] ? gerarMensagemCobranca(fila[0].parcela, fila[0].cliente, fila[0].venda, profile).mensagem : ''
   )
@@ -63,11 +62,7 @@ export default function ModoCobranca({ clientes, vendas, navegar, registrarCobra
       await registrarCobranca(item.venda.id, item.parcela.numero)
       window.open(linkWhatsApp(item.cliente.telefone, mensagem), '_blank', 'noopener,noreferrer')
       setEnviados(n => n + 1)
-      // Com Pix, segura a fila num passo extra: o codigo tem que ir numa
-      // mensagem so dele pra cliente copiar limpo.
-      const { codigoPix } = gerarMensagemCobranca(item.parcela, item.cliente, item.venda, profile)
-      if (codigoPix) setPixPendente({ telefone: item.cliente.telefone, codigo: codigoPix })
-      else avancar(indice + 1)
+      avancar(indice + 1)
     } catch {
       mostrarToast('Erro ao registrar cobrança. Tente de novo.', 'error')
     } finally {
@@ -75,15 +70,11 @@ export default function ModoCobranca({ clientes, vendas, navegar, registrarCobra
     }
   }
 
-  function enviarPixEAvancar() {
-    window.open(linkWhatsApp(pixPendente.telefone, pixPendente.codigo), '_blank', 'noopener,noreferrer')
-    setPixPendente(null)
-    avancar(indice + 1)
-  }
-
-  function pularPix() {
-    setPixPendente(null)
-    avancar(indice + 1)
+  // Botao proprio em vez de um passo apos o envio: voltando do WhatsApp o PWA
+  // recarrega e o passo pendente se perderia.
+  function enviarSoOPix() {
+    const { codigoPix } = gerarMensagemCobranca(item.parcela, item.cliente, item.venda, profile)
+    if (codigoPix) window.open(linkWhatsApp(item.cliente.telefone, codigoPix), '_blank', 'noopener,noreferrer')
   }
 
   if (fila.length === 0) {
@@ -178,45 +169,29 @@ export default function ModoCobranca({ clientes, vendas, navegar, registrarCobra
         />
       </div>
 
-      {pixPendente ? (
-        <div className="space-y-3">
-          <div className="bg-primary-50 text-primary rounded-xl px-3 py-2.5">
-            <p className="text-sm font-semibold">Falta o codigo Pix</p>
-            <p className="text-xs mt-1 leading-relaxed">
-              Vai numa mensagem separada, pra cliente conseguir copiar so o codigo.
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <button
-              onClick={pularPix}
-              className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl border-2 border-border text-ink-muted font-semibold active:bg-surface-2 transition-colors"
-            >
-              <SkipForward size={16} /> Pular
-            </button>
-            <button
-              onClick={enviarPixEAvancar}
-              className="flex-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-primary text-white font-semibold active:bg-primary-light transition-colors"
-            >
-              <MessageCircle size={16} /> Enviar o codigo Pix
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex gap-3">
-          <button
-            onClick={() => avancar(indice + 1)}
-            className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl border-2 border-border text-ink-muted font-semibold active:bg-surface-2 transition-colors"
-          >
-            <SkipForward size={16} /> Pular
-          </button>
-          <button
-            onClick={enviar}
-            disabled={enviando}
-            className="flex-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-primary text-white font-semibold active:bg-primary-light transition-colors disabled:opacity-60"
-          >
-            <MessageCircle size={16} /> Enviar no WhatsApp
-          </button>
-        </div>
+      <div className="flex gap-3">
+        <button
+          onClick={() => avancar(indice + 1)}
+          className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl border-2 border-border text-ink-muted font-semibold active:bg-surface-2 transition-colors"
+        >
+          <SkipForward size={16} /> Pular
+        </button>
+        <button
+          onClick={enviar}
+          disabled={enviando}
+          className="flex-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-primary text-white font-semibold active:bg-primary-light transition-colors disabled:opacity-60"
+        >
+          <MessageCircle size={16} /> Enviar no WhatsApp
+        </button>
+      </div>
+
+      {gerarMensagemCobranca(item.parcela, item.cliente, item.venda, profile).codigoPix && (
+        <button
+          onClick={enviarSoOPix}
+          className="mt-3 w-full flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl border-2 border-primary text-primary font-semibold active:bg-primary-50 transition-colors"
+        >
+          <Copy size={16} /> Enviar so o codigo Pix
+        </button>
       )}
     </div>
   )
