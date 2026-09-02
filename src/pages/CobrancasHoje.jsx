@@ -25,7 +25,7 @@ function CartaoCobranca({ cliente, parcela, venda, perfil, navegar, registrarCob
             <span className="font-display font-semibold text-ink-muted text-base">{cliente.nome[0]?.toUpperCase()}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xl font-bold text-ink leading-tight">{cliente.nome}</p>
+            <p className="text-2xl font-bold text-ink leading-tight">{cliente.nome}</p>
             {cliente.bairro && <p className="text-xs font-mono text-ink-muted truncate">{cliente.bairro}</p>}
           </div>
           <div className="text-right flex-shrink-0 font-mono">
