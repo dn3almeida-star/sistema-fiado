@@ -438,6 +438,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                       parcela={p}
                                       cliente={cliente}
                                       venda={venda}
+                                      perfil={profile}
                                       bloqueado={bloqueado}
                                       onUpgrade={abrirUpgrade}
                                       onRegistrar={async () => {

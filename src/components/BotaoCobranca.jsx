@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { MessageCircle, X } from 'lucide-react'
 import { gerarMensagemCobranca, linkWhatsApp } from '../utils/mensagensCobranca.js'
 
-export default function BotaoCobranca({ parcela, cliente, venda, onRegistrar, bloqueado = false, onUpgrade }) {
+export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegistrar, bloqueado = false, onUpgrade }) {
   const [aberto, setAberto] = useState(false)
   const [mensagem, setMensagem] = useState('')
   const [titulo, setTitulo] = useState('')
@@ -21,7 +21,7 @@ export default function BotaoCobranca({ parcela, cliente, venda, onRegistrar, bl
     // Cobrança 1-toque é do plano pago; no grátis o clique leva ao upgrade.
     if (bloqueado) { onUpgrade?.(); return }
     if (semTelefone) return
-    const g = gerarMensagemCobranca(parcela, cliente, venda)
+    const g = gerarMensagemCobranca(parcela, cliente, venda, perfil)
     setMensagem(g.mensagem)
     setTitulo(g.titulo)
     setAberto(true)

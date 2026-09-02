@@ -1,6 +1,7 @@
 import { formatarData, formatarMoeda, diasAteVencimento } from './formatadores.js'
+import { gerarBrCodePix } from './pixBrCode.js'
 
-export function gerarMensagemCobranca(parcela, cliente, venda) {
+export function gerarMensagemCobranca(parcela, cliente, venda, perfil) {
   const valor = formatarMoeda(parcela.valor)
 
   if (parcela.pago) {
@@ -23,6 +24,22 @@ export function gerarMensagemCobranca(parcela, cliente, venda) {
     mensagem = `Prezado(a) ${cliente.nome}, informamos que vence em ${dataVencimento} uma parcela de ${valor}.`
   }
   mensagem += ' Podemos regularizar o pagamento?'
+
+  // O copia e cola so entra na cobranca (no recibo nao faz sentido) e so quando
+  // a loja cadastrou a chave. Sem chave, a mensagem sai exatamente como antes.
+  const brCode = gerarBrCodePix({
+    chave: perfil?.chave_pix,
+    nome: perfil?.nome_loja,
+    cidade: perfil?.cidade,
+    valor: parcela.valor,
+  })
+  if (brCode) {
+    mensagem += `
+
+Pague por PIX Copia e Cola (o valor ja vai preenchido):
+${brCode}`
+  }
+
   return { mensagem, tipo: 'cobranca', titulo: 'Cobrar' }
 }
 

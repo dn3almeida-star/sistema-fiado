@@ -52,6 +52,38 @@ describe('gerarMensagemCobranca', () => {
     expect(r.mensagem).toContain('João Silva')
     expect(r.mensagem).not.toContain('Pedido')
   })
+
+  it('cobranca: sem chave pix no perfil, mensagem sai igual a de hoje', () => {
+    const parcela = { numero: 1, valor: 150, vencimento: diasAPartirDeHoje(-3), pago: false, pagoEm: null }
+    const semPerfil = gerarMensagemCobranca(parcela, cliente, venda)
+    const perfilSemChave = gerarMensagemCobranca(parcela, cliente, venda, { nome_loja: 'Iram Utilidades' })
+    expect(perfilSemChave.mensagem).toBe(semPerfil.mensagem)
+    expect(perfilSemChave.mensagem).not.toContain('PIX')
+  })
+
+  it('cobranca: com chave pix, acrescenta o copia e cola com o valor da parcela', () => {
+    const parcela = { numero: 1, valor: 150, vencimento: diasAPartirDeHoje(-3), pago: false, pagoEm: null }
+    const perfil = { nome_loja: 'Iram Utilidades', chave_pix: '62999887766', cidade: 'Goiania' }
+    const r = gerarMensagemCobranca(parcela, cliente, venda, perfil)
+    expect(r.mensagem).toContain('PIX Copia e Cola')
+    expect(r.mensagem).toContain('BR.GOV.BCB.PIX')
+    expect(r.mensagem).toContain('5406150.00')
+    expect(r.mensagem).toContain('venceu em')
+  })
+
+  it('recebimento: parcela paga nao leva pix (e recibo, nao cobranca)', () => {
+    const parcela = { numero: 1, valor: 150, vencimento: '2026-07-15', pago: true, pagoEm: '2026-07-10T12:00:00.000Z' }
+    const perfil = { nome_loja: 'Iram Utilidades', chave_pix: '62999887766', cidade: 'Goiania' }
+    const r = gerarMensagemCobranca(parcela, cliente, venda, perfil)
+    expect(r.tipo).toBe('recebimento')
+    expect(r.mensagem).not.toContain('BR.GOV.BCB.PIX')
+  })
+
+  it('cobranca: chave so com espacos e tratada como ausente', () => {
+    const parcela = { numero: 1, valor: 150, vencimento: diasAPartirDeHoje(0), pago: false, pagoEm: null }
+    const r = gerarMensagemCobranca(parcela, cliente, venda, { chave_pix: '   ' })
+    expect(r.mensagem).not.toContain('PIX')
+  })
 })
 
 describe('linkWhatsApp', () => {

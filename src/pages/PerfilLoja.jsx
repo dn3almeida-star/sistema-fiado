@@ -11,6 +11,8 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
   const [nomeLoja, setNomeLoja] = useState(profile?.nome_loja ?? '')
   const [telefone, setTelefone] = useState(profile?.telefone ?? '')
   const [logoUrl, setLogoUrl] = useState(profile?.logo_url ?? '')
+  const [chavePix, setChavePix] = useState(profile?.chave_pix ?? '')
+  const [cidade, setCidade] = useState(profile?.cidade ?? '')
   const [erro, setErro] = useState('')
   const [salvando, setSalvando] = useState(false)
   const [enviandoLogo, setEnviandoLogo] = useState(false)
@@ -45,7 +47,7 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
     }
     setSalvando(true)
     try {
-      await salvarProfile({ nome_loja: nomeLoja.trim(), telefone })
+      await salvarProfile({ nome_loja: nomeLoja.trim(), telefone, chave_pix: chavePix.trim(), cidade: cidade.trim() })
       mostrarToast('✓ Perfil salvo')
       if (modoInicial && onConcluir) onConcluir()
     } catch {
@@ -114,6 +116,31 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
             value={telefone}
             onChange={e => setTelefone(mascaraTelefone(e.target.value))}
             placeholder="(00)00000-0000"
+            className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Chave Pix</span>
+          <input
+            type="text"
+            value={chavePix}
+            onChange={e => setChavePix(e.target.value)}
+            placeholder="CPF, telefone, e-mail ou chave aleatoria"
+            className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          />
+          <span className="mt-1 block text-xs text-ink-muted">
+            Preenchendo, toda cobranca no WhatsApp ja vai com o Pix Copia e Cola e o valor da parcela.
+          </span>
+        </label>
+
+        <label className="block">
+          <span className="text-[11px] font-mono font-medium text-ink-muted uppercase tracking-wide">Cidade</span>
+          <input
+            type="text"
+            value={cidade}
+            onChange={e => setCidade(e.target.value)}
+            placeholder="Ex: Goiania"
             className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </label>

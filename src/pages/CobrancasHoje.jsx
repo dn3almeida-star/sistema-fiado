@@ -8,7 +8,7 @@ import { staggerContainer, fadeInUp } from '../utils/motion.js'
 import { rotuloUltimaCobranca } from '../utils/cobrancaSelo.js'
 import { construirFilaCobranca } from '../utils/filaCobranca.js'
 
-function CartaoCobranca({ cliente, parcela, venda, navegar, registrarCobranca, mostrarToast, bloqueado, onUpgrade }) {
+function CartaoCobranca({ cliente, parcela, venda, perfil, navegar, registrarCobranca, mostrarToast, bloqueado, onUpgrade }) {
   const st = statusParcela(parcela)
   const selo = rotuloUltimaCobranca(parcela.ultimaCobrancaEm, new Date().toISOString())
   return (
@@ -56,6 +56,7 @@ function CartaoCobranca({ cliente, parcela, venda, navegar, registrarCobranca, m
           parcela={parcela}
           cliente={cliente}
           venda={venda}
+          perfil={perfil}
           bloqueado={bloqueado}
           onUpgrade={onUpgrade}
           onRegistrar={async () => {
@@ -78,7 +79,7 @@ function CartaoCobranca({ cliente, parcela, venda, navegar, registrarCobranca, m
   )
 }
 
-export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobranca, mostrarToast, planoStatus, abrirUpgrade }) {
+export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobranca, mostrarToast, profile, planoStatus, abrirUpgrade }) {
   const bloqueado = !planoStatus?.entitlements?.cobranca
   const cobrancas = useMemo(() => {
     const lista = []
@@ -154,6 +155,7 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
                     cliente={cliente}
                     parcela={parcela}
                     venda={venda}
+                    perfil={profile}
                     navegar={navegar}
                     registrarCobranca={registrarCobranca}
                     mostrarToast={mostrarToast}
@@ -177,6 +179,7 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
                     cliente={cliente}
                     parcela={parcela}
                     venda={venda}
+                    perfil={profile}
                     navegar={navegar}
                     registrarCobranca={registrarCobranca}
                     mostrarToast={mostrarToast}

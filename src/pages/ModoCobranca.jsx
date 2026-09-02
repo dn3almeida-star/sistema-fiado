@@ -14,13 +14,13 @@ function BotaoVoltar({ navegar }) {
   )
 }
 
-export default function ModoCobranca({ clientes, vendas, navegar, registrarCobranca, mostrarToast, planoStatus, abrirUpgrade }) {
+export default function ModoCobranca({ clientes, vendas, navegar, registrarCobranca, mostrarToast, profile, planoStatus, abrirUpgrade }) {
   const [fila] = useState(() => construirFilaCobranca(vendas, clientes, hoje(), new Date().toISOString()))
   const [indice, setIndice] = useState(0)
   const [enviados, setEnviados] = useState(0)
   const [enviando, setEnviando] = useState(false)
   const [mensagem, setMensagem] = useState(() =>
-    fila[0] ? gerarMensagemCobranca(fila[0].parcela, fila[0].cliente, fila[0].venda).mensagem : ''
+    fila[0] ? gerarMensagemCobranca(fila[0].parcela, fila[0].cliente, fila[0].venda, profile).mensagem : ''
   )
 
   const item = fila[indice]
@@ -50,7 +50,7 @@ export default function ModoCobranca({ clientes, vendas, navegar, registrarCobra
   function avancar(proximo) {
     if (proximo < fila.length) {
       const it = fila[proximo]
-      setMensagem(gerarMensagemCobranca(it.parcela, it.cliente, it.venda).mensagem)
+      setMensagem(gerarMensagemCobranca(it.parcela, it.cliente, it.venda, profile).mensagem)
     }
     setIndice(proximo)
   }
