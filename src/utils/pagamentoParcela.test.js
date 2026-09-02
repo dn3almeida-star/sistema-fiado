@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { aplicarPagamentoParcela } from './pagamentoParcela.js'
+import { aplicarPagamentoParcela, desfazerPagamentoParcela } from './pagamentoParcela.js'
 
 const AGORA = '2026-07-03T12:00:00.000Z'
 
@@ -108,5 +108,104 @@ describe('aplicarPagamentoParcela', () => {
     expect(r.parcelas).toEqual(entrada)
     expect(r.parcelaExtraCriada).toBe(false)
     expect(r.diferenca).toBe(0)
+  })
+})
+
+describe('desfazerPagamentoParcela', () => {
+  it('pagou o valor exato: desmarcar so limpa pago/pagoEm, nada mais muda', () => {
+    const entrada = parcelas(
+      { numero: 1, valor: 100, vencimento: '2026-07-01', pago: true, pagoEm: AGORA },
+      { numero: 2, valor: 100, vencimento: '2026-08-01' },
+    )
+    const r = desfazerPagamentoParcela(entrada, 1)
+    expect(r.parcelas.find(p => p.numero === 1)).toEqual({
+      numero: 1, valor: 100, vencimento: '2026-07-01', pago: false, pagoEm: null,
+    })
+    expect(r.parcelaRemovida).toBe(false)
+    expect(r.diferencaRevertida).toBe(0)
+  })
+
+  it('pagou menos (diferenca redistribuida): desmarcar volta os dois valores ao original', () => {
+    const original = parcelas(
+      { numero: 1, valor: 93.34, vencimento: '2026-07-01' },
+      { numero: 2, valor: 93.33, vencimento: '2026-08-01' },
+    )
+    const pago = aplicarPagamentoParcela(original, 1, 60, AGORA)
+    expect(pago.parcelas.find(p => p.numero === 2).valor).toBe(126.67)
+
+    const r = desfazerPagamentoParcela(pago.parcelas, 1)
+    expect(r.parcelas.find(p => p.numero === 1)).toEqual(original[0])
+    expect(r.parcelas.find(p => p.numero === 2)).toEqual(original[1])
+    expect(r.parcelaRemovida).toBe(false)
+  })
+
+  it('pagou mais (excedente abatido da proxima): desmarcar restaura os dois valores', () => {
+    const original = parcelas(
+      { numero: 1, valor: 142.33, vencimento: '2026-07-01' },
+      { numero: 2, valor: 142.33, vencimento: '2026-08-01' },
+    )
+    const pago = aplicarPagamentoParcela(original, 1, 200, AGORA)
+    const r = desfazerPagamentoParcela(pago.parcelas, 1)
+    expect(r.parcelas.find(p => p.numero === 1)).toEqual(original[0])
+    expect(r.parcelas.find(p => p.numero === 2)).toEqual(original[1])
+  })
+
+  it('faltou na ultima parcela (parcela extra criada): desmarcar remove a parcela extra', () => {
+    const original = parcelas({ numero: 1, valor: 142.33, vencimento: '2026-07-01' })
+    const pago = aplicarPagamentoParcela(original, 1, 100, AGORA)
+    expect(pago.parcelas).toHaveLength(2)
+
+    const r = desfazerPagamentoParcela(pago.parcelas, 1)
+    expect(r.parcelas).toEqual(original)
+    expect(r.parcelaRemovida).toBe(true)
+    expect(r.diferencaRevertida).toBe(42.33)
+  })
+
+  it('excedente que travou em 0 (clamp): desmarcar restaura o valor exato de antes, nao soma direto a diferenca', () => {
+    const original = parcelas(
+      { numero: 1, valor: 100, vencimento: '2026-07-01' },
+      { numero: 2, valor: 30, vencimento: '2026-08-01' },
+    )
+    const pago = aplicarPagamentoParcela(original, 1, 200, AGORA)
+    expect(pago.parcelas.find(p => p.numero === 2).valor).toBe(0) // clampou
+
+    const r = desfazerPagamentoParcela(pago.parcelas, 1)
+    expect(r.parcelas.find(p => p.numero === 2).valor).toBe(30) // volta pro original, nao pra -57.67
+  })
+
+  it('a parcela que absorveu a diferenca ja foi paga nesse meio tempo: nao mexe nela, so reverte o alvo', () => {
+    const original = parcelas(
+      { numero: 1, valor: 142.33, vencimento: '2026-07-01' },
+      { numero: 2, valor: 142.33, vencimento: '2026-08-01' },
+    )
+    const pago = aplicarPagamentoParcela(original, 1, 100, AGORA)
+    const comParcela2Paga = pago.parcelas.map(p =>
+      p.numero === 2 ? { ...p, pago: true, pagoEm: AGORA } : p
+    )
+    const r = desfazerPagamentoParcela(comParcela2Paga, 1)
+    expect(r.parcelas.find(p => p.numero === 1).valor).toBe(142.33) // alvo reverte normalmente
+    expect(r.parcelas.find(p => p.numero === 2).valor).toBe(184.66) // ja paga, intocada
+  })
+
+  it('sem metadado de ajuste (parcela paga por outro caminho, sem valorOriginal): so alterna pago', () => {
+    const entrada = parcelas({ numero: 1, valor: 50, vencimento: '2026-07-01', pago: true, pagoEm: AGORA })
+    const r = desfazerPagamentoParcela(entrada, 1)
+    expect(r.parcelas.find(p => p.numero === 1).valor).toBe(50)
+    expect(r.parcelas.find(p => p.numero === 1).pago).toBe(false)
+  })
+
+  it('parcela inexistente: retorna a lista original sem mudancas', () => {
+    const entrada = parcelas({ numero: 1, valor: 100, vencimento: '2026-07-01' })
+    const r = desfazerPagamentoParcela(entrada, 99)
+    expect(r.parcelas).toEqual(entrada)
+    expect(r.parcelaRemovida).toBe(false)
+  })
+
+  it('imutabilidade: nao muta o array/objetos de entrada', () => {
+    const original = parcelas({ numero: 1, valor: 142.33, vencimento: '2026-07-01' })
+    const pago = aplicarPagamentoParcela(original, 1, 100, AGORA)
+    const copia = JSON.parse(JSON.stringify(pago.parcelas))
+    desfazerPagamentoParcela(pago.parcelas, 1)
+    expect(pago.parcelas).toEqual(copia)
   })
 })

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase.js'
-import { aplicarPagamentoParcela } from '../utils/pagamentoParcela.js'
+import { aplicarPagamentoParcela, desfazerPagamentoParcela } from '../utils/pagamentoParcela.js'
 
 const SELECT = 'id, clienteId:cliente_id, itens, valorTotal:valor_total, entrada, parcelas, criadaEm:criada_em'
 
@@ -55,6 +55,17 @@ export function useVendas(usuario) {
     )
   }
 
+  async function atualizarParcelasEValorTotal(vendaId, novasParcelas, novoValorTotal) {
+    const { error } = await supabase
+      .from('vendas')
+      .update({ parcelas: novasParcelas, valor_total: novoValorTotal })
+      .eq('id', vendaId)
+    if (error) throw error
+    setVendas(prev =>
+      prev.map(v => (v.id === vendaId ? { ...v, parcelas: novasParcelas, valorTotal: novoValorTotal } : v))
+    )
+  }
+
   async function marcarParcelaPaga(vendaId, numeroParcela, valorPago) {
     const venda = vendas.find(v => v.id === vendaId)
     if (!venda) return
@@ -71,14 +82,7 @@ export function useVendas(usuario) {
 
     if (parcelaExtraCriada) {
       const novoValorTotal = Math.round((venda.valorTotal + diferenca) * 100) / 100
-      const { error } = await supabase
-        .from('vendas')
-        .update({ parcelas: novas, valor_total: novoValorTotal })
-        .eq('id', vendaId)
-      if (error) throw error
-      setVendas(prev =>
-        prev.map(v => (v.id === vendaId ? { ...v, parcelas: novas, valorTotal: novoValorTotal } : v))
-      )
+      await atualizarParcelasEValorTotal(vendaId, novas, novoValorTotal)
     } else {
       await atualizarParcelas(vendaId, novas)
     }
@@ -87,10 +91,17 @@ export function useVendas(usuario) {
   async function desmarcarParcelaPaga(vendaId, numeroParcela) {
     const venda = vendas.find(v => v.id === vendaId)
     if (!venda) return
-    const novas = venda.parcelas.map(p =>
-      p.numero === numeroParcela ? { ...p, pago: false, pagoEm: null } : p
+    const { parcelas: novas, parcelaRemovida, diferencaRevertida } = desfazerPagamentoParcela(
+      venda.parcelas,
+      numeroParcela
     )
-    await atualizarParcelas(vendaId, novas)
+
+    if (parcelaRemovida) {
+      const novoValorTotal = Math.round((venda.valorTotal - diferencaRevertida) * 100) / 100
+      await atualizarParcelasEValorTotal(vendaId, novas, novoValorTotal)
+    } else {
+      await atualizarParcelas(vendaId, novas)
+    }
   }
 
   async function alterarVencimento(vendaId, numeroParcela, novoVencimento) {
