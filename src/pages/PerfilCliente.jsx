@@ -410,7 +410,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                       {formatarMoeda(p.valor)}
                                     </span>
                                   </div>
-                                  <div className="flex flex-wrap items-center justify-between gap-2 pl-2">
+                                  <div className="flex flex-wrap items-center justify-between gap-1">
                                     {p.pago ? (
                                       <span className="text-xs font-mono text-ink-muted">{formatarData(p.vencimento)}</span>
                                     ) : (
@@ -435,7 +435,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                         </span>
                                       </div>
                                     )}
-                                    <div className="flex gap-2 ml-auto">
+                                    <div className="flex gap-1 ml-auto">
                                       <BotaoPix parcela={p} cliente={cliente} venda={venda} perfil={profile} />
                                       <BotaoCobranca
                                       parcela={p}
