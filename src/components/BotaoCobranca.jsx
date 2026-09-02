@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
-import { MessageCircle, X } from 'lucide-react'
+import { MessageCircle, X, AlertTriangle } from 'lucide-react'
 import { gerarMensagemCobranca, linkWhatsApp } from '../utils/mensagensCobranca.js'
+import { avisoRecobranca } from '../utils/cobrancaSelo.js'
 
 export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegistrar, bloqueado = false, onUpgrade }) {
   const [aberto, setAberto] = useState(false)
   const [mensagem, setMensagem] = useState('')
   const [titulo, setTitulo] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [aviso, setAviso] = useState(null)
 
   useEffect(() => {
     if (!aberto) return
@@ -24,6 +26,7 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
     const g = gerarMensagemCobranca(parcela, cliente, venda, perfil)
     setMensagem(g.mensagem)
     setTitulo(g.titulo)
+    setAviso(avisoRecobranca(parcela, new Date().toISOString()))
     setAberto(true)
   }
 
@@ -66,6 +69,13 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
                 <X size={20} />
               </button>
             </div>
+
+            {aviso && (
+              <div className="flex gap-2 items-start bg-accent/10 text-accent rounded-xl px-3 py-2.5" role="status">
+                <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
+                <p className="text-xs leading-relaxed">{aviso}</p>
+              </div>
+            )}
 
             <textarea
               value={mensagem}
