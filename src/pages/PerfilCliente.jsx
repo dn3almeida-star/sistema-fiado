@@ -435,9 +435,8 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                         </span>
                                       </div>
                                     )}
-                                    <div className="flex gap-1 ml-auto">
-                                      <BotaoPix parcela={p} cliente={cliente} venda={venda} perfil={profile} />
-                                      <BotaoCobranca
+                                    <BotaoPix parcela={p} cliente={cliente} venda={venda} perfil={profile} />
+                                    <BotaoCobranca
                                       parcela={p}
                                       cliente={cliente}
                                       venda={venda}
@@ -453,7 +452,6 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                         }
                                       }}
                                     />
-                                    </div>
                                   </div>
                                 </div>
                               )
