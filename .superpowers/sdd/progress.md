@@ -1,3 +1,44 @@
+# Progresso - Botao Pix no cartao + investigacao encerrada (2026-09-02)
+
+Commit `fb45601`, 215/215 testes. Fecha o assunto "codigo Pix no WhatsApp".
+
+**Estado final:** botao `Pix` no cartao de cobranca (e na parcela do
+PerfilCliente, e no ModoCobranca), ao lado do WhatsApp. Manda o codigo numa
+mensagem so dele; a cliente segura e copia limpo. `BotaoPix.jsx` some sozinho
+quando nao ha chave Pix ou telefone.
+
+**O que NAO deu, testado e nao suposto** — o usuario queria uma mensagem so com
+botao de copiar, como o print de cobranca de boleto que ele recebe:
+
+- **O WhatsApp NAO reconhece codigo Pix em texto.** Testado em uso real: codigo
+  sozinho na mensagem, nenhum botao apareceu. Ele reconhece *linha digitavel de
+  boleto* (formato numerico fixo), nao BR Code. Fonte tecnica confirma que nao
+  ha como forcar.
+- **Bloco de codigo (tres crases) nao da copia isolada** — so muda a fonte pra
+  monoespacada. Eu tinha apostado que sim, baseado em blogs; estava errado.
+- **Botao de copiar em mensagem so existe via WhatsApp Business API**, que exige
+  numero dedicado — o numero **deixa de funcionar no WhatsApp normal**. Inviavel
+  pra quem vende conversando. Alem de template aprovado pela Meta e custo por
+  mensagem.
+- **O WhatsApp Business (app gratis) TEM cobranca Pix nativa** com botao "Pagar
+  com Pix" e QR: Configuracoes > Cobrancas > Pix, e no chat clipe > Pagamentos >
+  Cobrar com Pix (ou `/pix`). **Mas nao ha deeplink** — so funciona tocando
+  dentro do WhatsApp, o app nao dispara. Anotado como saida manual pro lojista.
+- **Nenhum app pode enviar mensagem no WhatsApp pelo usuario** (protecao
+  anti-spam). Logo duas mensagens custam sempre dois toques do lojista.
+- **Concorrentes** resolvem com QR: Fiado Pago mostra na tela (presencial),
+  GesCredi poe QR + copia-e-cola em cada parcela do carne. Nosso app ja gera
+  carne PDF — daria pra fazer igual, se um dia valer.
+
+**Descartado tambem:** pagina publica `/pix` com botao copiar (1 toque do
+lojista, 1 mensagem) — funcionaria, mas o usuario nao quis link.
+
+**Bug corrigido no caminho:** o passo "Falta o codigo Pix" apos o envio sumia ao
+voltar do WhatsApp — saindo do PWA o iOS descarrega o app e recarrega do zero.
+Por isso o envio virou botao proprio, sem estado entre idas ao WhatsApp.
+
+---
+
 # Progresso - Pix em mensagem separada (2026-09-02)
 
 Commit `94d3c7c`, 215/215 testes, build limpo.
