@@ -1,3 +1,41 @@
+# Progresso - Pix em mensagem separada (2026-09-02)
+
+Commit `94d3c7c`, 215/215 testes, build limpo.
+
+**Correcao de uma hipotese minha que estava errada.** Na entrada anterior eu
+tinha posto o codigo Pix entre tres crases apostando que o bloco de codigo do
+WhatsApp seria copiavel isoladamente — varias fontes de tecnologia afirmam
+isso. **Nao e verdade**, comprovado em uso real: o WhatsApp renderiza em
+monoespacado, mas segurar continua selecionando a mensagem INTEIRA. A cliente
+copiaria "Prezado(a)..." junto e o banco recusa. Licao: nao tratar como fato o
+que so consigo confirmar por blog; se nao da pra testar, ir direto pro caminho
+que sabidamente funciona.
+
+O print de uso mostrou ainda um efeito colateral que eu nao tinha previsto: o
+final do codigo (`*63046928`) era detectado pelo WhatsApp como **numero de
+telefone** — virava link verde clicavel no meio do texto.
+
+**A solucao:** `gerarMensagemCobranca` passa a devolver `codigoPix` a parte, e a
+mensagem de texto volta a nao carregar o codigo. As telas enviam em dois passos
+— a cobranca, e depois o codigo sozinho. **Sozinho na mensagem, segurar copia
+exatamente o codigo**, porque a mensagem inteira e o codigo. Resolve tambem a
+deteccao de telefone: sem texto em volta, nao ha o que confundir.
+
+- `BotaoCobranca`: apos enviar, o modal fica aberto no passo 2 ("Falta o codigo
+  Pix") em vez de fechar. Sem chave cadastrada, `codigoPix` vem null e o
+  comportamento e o de antes — um envio so.
+- `ModoCobranca`: segura a fila num passo extra antes de avancar pro proximo
+  cliente. Tem "Pular" pra nao travar quem quiser tocar rapido.
+- Custo aceito: **dois envios do lojista** por cobranca. E o unico jeito de a
+  cliente copiar limpo.
+
+**Nome do cliente: `text-lg` -> `text-xl`.** O primeiro aumento ficou sutil
+demais (o usuario reportou "continua igual") porque `text-lg` ainda era menor
+que o valor em `text-xl`. Agora empata em tamanho e ganha em peso (bold vs
+semibold), virando o elemento dominante do cartao.
+
+---
+
 # Progresso - Nome em destaque + Pix em bloco de codigo (2026-09-02)
 
 Commit `c577fb1`, 216/216 testes, build limpo. Duas coisas pedidas a partir de
