@@ -37,6 +37,6 @@ export function avisoRecobranca(parcela, agoraISO) {
   const dias = diasDeCalendario(parcela.ultimaCobrancaEm, agoraISO)
   if (dias < 0 || dias > DIAS_RECOBRANCA) return null
 
-  const quando = dias <= 0 ? 'hoje' : dias === 1 ? 'ontem' : `ha ${dias} dias`
-  return `Voce ja cobrou esta parcela ${quando}. Confira se ela ja foi paga antes de cobrar de novo.`
+  const quando = dias <= 0 ? 'hoje' : dias === 1 ? 'ontem' : `há ${dias} dias`
+  return `Você já cobrou esta parcela ${quando}. Confira se ela já foi paga antes de cobrar de novo.`
 }

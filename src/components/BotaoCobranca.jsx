@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { MessageCircle, X, AlertTriangle, Copy } from 'lucide-react'
+import { MessageCircle, X, AlertTriangle } from 'lucide-react'
 import { gerarMensagemCobranca, linkWhatsApp } from '../utils/mensagensCobranca.js'
 import { avisoRecobranca } from '../utils/cobrancaSelo.js'
 
@@ -9,7 +9,6 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
   const [titulo, setTitulo] = useState('')
   const [enviando, setEnviando] = useState(false)
   const [aviso, setAviso] = useState(null)
-  const [codigoPix, setCodigoPix] = useState(null)
 
   useEffect(() => {
     if (!aberto) return
@@ -28,7 +27,6 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
     setMensagem(g.mensagem)
     setTitulo(g.titulo)
     setAviso(avisoRecobranca(parcela, new Date().toISOString()))
-    setCodigoPix(g.codigoPix)
     setAberto(true)
   }
 
@@ -43,11 +41,6 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
       setEnviando(false)
     }
     window.open(linkWhatsApp(cliente.telefone, mensagem), '_blank', 'noopener,noreferrer')
-    setAberto(false)
-  }
-
-  function enviarPix() {
-    window.open(linkWhatsApp(cliente.telefone, codigoPix), '_blank', 'noopener,noreferrer')
     setAberto(false)
   }
 
@@ -106,20 +99,6 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
               </button>
             </div>
 
-            {/* O codigo Pix vai numa mensagem so dele: no WhatsApp, segurar
-                seleciona a mensagem inteira, entao junto do texto a cliente
-                copiaria "Prezado(a)..." e o banco recusa. Fica como botao
-                proprio em vez de um passo depois do envio — voltando do
-                WhatsApp o PWA recarrega e qualquer passo pendente se perderia. */}
-            {codigoPix && (
-              <button
-                onClick={enviarPix}
-                className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold border-2 border-primary text-primary active:bg-primary-50"
-              >
-                <Copy size={16} />
-                Enviar so o codigo Pix
-              </button>
-            )}
           </div>
         </div>
       )}

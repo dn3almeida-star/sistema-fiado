@@ -34,7 +34,7 @@ describe('avisoRecobranca', () => {
 
   it('cobrada ha 2 dias: avisa, dizendo ha quanto tempo', () => {
     const aviso = avisoRecobranca({ ...emAberto, ultimaCobrancaEm: '2026-07-08T09:00:00.000Z' }, agora)
-    expect(aviso).toContain('ha 2 dias')
+    expect(aviso).toContain('há 2 dias')
   })
 
   it('cobrada hoje: avisa', () => {
@@ -52,7 +52,7 @@ describe('avisoRecobranca', () => {
   })
 
   it('limite: 7 dias ainda avisa, 8 nao', () => {
-    expect(avisoRecobranca({ ...emAberto, ultimaCobrancaEm: '2026-07-03T09:00:00.000Z' }, agora)).toContain('7 dias')
+    expect(avisoRecobranca({ ...emAberto, ultimaCobrancaEm: '2026-07-03T09:00:00.000Z' }, agora)).toContain('há 7 dias')
     expect(avisoRecobranca({ ...emAberto, ultimaCobrancaEm: '2026-07-02T09:00:00.000Z' }, agora)).toBe(null)
   })
 

@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Bell, Send, AlertTriangle, Clock } from 'lucide-react'
 import BotaoCobranca from '../components/BotaoCobranca.jsx'
+import BotaoPix from '../components/BotaoPix.jsx'
 import EstadoVazio from '../components/EstadoVazio.jsx'
 import { formatarMoeda, formatarData, diasAteVencimento, statusParcela, hoje } from '../utils/formatadores.js'
 import { staggerContainer, fadeInUp } from '../utils/motion.js'
@@ -68,9 +69,10 @@ function CartaoCobranca({ cliente, parcela, venda, perfil, navegar, registrarCob
             }
           }}
         />
+        <BotaoPix parcela={parcela} cliente={cliente} venda={venda} perfil={perfil} />
         <button
           onClick={() => navegar('perfil', { clienteId: cliente.id })}
-          className="flex-1 border-2 border-primary text-primary py-2.5 rounded-xl font-semibold text-sm min-h-touch transition-colors active:bg-primary-50"
+          className="flex-1 border-2 border-border text-ink-muted py-2.5 rounded-xl font-semibold text-sm min-h-touch transition-colors active:bg-surface-2"
         >
           Ver Perfil
         </button>

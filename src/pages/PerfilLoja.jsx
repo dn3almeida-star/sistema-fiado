@@ -126,11 +126,11 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
             type="text"
             value={chavePix}
             onChange={e => setChavePix(e.target.value)}
-            placeholder="CPF, telefone, e-mail ou chave aleatoria"
+            placeholder="CPF, telefone, e-mail ou chave aleatória"
             className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
           <span className="mt-1 block text-xs text-ink-muted">
-            Preenchendo, toda cobranca no WhatsApp ja vai com o Pix Copia e Cola e o valor da parcela.
+            Preenchendo, toda cobrança no WhatsApp já vai com o Pix Copia e Cola e o valor da parcela.
           </span>
         </label>
 
@@ -140,7 +140,7 @@ export default function PerfilLoja({ profile, salvarProfile, enviarLogo, mostrar
             type="text"
             value={cidade}
             onChange={e => setCidade(e.target.value)}
-            placeholder="Ex: Goiania"
+            placeholder="Ex: Goiânia"
             className="mt-1.5 w-full px-4 py-3 border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </label>

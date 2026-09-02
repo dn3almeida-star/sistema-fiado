@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, SkipForward, MessageCircle, PartyPopper, Lock, Copy } from 'lucide-react'
+import { ArrowLeft, SkipForward, MessageCircle, PartyPopper, Lock } from 'lucide-react'
 import { construirFilaCobranca } from '../utils/filaCobranca.js'
+import BotaoPix from '../components/BotaoPix.jsx'
 import { gerarMensagemCobranca, linkWhatsApp } from '../utils/mensagensCobranca.js'
 import { statusParcela, hoje } from '../utils/formatadores.js'
 import { rotuloUltimaCobranca } from '../utils/cobrancaSelo.js'
@@ -68,13 +69,6 @@ export default function ModoCobranca({ clientes, vendas, navegar, registrarCobra
     } finally {
       setEnviando(false)
     }
-  }
-
-  // Botao proprio em vez de um passo apos o envio: voltando do WhatsApp o PWA
-  // recarrega e o passo pendente se perderia.
-  function enviarSoOPix() {
-    const { codigoPix } = gerarMensagemCobranca(item.parcela, item.cliente, item.venda, profile)
-    if (codigoPix) window.open(linkWhatsApp(item.cliente.telefone, codigoPix), '_blank', 'noopener,noreferrer')
   }
 
   if (fila.length === 0) {
@@ -185,14 +179,13 @@ export default function ModoCobranca({ clientes, vendas, navegar, registrarCobra
         </button>
       </div>
 
-      {gerarMensagemCobranca(item.parcela, item.cliente, item.venda, profile).codigoPix && (
-        <button
-          onClick={enviarSoOPix}
-          className="mt-3 w-full flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl border-2 border-primary text-primary font-semibold active:bg-primary-50 transition-colors"
-        >
-          <Copy size={16} /> Enviar so o codigo Pix
-        </button>
-      )}
+      <BotaoPix
+        parcela={item.parcela}
+        cliente={item.cliente}
+        venda={item.venda}
+        perfil={profile}
+        className="mt-3 w-full py-3"
+      />
     </div>
   )
 }

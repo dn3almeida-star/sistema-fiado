@@ -3,6 +3,7 @@ import { ArrowLeft, Phone, MapPin, Home, FileText, ChevronDown, ChevronUp, Check
 import ModalConfirmar from '../components/ModalConfirmar.jsx'
 import ModalConfirmarPagamento from '../components/ModalConfirmarPagamento.jsx'
 import BotaoCobranca from '../components/BotaoCobranca.jsx'
+import BotaoPix from '../components/BotaoPix.jsx'
 import SeloPago from '../components/SeloPago.jsx'
 import Timeline from '../components/Timeline.jsx'
 import { formatarMoeda, formatarData, statusParcela, formatarTelefone, mascaraTelefone, mascaraCPF, validarCPF } from '../utils/formatadores.js'
@@ -434,6 +435,8 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                         </span>
                                       </div>
                                     )}
+                                    <div className="flex gap-2">
+                                    <BotaoPix parcela={p} cliente={cliente} venda={venda} perfil={profile} />
                                     <BotaoCobranca
                                       parcela={p}
                                       cliente={cliente}
@@ -450,6 +453,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                         }
                                       }}
                                     />
+                                    </div>
                                   </div>
                                 </div>
                               )
