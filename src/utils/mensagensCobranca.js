@@ -8,6 +8,7 @@ export function gerarMensagemCobranca(parcela, cliente, venda, perfil) {
     const dataRecebimento = formatarData(parcela.pagoEm)
     return {
       mensagem: `Oi ${cliente.nome}, recebemos seu pagamento de ${valor} em ${dataRecebimento}. Obrigado!`,
+      codigoPix: null,
       tipo: 'recebimento',
       titulo: 'Confirmar Recebimento',
     }
@@ -25,24 +26,18 @@ export function gerarMensagemCobranca(parcela, cliente, venda, perfil) {
   }
   mensagem += ' Podemos regularizar o pagamento?'
 
-  // O copia e cola so entra na cobranca (no recibo nao faz sentido) e so quando
-  // a loja cadastrou a chave. Sem chave, a mensagem sai exatamente como antes.
-  const brCode = gerarBrCodePix({
+  // O codigo vai SEPARADO, pra ser enviado como uma segunda mensagem contendo
+  // so ele: no WhatsApp, segurar seleciona a mensagem inteira, entao junto do
+  // texto a cliente copiaria "Prezado(a)..." e o banco recusaria o codigo.
+  // Sem chave cadastrada vem null, e a tela nao oferece o segundo envio.
+  const codigoPix = gerarBrCodePix({
     chave: perfil?.chave_pix,
     nome: perfil?.nome_loja,
     cidade: perfil?.cidade,
     valor: parcela.valor,
   })
-  if (brCode) {
-    // Tres crases = bloco de codigo do WhatsApp: cai numa caixa monoespacada,
-    // sem quebra no meio dos digitos, e a cliente copia so o bloco.
-    mensagem += `
 
-Pague por PIX Copia e Cola (o valor ja vai preenchido):
-\`\`\`${brCode}\`\`\``
-  }
-
-  return { mensagem, tipo: 'cobranca', titulo: 'Cobrar' }
+  return { mensagem, codigoPix, tipo: 'cobranca', titulo: 'Cobrar' }
 }
 
 export function linkWhatsApp(telefone, mensagem) {

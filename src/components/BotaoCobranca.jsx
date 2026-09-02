@@ -9,6 +9,8 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
   const [titulo, setTitulo] = useState('')
   const [enviando, setEnviando] = useState(false)
   const [aviso, setAviso] = useState(null)
+  const [codigoPix, setCodigoPix] = useState(null)
+  const [pixEnviado, setPixEnviado] = useState(false)
 
   useEffect(() => {
     if (!aberto) return
@@ -27,6 +29,8 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
     setMensagem(g.mensagem)
     setTitulo(g.titulo)
     setAviso(avisoRecobranca(parcela, new Date().toISOString()))
+    setCodigoPix(g.codigoPix)
+    setPixEnviado(false)
     setAberto(true)
   }
 
@@ -41,6 +45,14 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
       setEnviando(false)
     }
     window.open(linkWhatsApp(cliente.telefone, mensagem), '_blank', 'noopener,noreferrer')
+    // Com Pix, o modal fica aberto no passo 2: o codigo precisa ir numa
+    // mensagem so dele pra cliente conseguir copiar limpo.
+    if (codigoPix) setPixEnviado(true)
+    else setAberto(false)
+  }
+
+  function enviarPix() {
+    window.open(linkWhatsApp(cliente.telefone, codigoPix), '_blank', 'noopener,noreferrer')
     setAberto(false)
   }
 
@@ -70,6 +82,33 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
               </button>
             </div>
 
+            {pixEnviado ? (
+              <>
+                <div className="bg-primary-50 text-primary rounded-xl px-3 py-2.5">
+                  <p className="text-sm font-semibold">Falta o codigo Pix</p>
+                  <p className="text-xs mt-1 leading-relaxed">
+                    Ele vai numa mensagem separada — assim {cliente.nome.split(' ')[0]} consegue
+                    segurar e copiar so o codigo, sem o texto junto.
+                  </p>
+                </div>
+                <p className="font-mono text-[10px] text-ink-muted break-all bg-surface-2 rounded-xl p-3">
+                  {codigoPix}
+                </p>
+                <div className="flex gap-2 justify-end">
+                  <button onClick={() => setAberto(false)} className="px-4 py-2 text-sm font-semibold text-ink-muted hover:text-ink">
+                    Agora nao
+                  </button>
+                  <button
+                    onClick={enviarPix}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-white active:bg-primary-light"
+                  >
+                    <MessageCircle size={16} />
+                    Enviar o codigo Pix
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
             {aviso && (
               <div className="flex gap-2 items-start bg-accent/10 text-accent rounded-xl px-3 py-2.5" role="status">
                 <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
@@ -98,6 +137,8 @@ export default function BotaoCobranca({ parcela, cliente, venda, perfil, onRegis
                 Enviar via WhatsApp
               </button>
             </div>
+              </>
+            )}
           </div>
         </div>
       )}

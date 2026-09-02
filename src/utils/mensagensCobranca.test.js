@@ -59,34 +59,24 @@ describe('gerarMensagemCobranca', () => {
     const semPerfil = gerarMensagemCobranca(parcela, cliente, venda)
     const perfilSemChave = gerarMensagemCobranca(parcela, cliente, venda, { nome_loja: 'Iram Utilidades' })
     expect(perfilSemChave.mensagem).toBe(semPerfil.mensagem)
-    expect(perfilSemChave.mensagem).not.toContain('PIX')
+    expect(perfilSemChave.codigoPix).toBe(null)
   })
 
-  it('cobranca: com chave pix, acrescenta o copia e cola com o valor da parcela', () => {
+  it('cobranca: com chave pix, o codigo vem SEPARADO da mensagem', () => {
     const parcela = { numero: 1, valor: 150, vencimento: diasAPartirDeHoje(-3), pago: false, pagoEm: null }
     const perfil = { nome_loja: 'Iram Utilidades', chave_pix: '62999887766', cidade: 'Goiania' }
     const r = gerarMensagemCobranca(parcela, cliente, venda, perfil)
-    expect(r.mensagem).toContain('PIX Copia e Cola')
-    expect(r.mensagem).toContain('BR.GOV.BCB.PIX')
-    expect(r.mensagem).toContain('5406150.00')
+
+    // a mensagem de texto NAO carrega o codigo: no WhatsApp, segurar seleciona
+    // a mensagem inteira, entao a cliente copiaria o texto junto e o banco recusa
+    expect(r.mensagem).not.toContain('BR.GOV.BCB.PIX')
     expect(r.mensagem).toContain('venceu em')
-  })
 
-  it('cobranca: o codigo pix vem em bloco de codigo do WhatsApp (tres crases)', () => {
-    const parcela = { numero: 1, valor: 150, vencimento: diasAPartirDeHoje(-3), pago: false, pagoEm: null }
-    const perfil = { nome_loja: 'Iram Utilidades', chave_pix: '62999887766', cidade: 'Goiania' }
-    const r = gerarMensagemCobranca(parcela, cliente, venda, perfil)
-    const bloco = r.mensagem.match(/```([^`]+)```/)
-    expect(bloco).not.toBe(null)
-    // o bloco tem o codigo e SO o codigo — nada de texto junto, senao a
-    // cliente copia lixo e o banco recusa
-    // o bloco tem o codigo e SO o codigo: nem o texto da cobranca, nem quebra
-    // de linha. Se vazar qualquer coisa junto, a cliente cola lixo no banco.
-    expect(bloco[1].startsWith('000201')).toBe(true)
-    expect(bloco[1].endsWith(gerarBrCodePix({ chave: '62999887766', nome: 'Iram Utilidades', cidade: 'Goiania', valor: 150 }).slice(-4))).toBe(true)
-    expect(bloco[1]).not.toContain('Prezado')
-    expect(bloco[1]).not.toContain('Pague por')
-    expect(bloco[1]).not.toContain(String.fromCharCode(10))
+    // o codigo vem sozinho, pra ser enviado como segunda mensagem
+    expect(r.codigoPix.startsWith('000201')).toBe(true)
+    expect(r.codigoPix).toContain('5406150.00')
+    expect(r.codigoPix).not.toContain('Prezado')
+    expect(r.codigoPix).not.toContain(String.fromCharCode(10))
   })
 
   it('recebimento: parcela paga nao leva pix (e recibo, nao cobranca)', () => {
@@ -94,13 +84,13 @@ describe('gerarMensagemCobranca', () => {
     const perfil = { nome_loja: 'Iram Utilidades', chave_pix: '62999887766', cidade: 'Goiania' }
     const r = gerarMensagemCobranca(parcela, cliente, venda, perfil)
     expect(r.tipo).toBe('recebimento')
-    expect(r.mensagem).not.toContain('BR.GOV.BCB.PIX')
+    expect(r.codigoPix).toBe(null)
   })
 
   it('cobranca: chave so com espacos e tratada como ausente', () => {
     const parcela = { numero: 1, valor: 150, vencimento: diasAPartirDeHoje(0), pago: false, pagoEm: null }
     const r = gerarMensagemCobranca(parcela, cliente, venda, { chave_pix: '   ' })
-    expect(r.mensagem).not.toContain('PIX')
+    expect(r.codigoPix).toBe(null)
   })
 })
 
