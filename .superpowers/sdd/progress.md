@@ -1,3 +1,42 @@
+# Progresso - Pix Copia e Cola na cobranca (2026-09-02)
+
+Commit `812d2c0`, 208/208 testes, deploy verificado no ar e **codigo validado
+num banco real** (colado no Pix Copia e Cola: nome do titular e valor corretos).
+
+**Por que essa feature e nao outra.** O usuario pediu ideias pra ajudar nas
+vendas do pai (loja Iram Utilidades, revendedor de utilidades/moveis no fiado).
+Olhando os dados dele, a primeira hipotese — "vender de novo pra quem ja pagou
+bem" — foi *refutada*: 54 dos 69 clientes ainda devem 3+ parcelas (media 5,1
+restantes), entao nao voltam a comprar porque ainda estao pagando, nao por
+falta de oferta. O que os numeros mostram e outra coisa: R$ 63.648 vendidos,
+R$ 53.633 na rua, R$ 8.695 recebidos, ~100% sem entrada, 5-12 parcelas, atraso
+de so 3%. Os clientes pagam — o dinheiro e que demora a voltar. E o teto dele e
+o credito do fornecedor. Logo a alavanca e **giro**, nao volume: fazer a cliente
+pagar no momento em que le a cobranca.
+
+- **`pixBrCode.js`** (novo): monta o BR Code do padrao BCB. Funcao pura, sem
+  rede. Campos TLV + CRC-16/CCITT-FALSE.
+- **Como o CRC foi garantido:** CRC errado faz o banco recusar o codigo inteiro
+  e a cliente desiste sem ninguem saber. Duas travas: teste contra o vetor
+  canonico do algoritmo (`crc16('123456789') === '29B1'`) e, na revisao, uma
+  checagem cruzada com implementacao independente por tabela — as duas
+  concordaram.
+- **`profiles` ganhou `chave_pix` e `cidade`** (migration aplicada pelo usuario
+  no SQL Editor; o classificador do modo auto barra escrita em banco por aqui).
+  Nome do recebedor sai de `nome_loja` — nao pede campo novo, e o campo 59 e
+  informativo (o banco destino mostra o titular real pela chave).
+- **Sem chave preenchida, a mensagem sai identica a de antes.** Recibo de
+  pagamento nao leva Pix; so a cobranca.
+- **Chave CPF/CNPJ vai sem pontuacao** — o DICT guarda so digitos. A do lojista
+  e CNPJ (14 digitos).
+- **Fora de escopo, decidido junto:** QR Code (vale mais no presencial que no
+  WhatsApp, e a cliente nao escaneia a propria tela — fica pra quando souber se
+  usam Pix) e baixa automatica da parcela (exigiria integrar com banco).
+- **Como medir:** isso NAO sobe o numero de vendas. O termometro e o
+  `total_recebido` (R$ 8.695 na data) subir mais rapido.
+
+---
+
 # Progresso - Alterar vencimento de parcela (2026-08-30)
 
 Pedido do usuario a partir de um print: poder mudar a data de vencimento de
