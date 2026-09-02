@@ -410,7 +410,7 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                       {formatarMoeda(p.valor)}
                                     </span>
                                   </div>
-                                  <div className="flex items-center justify-between gap-2 pl-9">
+                                  <div className="flex flex-wrap items-center justify-between gap-2 pl-2">
                                     {p.pago ? (
                                       <span className="text-xs font-mono text-ink-muted">{formatarData(p.vencimento)}</span>
                                     ) : (
@@ -428,16 +428,16 @@ export default function PerfilCliente({ clienteId, clientes, vendas, marcarParce
                                               .then(() => mostrarToast('✓ Vencimento alterado'))
                                               .catch(() => mostrarToast('Erro ao alterar o vencimento.', 'error'))
                                           }}
-                                          className="w-[104px] text-xs text-transparent bg-surface border border-border rounded-lg px-2 py-1.5 min-h-touch [&::-webkit-calendar-picker-indicator]:opacity-0"
+                                          className="w-[92px] text-xs text-transparent bg-surface border border-border rounded-lg px-2 py-1.5 min-h-touch [&::-webkit-calendar-picker-indicator]:opacity-0"
                                         />
                                         <span className="absolute inset-0 flex items-center justify-center text-xs font-mono text-ink-muted pointer-events-none">
                                           {formatarData(p.vencimento)}
                                         </span>
                                       </div>
                                     )}
-                                    <div className="flex gap-2">
-                                    <BotaoPix parcela={p} cliente={cliente} venda={venda} perfil={profile} />
-                                    <BotaoCobranca
+                                    <div className="flex gap-2 ml-auto">
+                                      <BotaoPix parcela={p} cliente={cliente} venda={venda} perfil={profile} />
+                                      <BotaoCobranca
                                       parcela={p}
                                       cliente={cliente}
                                       venda={venda}
