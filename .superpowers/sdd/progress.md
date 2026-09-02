@@ -1,3 +1,40 @@
+# Progresso - Desmarcar parcela reverte o valor (2026-09-02)
+
+Commit `7d64f0e`, 224/224 testes.
+
+**O bug:** pagar uma parcela com valor diferente repassa a diferenca pra proxima
+em aberto (ou cria parcela nova). Desmarcar so limpava `pago`/`pagoEm` — o valor
+mexido ficava mexido pra sempre, nos dois lados.
+
+**A correcao:** `aplicarPagamentoParcela` passa a gravar na parcela paga de onde
+veio (`valorOriginal`) e pra onde foi o ajuste (`ajuste: {numero, valor,
+valorEsperado, criouParcela}`). `desfazerPagamentoParcela` le isso e reverte os
+dois lados, ou remove a parcela extra e devolve o `valor_total`.
+
+Decisoes que valem lembrar:
+
+- **Guarda `valorEsperado`, nao so a diferenca bruta.** O excedente trava em 0
+  (`Math.max(0, ...)`) quando passaria do valor da proxima parcela — nesses
+  casos o delta aplicado difere da diferenca, e somar a diferenca de volta
+  levaria a um valor errado. Ha teste cobrindo esse clamp.
+- **So reverte a outra parcela se ela estiver exatamente como o ajuste deixou**
+  (nao paga e com `valor === valorEsperado`). Se foi paga ou editada nesse meio
+  tempo, reverte so a parcela alvo — melhor deixar uma parcela sobrando mexida
+  do que desfazer um pagamento real.
+- Metadado so e gravado quando `diferenca !== 0`: o caminho comum (pagar o valor
+  cheio) segue sem campo extra nenhum.
+
+**Armadilha que me custou dois ciclos de teste do usuario:** desmarcar devolve o
+valor **imediatamente anterior ao pagamento**, nao o valor original da venda. Se
+o dado ja estava corrompido de antes, marcar+desmarcar restaura a corrupcao — e
+isso e o comportamento certo. Eu li isso errado e afirmei que o conserto nao
+tinha rodado; o que distingue os dois casos: com o codigo antigo o valor **pago**
+fica travado na parcela; com o conserto, volta o valor de antes do pagamento.
+Dados ja corrompidos precisam de correcao manual (foi feita por SQL na venda
+`f801b4c4`, de teste, restaurando 93,33 / 93,33 / 93,34).
+
+---
+
 # Progresso - Botao Pix no cartao + investigacao encerrada (2026-09-02)
 
 Commit `fb45601`, 215/215 testes. Fecha o assunto "codigo Pix no WhatsApp".
