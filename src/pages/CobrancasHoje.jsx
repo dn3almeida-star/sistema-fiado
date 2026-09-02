@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Bell, Send } from 'lucide-react'
+import { Bell, Send, AlertTriangle, Clock } from 'lucide-react'
 import BotaoCobranca from '../components/BotaoCobranca.jsx'
 import EstadoVazio from '../components/EstadoVazio.jsx'
 import { formatarMoeda, formatarData, diasAteVencimento, statusParcela, hoje } from '../utils/formatadores.js'
@@ -25,7 +25,7 @@ function CartaoCobranca({ cliente, parcela, venda, perfil, navegar, registrarCob
             <span className="font-display font-semibold text-ink-muted text-base">{cliente.nome[0]?.toUpperCase()}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-2xl font-bold text-ink leading-tight">{cliente.nome}</p>
+            <p className="text-lg font-bold text-ink leading-tight">{cliente.nome}</p>
             {cliente.bairro && <p className="text-xs font-mono text-ink-muted truncate">{cliente.bairro}</p>}
           </div>
           <div className="text-right flex-shrink-0 font-mono">
@@ -145,9 +145,15 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
 
           {vencidas.length > 0 && (
             <div>
-              <h2 className="text-[11px] font-mono font-semibold text-red-500 uppercase tracking-widest mb-2">
-                Vencidas ({vencidas.length})
-              </h2>
+              <div className="flex items-center gap-2.5 bg-red-500/10 border-l-4 border-red-500 rounded-r-xl pl-3 pr-4 py-3 mb-3">
+                <AlertTriangle size={20} className="text-red-500 flex-shrink-0" />
+                <h2 className="text-base font-display font-bold text-red-500 uppercase tracking-wide">
+                  Vencidas
+                </h2>
+                <span className="ml-auto text-base font-mono font-bold text-red-500 tabular-nums">
+                  {vencidas.length}
+                </span>
+              </div>
               <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-3">
                 {vencidas.map(({ cliente, parcela, venda }) => (
                   <CartaoCobranca
@@ -169,9 +175,15 @@ export default function CobrancasHoje({ clientes, vendas, navegar, registrarCobr
 
           {aVencer.length > 0 && (
             <div>
-              <h2 className="text-[11px] font-mono font-semibold text-ink-muted uppercase tracking-widest mb-2">
-                A vencer ({aVencer.length})
-              </h2>
+              <div className="flex items-center gap-2.5 bg-surface-2 border-l-4 border-border rounded-r-xl pl-3 pr-4 py-3 mb-3">
+                <Clock size={20} className="text-ink-muted flex-shrink-0" />
+                <h2 className="text-base font-display font-bold text-ink uppercase tracking-wide">
+                  A vencer
+                </h2>
+                <span className="ml-auto text-base font-mono font-bold text-ink-muted tabular-nums">
+                  {aVencer.length}
+                </span>
+              </div>
               <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-3">
                 {aVencer.map(({ cliente, parcela, venda }) => (
                   <CartaoCobranca
