@@ -1,3 +1,31 @@
+# Progresso - Acabamento da cobranca com Pix (2026-09-02)
+
+Commits `5d236f6`, `65cf06c`, `939a5ac`, `cfca6f5`. 226/226 testes.
+
+**Aviso na cobranca (`cfca6f5`).** A mensagem de cobranca passa a avisar que o
+codigo vem logo em seguida, ensinando os tres passos (segurar, copiar, colar) e
+nomeando a opcao do banco — "Pix Copia e Cola", que e onde as pessoas se perdem.
+Sem isso a cliente recebia uma parede de numeros sem contexto. **So entra quando
+`codigoPix` existe**: sem chave cadastrada nao promete uma segunda mensagem que
+nunca chegaria (ha teste travando os dois casos).
+
+**Layout da linha da parcela — tres rodadas ate acertar.** Com o botao Pix ao
+lado do WhatsApp a linha passou a pedir mais largura do que o cartao tem, e o
+WhatsApp era cortado pela borda. O que resolveu, na ordem:
+
+1. `flex-wrap` como rede (para de cortar, mas quebrava em duas linhas)
+2. recuo `pl-9` -> nada e data de 104px -> 92px: devolve os ~12pt que faltavam
+   pra tudo caber numa linha so
+3. **tirar o agrupamento dos botoes**: Pix e WhatsApp estavam dentro de uma
+   `div`, entao o `justify-between` via dois itens e jogava toda a sobra num vao
+   so (data--Pix bem maior que Pix--WhatsApp). Com os tres como irmaos diretos,
+   a sobra se reparte igual.
+
+Licao pra proxima: **`justify-between` reparte a sobra entre os itens diretos** —
+agrupar dois deles numa `div` desequilibra o espacamento sem ser obvio no codigo.
+
+---
+
 # Progresso - Desmarcar parcela reverte o valor (2026-09-02)
 
 Commit `7d64f0e`, 224/224 testes.
