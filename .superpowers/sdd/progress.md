@@ -1,3 +1,35 @@
+# Progresso - Nome em destaque + Pix em bloco de codigo (2026-09-02)
+
+Commit `c577fb1`, 216/216 testes, build limpo. Duas coisas pedidas a partir de
+prints de uso real.
+
+**Nome do cliente nos cartoes de cobranca** (`CobrancasHoje.jsx`): de
+`font-semibold` no tamanho base para `text-lg font-bold` — vira o elemento mais
+forte do cartao, na frente do valor; e o nome e o que o lojista bate o olho pra
+reconhecer quem cobrar. Junto: `leading-tight` (nome longo agora quebra em duas
+linhas) e `truncate` no bairro, que e secundario e estava roubando duas linhas
+("Jd Tiradente [ ap de.goiania]"). **Nome nao trunca de proposito** — nessa tela
+ele precisa ler o nome inteiro; "Valdirene Braz da..." atrapalharia mais que uma
+linha a mais. Um componente so serve Vencidas e A vencer.
+
+**Pix entre tres crases (bloco de codigo do WhatsApp).** Descoberto em uso real:
+na mensagem corrida, segurar no WhatsApp seleciona a mensagem INTEIRA — a
+cliente copiava "Prezado(a)..." junto e o banco recusa. Ou seja, o copia e cola
+nao funcionava na pratica. O bloco de codigo tambem evita a quebra no meio dos
+digitos (com hifen) que aparecia no print.
+
+- **Hipotese nao verificada por mim:** fontes de tecnologia dizem que o bloco de
+  codigo do WhatsApp e copiavel isoladamente (diferente de negrito/italico, que
+  sao so visuais). Nao consigo testar daqui — **o usuario confirma**. Se copiar
+  a mensagem toda, o plano B ja esta desenhado: **duas mensagens** (cobranca, e
+  o codigo sozinho depois), que resolve 100% ao custo de dois envios.
+- **Teste trava o essencial:** dentro do bloco vai so o codigo — sem 'Prezado',
+  sem 'Pague por', sem quebra de linha. Se alguem vazar texto pra dentro, quebra.
+- Um teste meu nasceu errado assumindo que o codigo nao tem espaco: "IRAM
+  UTILIDADES" (campo 59) tem. O codigo estava certo, a assercao e que estava.
+
+---
+
 # Progresso - Aviso antes de recobrar (2026-09-02)
 
 Commit `0dcacb1`, 215/215 testes, build limpo.
