@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { gerarMensagemCobranca, linkWhatsApp } from './mensagensCobranca.js'
+import { gerarBrCodePix } from './pixBrCode.js'
 
 describe('gerarMensagemCobranca', () => {
   const cliente = { id: 'c1', nome: 'João Silva', telefone: '(11) 99999-9999' }
@@ -69,6 +70,23 @@ describe('gerarMensagemCobranca', () => {
     expect(r.mensagem).toContain('BR.GOV.BCB.PIX')
     expect(r.mensagem).toContain('5406150.00')
     expect(r.mensagem).toContain('venceu em')
+  })
+
+  it('cobranca: o codigo pix vem em bloco de codigo do WhatsApp (tres crases)', () => {
+    const parcela = { numero: 1, valor: 150, vencimento: diasAPartirDeHoje(-3), pago: false, pagoEm: null }
+    const perfil = { nome_loja: 'Iram Utilidades', chave_pix: '62999887766', cidade: 'Goiania' }
+    const r = gerarMensagemCobranca(parcela, cliente, venda, perfil)
+    const bloco = r.mensagem.match(/```([^`]+)```/)
+    expect(bloco).not.toBe(null)
+    // o bloco tem o codigo e SO o codigo — nada de texto junto, senao a
+    // cliente copia lixo e o banco recusa
+    // o bloco tem o codigo e SO o codigo: nem o texto da cobranca, nem quebra
+    // de linha. Se vazar qualquer coisa junto, a cliente cola lixo no banco.
+    expect(bloco[1].startsWith('000201')).toBe(true)
+    expect(bloco[1].endsWith(gerarBrCodePix({ chave: '62999887766', nome: 'Iram Utilidades', cidade: 'Goiania', valor: 150 }).slice(-4))).toBe(true)
+    expect(bloco[1]).not.toContain('Prezado')
+    expect(bloco[1]).not.toContain('Pague por')
+    expect(bloco[1]).not.toContain(String.fromCharCode(10))
   })
 
   it('recebimento: parcela paga nao leva pix (e recibo, nao cobranca)', () => {

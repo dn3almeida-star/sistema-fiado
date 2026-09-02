@@ -34,10 +34,12 @@ export function gerarMensagemCobranca(parcela, cliente, venda, perfil) {
     valor: parcela.valor,
   })
   if (brCode) {
+    // Tres crases = bloco de codigo do WhatsApp: cai numa caixa monoespacada,
+    // sem quebra no meio dos digitos, e a cliente copia so o bloco.
     mensagem += `
 
 Pague por PIX Copia e Cola (o valor ja vai preenchido):
-${brCode}`
+\`\`\`${brCode}\`\`\``
   }
 
   return { mensagem, tipo: 'cobranca', titulo: 'Cobrar' }
